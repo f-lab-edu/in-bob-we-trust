@@ -1,0 +1,4 @@
+rootProject.name = 'in-bob-we-trust'
+include 'external-customer'
+include 'relay-server-api'
+
