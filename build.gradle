@@ -17,3 +17,7 @@ allprojects {
         useJUnitPlatform()
     }
 }
+
+subprojects {
+    buildDir = getRootDir().toString().concat("/build")
+}
