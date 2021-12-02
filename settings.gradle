@@ -1,4 +1,6 @@
 rootProject.name = 'in-bob-we-trust'
 
-include 'external-order-server'
-include 'relay-server-api'
+include 'relay-order-server'
+include 'relay-delivery-server'
+include 'relay-shop-sever'
+
