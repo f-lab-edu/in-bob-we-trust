@@ -1,23 +1,39 @@
-allprojects {
+buildscript {
+    repositories {
+        mavenCentral()
+    }
 
-    apply plugin: 'java'
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.5.6"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+    }
+}
 
-    sourceCompatibility = '11'
+subprojects {
+    apply plugin: "java"
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "org.springframework.boot"
+
+    group = 'com.inbobwetrust'
+    version = '0.0.1-SNAPSHOT'
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+        implementation enforcedPlatform('org.springframework.boot:spring-boot-dependencies:2.5.6')
+        implementation 'org.springframework.boot:spring-boot-starter'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'org.springframework.security:spring-security-test:5.5.3'
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     }
 
     test {
         useJUnitPlatform()
     }
-}
-
-subprojects {
-    buildDir = rootProject.buildDir
 }
