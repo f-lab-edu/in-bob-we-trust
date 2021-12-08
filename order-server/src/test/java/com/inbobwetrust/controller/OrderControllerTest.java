@@ -23,30 +23,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(OrderController.class)
 class OrderControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @MockBean
-    private OrderService orderService;
+    @MockBean private OrderService orderService;
 
     private ObjectMapper mapper = new ObjectMapper();
-    Order orderToSave = new Order("order-1", "shop-1");
+    Order orderToSave = Order.builder().id("order-1").shopId("shop-1").build();
 
     @BeforeEach
-    void setUp() {
-    }
+    void setUp() {}
 
     @Test
     @DisplayName("신규주문수신 테스트")
     public void receiveNewOrder_successTest() throws Exception {
         when(this.orderService.receiveNewOrder(orderToSave))
-            .thenReturn(new Order("order-1", "shop-1"));
+                .thenReturn(Order.builder().id("order-1").shopId("shop-1").build());
         String requestBody = mapper.writeValueAsString(orderToSave);
 
         mockMvc.perform(post("/order").contentType(MediaType.APPLICATION_JSON).content(requestBody))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is("order-1")))
-            .andExpect(jsonPath("$.shopId", is("shop-1")));
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(orderToSave.getId())))
+                .andExpect(jsonPath("$.shopId", is(orderToSave.getShopId())));
     }
 }

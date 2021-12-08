@@ -10,9 +10,9 @@ class OrderTest {
     @Test
     @DisplayName("주문 VO의 equals 오버라이드")
     void equals_test() {
-        Order order1 = new Order("order1", "shop1");
-        Order order2 = new Order("order2", "shop2");
-        Order order3 = new Order("order1", "shop1");
+        Order order1 = Order.builder().id("order1").shopId("shop1").build();
+        Order order2 = Order.builder().id("order2").shopId("shop2").build();
+        Order order3 = Order.builder().id("order1").shopId("shop1").build();
 
         Assertions.assertFalse(order1.equals(order2));
         Assertions.assertTrue(order1.equals(order3));

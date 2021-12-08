@@ -18,8 +18,8 @@ class ShopsTest {
         int totalOrders = 3;
         int totalShops = 2;
         for (int i = 0; i < totalOrders; i++) {
-            shops.send(new Order("order-" + i, "shop-1"));
-            shops.send(new Order("order-" + i, "shop-2"));
+            shops.send(Order.builder().id("order-" + i).shopId("shop-1").build());
+            shops.send(Order.builder().id("order-" + i).shopId("shop-2").build());
         }
 
         Assertions.assertTrue(totalOrders * totalShops == shops.getHistory().size());
