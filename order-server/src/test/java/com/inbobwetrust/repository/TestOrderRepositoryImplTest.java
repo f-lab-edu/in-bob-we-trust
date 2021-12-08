@@ -66,9 +66,9 @@ class TestOrderRepositoryImplTest {
     void findAll_successTest() {
         Assertions.assertTrue(orderRepository.findAll().size() == 0);
         for (int i = 0; i < 10; i++) {
-            orderRepository.save(Order.builder().id("order-" + 1).shopId("shop-" + i).build());
+            orderRepository.save(Order.builder().id("order-" + i).shopId("shop-" + i).build());
         }
 
-        Assertions.assertTrue(10 == orderRepository.findAll().size());
+        Assertions.assertEquals(10, orderRepository.findAll().size());
     }
 }
