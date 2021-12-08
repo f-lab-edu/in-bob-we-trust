@@ -29,7 +29,7 @@ class OrderServiceTest {
     @Test
     @DisplayName("신규주문수신 : 성공적으로 저장하는 케이스")
     void receiveNewOrder_successTest() {
-        Order orderReceived = new Order("order-1", "shop-1");
+        Order orderReceived = Order.builder().id("order-1").shopId("shop-1").build();
         when(orderRepository.save(orderReceived)).thenReturn(true);
         when(orderRepository.findByOrderId(orderReceived.getId()))
                 .thenReturn(Optional.ofNullable(orderReceived));
@@ -43,7 +43,7 @@ class OrderServiceTest {
     @Test
     @DisplayName("신규주문수신 : 주문저장 실패 시 exception 발생")
     void receiveNewOrder_fail_repository_saveTest() {
-        Order orderReceived = new Order("order-1", "shop-1");
+        Order orderReceived = Order.builder().id("order-1").shopId("shop-1").build();
         when(orderRepository.save(orderReceived)).thenReturn(false);
 
         assertThrows(RuntimeException.class, () -> orderService.receiveNewOrder(orderReceived))

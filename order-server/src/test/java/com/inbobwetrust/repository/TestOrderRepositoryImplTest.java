@@ -11,8 +11,8 @@ import java.util.Optional;
 class TestOrderRepositoryImplTest {
 
     private TestOrderRepositoryImpl orderRepository = new TestOrderRepositoryImpl();
-    Order orderToSave = new Order("order-1", "shop-1");
-    Order notExistOrder = new Order("order-notexist", "shop-notexist");
+    Order orderToSave = Order.builder().id("order-1").shopId("shop-1").build();
+    Order notExistOrder = Order.builder().id("order-notexist").shopId("shop-notexist").build();
 
     @BeforeEach
     public void setUp() {
@@ -66,7 +66,7 @@ class TestOrderRepositoryImplTest {
     void findAll_successTest() {
         Assertions.assertTrue(orderRepository.findAll().size() == 0);
         for (int i = 0; i < 10; i++) {
-            orderRepository.save(new Order("order-" + i, "shop-" + i));
+            orderRepository.save(Order.builder().id("order-" + 1).shopId("shop-" + i).build());
         }
 
         Assertions.assertTrue(10 == orderRepository.findAll().size());
