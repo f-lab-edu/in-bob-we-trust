@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,5 +67,25 @@ public class DeliveryControllerTest {
         assertEquals(
                 expectedDeliveryResponse.getEstimatedDeliveryFinishTime(),
                 responseObj.getEstimatedDeliveryFinishTime());
+    }
+
+    @Test
+    @DisplayName("배달대행사 라이더배정 테스트")
+    void setRider_successTest() throws Exception {
+        Delivery dlvry = makeDeliveryForRequestAndResponse().get(0);
+        when(this.deliveryService.setRider(dlvry)).thenReturn(dlvry);
+        String requestBody = mapper.writeValueAsString(dlvry);
+
+        MvcResult result =
+                mockMvc.perform(
+                                put("/delivery/rider")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(requestBody))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.orderId", is(dlvry.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(dlvry.getRiderId())))
+                        .andExpect(jsonPath("$.deliveryAgentId", is(dlvry.getDeliveryAgentId())))
+                        .andReturn();
     }
 }
