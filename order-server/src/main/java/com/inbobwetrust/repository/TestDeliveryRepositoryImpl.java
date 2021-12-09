@@ -30,14 +30,31 @@ public class TestDeliveryRepositoryImpl implements DeliveryRepository {
         return Collections.unmodifiableList(deliveries);
     }
 
-    public void clear() {
-        while (!deliveries.isEmpty()) {
-            deliveries.remove(0);
+    @Override
+    public boolean update(Delivery delivery) {
+        if (!contains(delivery)) return false;
+        int index = findIdxByOrderId(delivery.getOrderId());
+        deliveries.set(index, delivery);
+        return true;
+    }
+
+    private int findIdxByOrderId(String orderId) {
+        for (int i = 0; i < deliveries.size(); i++) {
+            if (deliveries.get(i).getOrderId().equals(orderId)) {
+                return i;
+            }
         }
+        throw new RuntimeException("Unexpected Output : missing delivery element");
     }
 
     private boolean contains(Delivery delivery) {
         return deliveries.stream()
                 .anyMatch(existing -> existing.getOrderId().equals(delivery.getOrderId()));
+    }
+
+    public void clear() {
+        while (!deliveries.isEmpty()) {
+            deliveries.remove(0);
+        }
     }
 }

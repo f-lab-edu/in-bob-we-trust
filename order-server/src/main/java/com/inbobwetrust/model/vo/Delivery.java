@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Delivery {
     private String orderId;
-    private String riderId = null;
+    private String riderId;
     private String deliveryAgentId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")

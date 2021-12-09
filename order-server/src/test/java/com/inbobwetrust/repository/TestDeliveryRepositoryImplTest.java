@@ -77,4 +77,16 @@ class TestDeliveryRepositoryImplTest {
 
         assertTrue(optionalDelivery.isEmpty());
     }
+
+    @Test
+    @DisplayName("Delivery Update 성공")
+    void update_success() {
+        throw new RuntimeException("unimplemented");
+    }
+
+    @Test
+    @DisplayName("Delivery Update 실패")
+    void update_fail() {
+        throw new RuntimeException("unimplemented");
+    }
 }
