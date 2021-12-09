@@ -24,4 +24,11 @@ public class DeliveryController {
         Delivery delivery = deliveryService.setRider(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
+
+    @PatchMapping("status/pickup")
+    public ResponseEntity<Delivery> updateDeliveryStatusPickup(
+            @RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.updateDeliveryStatusPickup(deliveryRequest);
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
 }

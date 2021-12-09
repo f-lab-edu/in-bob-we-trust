@@ -28,10 +28,6 @@ public class DeliveryService {
         return savedDelivery.get();
     }
 
-    public void addEstimatedDeliveryFinishTime(Delivery delivery) {
-        delivery.setEstimatedDeliveryFinishTime(delivery.getWantedPickupTime().plusMinutes(30));
-    }
-
     public Delivery setRider(Delivery delivery) {
         validateSetRider(delivery);
         if (!deliveryRepository.update(delivery)) {
@@ -44,6 +40,14 @@ public class DeliveryService {
         }
         deliveryProducer.sendSetRiderMessage(updatedDelivery.get());
         return updatedDelivery.get();
+    }
+
+    public Delivery updateDeliveryStatusPickup(Delivery deliveryRequest) {
+        return deliveryRequest;
+    }
+
+    public void addEstimatedDeliveryFinishTime(Delivery delivery) {
+        delivery.setEstimatedDeliveryFinishTime(delivery.getWantedPickupTime().plusMinutes(30));
     }
 
     private void validateSetRider(Delivery delivery) {
