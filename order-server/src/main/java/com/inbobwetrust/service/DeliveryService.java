@@ -28,46 +28,66 @@ public class DeliveryService {
         return savedDelivery.get();
     }
 
-    public Delivery setRider(Delivery delivery) {
-        validateSetRider(delivery);
-        if (!deliveryRepository.update(delivery)) {
-            throw new RuntimeException("setRider Operation Failed : No Such OrderId");
-        }
-        Optional<Delivery> updatedDelivery =
-                deliveryRepository.findByOrderId(delivery.getOrderId());
-        if (updatedDelivery.isEmpty()) {
-            throw new RuntimeException("Cannot find updated Delivery");
-        }
-        deliveryProducer.sendSetRiderMessage(updatedDelivery.get());
-        return updatedDelivery.get();
-    }
-
-    public Delivery updateDeliveryStatusPickup(Delivery deliveryRequest) {
-        return deliveryRequest;
-    }
-
     public void addEstimatedDeliveryFinishTime(Delivery delivery) {
         delivery.setEstimatedDeliveryFinishTime(delivery.getWantedPickupTime().plusMinutes(30));
     }
 
-    private void validateSetRider(Delivery delivery) {
-        riderValidation(delivery);
-        agentValidation(delivery);
+    public Delivery setRider(Delivery delivery) {
+        validateSetRider(delivery);
+        updateOrThrow(delivery, "setRider() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        deliveryProducer.sendSetRiderMessage(updatedDelivery);
+        return updatedDelivery;
     }
 
-    private void riderValidation(Delivery delivery) {
-        if (delivery.getRiderId() == null
-                || delivery.getRiderId().isEmpty()
-                || delivery.getRiderId().isBlank()) {
-            throw new IllegalArgumentException("Rider not set for delivery");
+    public Delivery updateDeliveryStatusPickup(Delivery delivery) {
+        validateSetStatusToPickup(delivery);
+        updateOrThrow(delivery, "setStatusToPickup() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
+        return updatedDelivery;
+    }
+
+    private void updateOrThrow(Delivery delivery, String msg) {
+        if (!deliveryRepository.update(delivery)) {
+            throw new RuntimeException(msg);
         }
     }
 
-    private void agentValidation(Delivery delivery) {
-        if (delivery.getDeliveryAgentId() == null
-                || delivery.getDeliveryAgentId().isBlank()
-                || delivery.getDeliveryAgentId().isEmpty()) {
-            throw new IllegalArgumentException("deliveryAgent not set for delivery");
+    private void validateSetRider(Delivery delivery) {
+        riderValidation(delivery.getRiderId());
+        agentValidation(delivery.getDeliveryAgentId());
+    }
+
+    private void validateSetStatusToPickup(Delivery delivery) {
+        riderValidation(delivery.getRiderId());
+        agentValidation(delivery.getDeliveryAgentId());
+        statusValidation(delivery.getStatus());
+    }
+
+    private Delivery findByOrderId(String orderId) {
+        Optional<Delivery> updatedDelivery = deliveryRepository.findByOrderId(orderId);
+        if (updatedDelivery.isEmpty()) {
+            throw new RuntimeException("Cannot find updated Delivery");
+        }
+        return updatedDelivery.get();
+    }
+
+    private void riderValidation(String rider) {
+        validateStringOrThrow(rider, "Rider not set for delivery");
+    }
+
+    private void agentValidation(String agent) {
+        validateStringOrThrow(agent, "deliveryAgent not set for delivery");
+    }
+
+    private void statusValidation(String status) {
+        validateStringOrThrow(status, "status not set for delivery");
+    }
+
+    private void validateStringOrThrow(String str, String msg) {
+        if (str == null || str.isBlank() || str.isEmpty()) {
+            throw new IllegalArgumentException(msg);
         }
     }
 }
