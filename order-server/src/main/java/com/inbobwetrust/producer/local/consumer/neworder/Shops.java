@@ -1,4 +1,4 @@
-package com.inbobwetrust.producer.local.consumer;
+package com.inbobwetrust.producer.local.consumer.neworder;
 
 import com.inbobwetrust.model.vo.Order;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,10 @@ public class Shops {
     public void send(Order order) {
         log.info("shops send {}", shopIdToOrderlist);
         List<Order> shopOrders =
-                shopIdToOrderlist.getOrDefault(order.getShopId(), new ArrayList<>());
-        shopOrders.add(order);
-        this.shopIdToOrderlist.put(order.getShopId(), shopOrders);
-        history.add(order);
+                shopIdToOrderlist.getOrDefault(message.getShopId(), new ArrayList<>());
+        shopOrders.add(message);
+        this.shopIdToOrderlist.put(message.getShopId(), shopOrders);
+        history.add(message);
     }
 
     public List<Order> getHistory() {

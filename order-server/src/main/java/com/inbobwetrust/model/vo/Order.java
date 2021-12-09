@@ -11,6 +11,9 @@ public class Order {
     private String id;
     private String shopId;
 
+    protected Order() {
+    }
+
     public Order(String id, String shopId) {
         this.id = id;
         this.shopId = shopId;
