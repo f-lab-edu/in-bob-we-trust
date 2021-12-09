@@ -33,8 +33,7 @@ public class RiderControllerTest {
     @Test
     @DisplayName("라이더 위치 업데이트 API")
     void addDelivery_successTest() throws Exception {
-        Rider riderLoc =
-                Rider.builder().riderId("rider-1").location("somewhere far...").build();
+        Rider riderLoc = Rider.builder().riderId("rider-1").location("somewhere far...").build();
         when(this.riderService.updateLocation(riderLoc)).thenReturn(riderLoc);
         String requestBody = mapper.writeValueAsString(riderLoc);
 
