@@ -88,7 +88,7 @@ public class DeliveryControllerTest {
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.updateDeliveryStatusPickup(deliveryRequest))
+        when(this.deliveryService.setStatusPickup(deliveryRequest))
                 .thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
@@ -114,7 +114,7 @@ public class DeliveryControllerTest {
     void setStatusToComplete_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("complete");
-        when(this.deliveryService.updateDeliveryStatusComplete(deliveryRequest))
+        when(this.deliveryService.setStatusComplete(deliveryRequest))
                 .thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
