@@ -46,7 +46,7 @@ class TestDeliveryRepositoryImplTest {
     @DisplayName("Delivery 저장")
     void save() {
         Delivery delivery1 = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
-
+        System.out.println(delivery1);
         assertTrue(deliveryRepository.save(delivery1));
         assertFalse(deliveryRepository.save(delivery1));
     }
