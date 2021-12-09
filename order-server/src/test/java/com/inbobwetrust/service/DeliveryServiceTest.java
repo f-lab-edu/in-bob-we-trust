@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,7 +60,9 @@ public class DeliveryServiceTest {
     void addEstimatedDeliveryFinishTimeTest() {
         Delivery delivery = makeDeliveryForRequestAndResponse().get(0);
         assertNull(delivery.getEstimatedDeliveryFinishTime());
+
         deliveryService.addEstimatedDeliveryFinishTime(delivery);
+
         assertEquals(
                 delivery.getWantedPickupTime().plusMinutes(30),
                 delivery.getEstimatedDeliveryFinishTime());
@@ -72,24 +75,5 @@ public class DeliveryServiceTest {
             LocalDateTime later = now.plusMinutes(30);
             Assertions.assertEquals(now.plusMinutes(30), later);
         }
-    }
-
-    List<Delivery> makeDeliveryForRequestAndResponse() {
-        LocalDateTime wantedPickupTime = LocalDateTime.now().plusMinutes(30);
-        LocalDateTime estimatedDeliveryFinishTime = wantedPickupTime.plusMinutes(30);
-        Delivery deliveryRequest =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(wantedPickupTime)
-                        .build();
-        Delivery expectedDeliveryResponse =
-                Delivery.builder()
-                        .orderId(deliveryRequest.getOrderId())
-                        .riderId(deliveryRequest.getRiderId())
-                        .wantedPickupTime(deliveryRequest.getWantedPickupTime())
-                        .estimatedDeliveryFinishTime(estimatedDeliveryFinishTime)
-                        .build();
-        return List.of(deliveryRequest, expectedDeliveryResponse);
     }
 }

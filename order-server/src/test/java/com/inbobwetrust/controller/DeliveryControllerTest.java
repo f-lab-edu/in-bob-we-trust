@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
+
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,20 +42,8 @@ public class DeliveryControllerTest {
     @Test
     @DisplayName("사장님 주문접수요청 성공")
     void addDelivery_successTest() throws Exception {
-        LocalDateTime wantedPickupTime = LocalDateTime.now().plusMinutes(30);
-        Delivery deliveryRequest =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(wantedPickupTime)
-                        .build();
-        Delivery expectedDeliveryResponse =
-                Delivery.builder()
-                        .orderId(deliveryRequest.getOrderId())
-                        .riderId(deliveryRequest.getRiderId())
-                        .wantedPickupTime(deliveryRequest.getWantedPickupTime())
-                        .estimatedDeliveryFinishTime(wantedPickupTime.plusMinutes(30))
-                        .build();
+        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        Delivery expectedDeliveryResponse = makeDeliveryForRequestAndResponse().get(1);
         when(this.deliveryService.addDelivery(deliveryRequest))
                 .thenReturn(expectedDeliveryResponse);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
@@ -77,7 +67,6 @@ public class DeliveryControllerTest {
                 expectedDeliveryResponse.getEstimatedDeliveryFinishTime(),
                 responseObj.getEstimatedDeliveryFinishTime());
     }
-
 
     @Test
     void LocalDateTimeTest() {
