@@ -1,6 +1,5 @@
 package com.inbobwetrust.service;
 
-import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.model.vo.Rider;
 import com.inbobwetrust.repository.RiderRepository;
 import org.junit.jupiter.api.DisplayName;
