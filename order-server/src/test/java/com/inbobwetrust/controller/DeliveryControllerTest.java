@@ -67,10 +67,4 @@ public class DeliveryControllerTest {
                 expectedDeliveryResponse.getEstimatedDeliveryFinishTime(),
                 responseObj.getEstimatedDeliveryFinishTime());
     }
-
-    @Test
-    void LocalDateTimeTest() {
-        System.out.println(LocalDateTime.now());
-        System.out.println(LocalDateTime.now().plusMinutes(30L));
-    }
 }

@@ -8,7 +8,7 @@ import org.mockito.internal.matchers.Or;
 class OrderTest {
 
     @Test
-    @DisplayName("주문 VO의 equals 오버라이드")
+    @DisplayName("주문 VO의 equals 테스트")
     void equals_test() {
         Order order1 = Order.builder().id("order1").shopId("shop1").build();
         Order order2 = Order.builder().id("order2").shopId("shop2").build();
