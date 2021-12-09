@@ -1,6 +1,10 @@
 package com.inbobwetrust.producer;
 
 import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.producer.local.event.LocalAddDeliveryEvent;
+import com.inbobwetrust.producer.local.event.LocalSetRiderEvent;
+import com.inbobwetrust.producer.local.event.LocalSetStatusCompleteEvent;
+import com.inbobwetrust.producer.local.event.LocalSetStatusPickupEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
