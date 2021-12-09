@@ -12,9 +12,7 @@ public class LocalDeliveryProducerImpl implements DeliveryProducer {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public void sendAddDeliveryMessage(Delivery delivery) {
-        applicationEventPublisher.publishEvent(new LocalAddDeliveryEvent(delivery));
-    }
+    public void sendAddDeliveryMessage(Delivery delivery) {}
 
     @Override
     public void sendSetRiderMessage(Delivery delivery) {
