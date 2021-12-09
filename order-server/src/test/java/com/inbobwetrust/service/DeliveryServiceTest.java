@@ -3,7 +3,6 @@ package com.inbobwetrust.service;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
@@ -28,7 +25,7 @@ public class DeliveryServiceTest {
     @Mock DeliveryProducer deliveryProducer;
 
     @Test
-    @DisplayName("주문생성완료 : 성공")
+    @DisplayName("사장님 주문접수완료 : 성공")
     void addDelivery_successTest() {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         Delivery expectedDeliveryResponse = makeDeliveryForRequestAndResponse().get(1);
@@ -43,7 +40,7 @@ public class DeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("주문생성완료 : 주문저장이 안된경우 exception")
+    @DisplayName("사장님 주문접수완료 : 주문저장이 안된경우 exception")
     void addDelivery_failTest() {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         Delivery expectedDeliveryResponse = makeDeliveryForRequestAndResponse().get(1);
@@ -56,7 +53,7 @@ public class DeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("예상도착시간추가 픽업요청시간에 30분 고정적인 예상배달시간")
+    @DisplayName("사장님 주문접수완료 : 예상도착시간추가")
     void addEstimatedDeliveryFinishTimeTest() {
         Delivery delivery = makeDeliveryForRequestAndResponse().get(0);
         assertNull(delivery.getEstimatedDeliveryFinishTime());
@@ -67,5 +64,4 @@ public class DeliveryServiceTest {
                 delivery.getWantedPickupTime().plusMinutes(30),
                 delivery.getEstimatedDeliveryFinishTime());
     }
-
 }

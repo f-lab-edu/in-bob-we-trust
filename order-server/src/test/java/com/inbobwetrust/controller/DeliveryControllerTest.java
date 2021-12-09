@@ -35,7 +35,7 @@ public class DeliveryControllerTest {
     void setUp() {}
 
     @Test
-    @DisplayName("사장님 주문접수요청 성공")
+    @DisplayName("사장님 주문접수완료 성공")
     void addDelivery_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         Delivery expectedDeliveryResponse = makeDeliveryForRequestAndResponse().get(1);
