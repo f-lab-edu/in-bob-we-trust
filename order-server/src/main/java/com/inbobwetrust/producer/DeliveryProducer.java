@@ -6,4 +6,6 @@ public interface DeliveryProducer {
     void sendAddDeliveryMessage(Delivery delivery);
 
     void sendSetRiderMessage(Delivery delivery);
+
+    void sendSetStatusPickupMessage(Delivery delivery);
 }

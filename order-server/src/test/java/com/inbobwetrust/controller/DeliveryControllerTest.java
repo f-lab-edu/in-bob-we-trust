@@ -18,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -87,7 +85,7 @@ public class DeliveryControllerTest {
 
     @Test
     @DisplayName("라이더 픽업상태 변경 API")
-    void updateDeliveryStatusPickup_successTest() throws Exception {
+    void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
         when(this.deliveryService.updateDeliveryStatusPickup(deliveryRequest))

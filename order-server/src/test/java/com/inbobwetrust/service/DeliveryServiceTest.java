@@ -2,10 +2,8 @@ package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.producer.DeliveryProducer;
-import com.inbobwetrust.producer.LocalAddDeliveryEvent;
-import com.inbobwetrust.producer.LocalSetRiderEvent;
 import com.inbobwetrust.repository.DeliveryRepository;
-import org.junit.jupiter.api.Assertions;
+import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
@@ -73,15 +69,9 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("배달대행사의 라이더배정 성공")
     void setRider_successTest() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .deliveryAgentId("agent-1")
-                        .build();
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setRiderId("rider-1");
+
         when(deliveryRepository.update(initialDelivery)).thenReturn(true);
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
@@ -96,14 +86,8 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("배달대행사의 라이더배정 실패 : 라이더 아이디 누락")
     void setRider_failTest() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .deliveryAgentId("agent-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .build();
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setRiderId(null);
 
         assertThrows(RuntimeException.class, () -> deliveryService.setRider(initialDelivery));
 
@@ -114,17 +98,41 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("배달대행사의 라이더배정 실패 : 배달대행사 누락")
     void setRider_failTest2() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .build();
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setDeliveryAgentId(null);
 
         assertThrows(
                 IllegalArgumentException.class, () -> deliveryService.setRider(initialDelivery));
+
+        verify(deliveryRepository, times(0)).update(any(Delivery.class));
+        verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태 픽업완료로 업데이트 : 성공")
+    void setStatusToPickup_successTest() {
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setStatus("picked up");
+        when(deliveryRepository.update(initialDelivery)).thenReturn(true);
+        when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
+                .thenReturn(Optional.of(initialDelivery));
+
+        Delivery setRiderDelivery = deliveryService.updateDeliveryStatusPickup(initialDelivery);
+
+        assertNotNull(setRiderDelivery.getRiderId());
+        verify(deliveryRepository, times(1)).update(any(Delivery.class));
+        verify(deliveryProducer, times(1)).sendSetStatusPickupMessage(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태 픽업완료로 업데이트 : 실패")
+    void setStatusToPickup_failTest() {
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setStatus(null);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> deliveryService.updateDeliveryStatusPickup(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
         verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));

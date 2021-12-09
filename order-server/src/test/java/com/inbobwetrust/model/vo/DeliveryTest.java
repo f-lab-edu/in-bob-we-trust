@@ -31,15 +31,4 @@ public class DeliveryTest {
                 .build();
     }
 
-    @Test
-    @DisplayName("라이더 배정")
-    void setRiderId_test() {
-        Delivery delivery1 = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-
-        assertNull(delivery1.getRiderId());
-
-        delivery1.setRiderId("rider-01031223398");
-
-        assertNotNull(delivery1.getRiderId());
-    }
 }
