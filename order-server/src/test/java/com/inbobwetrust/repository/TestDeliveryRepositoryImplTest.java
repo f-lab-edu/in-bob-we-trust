@@ -2,9 +2,6 @@ package com.inbobwetrust.repository;
 
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +23,7 @@ class TestDeliveryRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Delivery 전체 조회")
+    @DisplayName("Delivery 전체조회")
     void findAll() {
         int rowCount = 10;
         assertEquals(0, deliveryRepository.findAll().size());
@@ -45,16 +43,15 @@ class TestDeliveryRepositoryImplTest {
     @Test
     @DisplayName("Delivery 저장")
     void save() {
-        Delivery delivery1 = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
-        System.out.println(delivery1);
+        Delivery delivery1 = makeDeliveryForRequestAndResponse().get(0);
         assertTrue(deliveryRepository.save(delivery1));
         assertFalse(deliveryRepository.save(delivery1));
     }
 
     @Test
-    @DisplayName("Delivery 조회성공 : 주문번호로 찾기")
+    @DisplayName("Delivery 조회 : 성공(주문번호로 찾기)")
     void findByOrderId_success() {
-        Delivery delivery1 = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
+        Delivery delivery1 = makeDeliveryForRequestAndResponse().get(0);
         deliveryRepository.save(delivery1);
 
         Optional<Delivery> optionalDelivery =
@@ -67,10 +64,10 @@ class TestDeliveryRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Delivery 조회실패 : 존재하지 않는 주문번호로 찾기 ")
+    @DisplayName("Delivery 조회 : 실패 (존재하지 않는 주문번호로 찾기) ")
     void findByOrderId_fail() {
         assertEquals(0, deliveryRepository.findAll().size());
-        Delivery delivery1 = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
+        Delivery delivery1 = makeDeliveryForRequestAndResponse().get(0);
 
         Optional<Delivery> optionalDelivery =
                 deliveryRepository.findByOrderId(delivery1.getOrderId());

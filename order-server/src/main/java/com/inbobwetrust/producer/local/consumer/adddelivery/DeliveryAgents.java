@@ -1,7 +1,6 @@
 package com.inbobwetrust.producer.local.consumer.adddelivery;
 
 import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.producer.local.consumer.ExternalMessageConsumer;
 import lombok.extern.slf4j.Slf4j;
 
