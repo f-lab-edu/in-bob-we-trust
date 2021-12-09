@@ -30,7 +30,6 @@ public class DeliveryInstanceGenerator {
         Delivery delivery =
                 Delivery.builder()
                         .orderId("order-" + num)
-                        .riderId("rider-" + num)
                         .deliveryAgentId("agent-" + num)
                         .wantedPickupTime(now.plusMinutes(30))
                         .estimatedDeliveryFinishTime(now.plusMinutes(60))
