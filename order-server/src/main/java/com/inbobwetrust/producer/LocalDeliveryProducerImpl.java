@@ -24,4 +24,9 @@ public class LocalDeliveryProducerImpl implements DeliveryProducer {
     public void sendSetStatusPickupMessage(Delivery delivery) {
         applicationEventPublisher.publishEvent(new LocalSetStatusPickupEvent(delivery));
     }
+
+    @Override
+    public void sendSetStatusCompleteMessage(Delivery delivery) {
+        applicationEventPublisher.publishEvent(new LocalSetStatusCompleteEvent(delivery));
+    }
 }

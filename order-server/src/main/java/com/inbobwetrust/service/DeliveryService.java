@@ -41,15 +41,19 @@ public class DeliveryService {
     }
 
     public Delivery updateDeliveryStatusPickup(Delivery delivery) {
-        validateSetStatusToPickup(delivery);
+        validateSetStatus(delivery);
         updateOrThrow(delivery, "setStatusToPickup() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
         return updatedDelivery;
     }
 
-    public Delivery updateDeliveryStatusComplete(Delivery deliveryRequest) {
-        return deliveryRequest;
+    public Delivery updateDeliveryStatusComplete(Delivery delivery) {
+        validateSetStatus(delivery);
+        updateOrThrow(delivery, "updateDeliveryStatusComplete() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        deliveryProducer.sendSetStatusCompleteMessage(updatedDelivery);
+        return updatedDelivery;
     }
 
     private void updateOrThrow(Delivery delivery, String msg) {
@@ -63,7 +67,7 @@ public class DeliveryService {
         agentValidation(delivery.getDeliveryAgentId());
     }
 
-    private void validateSetStatusToPickup(Delivery delivery) {
+    private void validateSetStatus(Delivery delivery) {
         riderValidation(delivery.getRiderId());
         agentValidation(delivery.getDeliveryAgentId());
         statusValidation(delivery.getStatus());
