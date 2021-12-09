@@ -1,15 +1,17 @@
 package com.inbobwetrust.producer.local.consumer;
 
 import com.inbobwetrust.model.vo.Order;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+@Slf4j
 public class Shops {
     private static final Map<String, List<Order>> shopIdToOrderlist = new HashMap<>();
     private static final List<Order> history = new ArrayList<>();
 
     public void send(Order order) {
-        System.out.println(shopIdToOrderlist);
+        log.info("shops send {}", shopIdToOrderlist);
         List<Order> shopOrders =
                 shopIdToOrderlist.getOrDefault(order.getShopId(), new ArrayList<>());
         shopOrders.add(order);
