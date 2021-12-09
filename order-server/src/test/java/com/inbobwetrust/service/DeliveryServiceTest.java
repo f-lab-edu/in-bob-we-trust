@@ -117,7 +117,7 @@ public class DeliveryServiceTest {
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
 
-        Delivery setRiderDelivery = deliveryService.updateDeliveryStatusPickup(initialDelivery);
+        Delivery setRiderDelivery = deliveryService.setStatusPickup(initialDelivery);
 
         assertNotNull(setRiderDelivery.getRiderId());
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
@@ -132,7 +132,7 @@ public class DeliveryServiceTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> deliveryService.updateDeliveryStatusPickup(initialDelivery));
+                () -> deliveryService.setStatusPickup(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
         verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
@@ -147,7 +147,7 @@ public class DeliveryServiceTest {
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
 
-        Delivery setRiderDelivery = deliveryService.updateDeliveryStatusComplete(initialDelivery);
+        Delivery setRiderDelivery = deliveryService.setStatusComplete(initialDelivery);
 
         assertNotNull(setRiderDelivery.getRiderId());
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
@@ -162,7 +162,7 @@ public class DeliveryServiceTest {
 
         assertThrows(
                 RuntimeException.class,
-                () -> deliveryService.updateDeliveryStatusPickup(initialDelivery));
+                () -> deliveryService.setStatusPickup(initialDelivery));
 
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
         verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
@@ -176,7 +176,7 @@ public class DeliveryServiceTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> deliveryService.updateDeliveryStatusPickup(initialDelivery));
+                () -> deliveryService.setStatusPickup(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
         verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));

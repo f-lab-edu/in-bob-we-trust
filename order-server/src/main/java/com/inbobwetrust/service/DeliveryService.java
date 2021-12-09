@@ -40,17 +40,17 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
-    public Delivery updateDeliveryStatusPickup(Delivery delivery) {
+    public Delivery setStatusPickup(Delivery delivery) {
         validateSetStatus(delivery);
-        updateOrThrow(delivery, "setStatusToPickup() Failed : No Such OrderId");
+        updateOrThrow(delivery, "setStatusPickup() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
         return updatedDelivery;
     }
 
-    public Delivery updateDeliveryStatusComplete(Delivery delivery) {
+    public Delivery setStatusComplete(Delivery delivery) {
         validateSetStatus(delivery);
-        updateOrThrow(delivery, "updateDeliveryStatusComplete() Failed : No Such OrderId");
+        updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         deliveryProducer.sendSetStatusCompleteMessage(updatedDelivery);
         return updatedDelivery;
