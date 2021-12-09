@@ -15,15 +15,23 @@ public class OrderService {
     private final OrderProducer orderProducer;
 
     public Order receiveNewOrder(Order order) {
+        saveOrThrow(order, "Save Operation Failed : order with such ID exists");
+        Order savedOrder = findByOrderId(order.getId());
+        orderProducer.sendNewOrderMessage(savedOrder);
+        return savedOrder;
+    }
+
+    private void saveOrThrow(Order order, String msg) {
         if (!orderRepository.save(order)) {
-            throw new RuntimeException("Save Operation Failed : order with such ID exists");
+            throw new RuntimeException(msg);
         }
-        Optional<Order> savedOrder = orderRepository.findByOrderId(order.getId());
-        if (savedOrder.isEmpty()) {
-            throw new RuntimeException("Cannot find saved order");
+    }
+
+    private Order findByOrderId(String orderId) {
+        Optional<Order> order = orderRepository.findByOrderId(orderId);
+        if (order.isEmpty()) {
+            throw new RuntimeException("Cannot find Order");
         }
-        orderProducer.sendNewOrderMessage(savedOrder.get());
-        // optionally do something w/ event
-        return savedOrder.get();
+        return order.get();
     }
 }

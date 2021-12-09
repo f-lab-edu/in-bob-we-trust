@@ -53,10 +53,6 @@ public class DeliveryControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
                         .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
 
@@ -76,10 +72,6 @@ public class DeliveryControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
                         .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
 
@@ -102,10 +94,6 @@ public class DeliveryControllerTest {
                         .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
                         .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
                         .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
 }

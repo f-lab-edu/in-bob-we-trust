@@ -28,8 +28,9 @@ class TestDeliveryRepositoryImplTest {
     @Test
     @DisplayName("Delivery 전체 조회")
     void findAll() {
-        int rowCount = 10;
         assertEquals(0, deliveryRepository.findAll().size());
+        int rowCount = 10;
+
         for (int i = 0; i < rowCount; i++) {
             deliveryRepository.save(
                     Delivery.builder()
@@ -47,7 +48,7 @@ class TestDeliveryRepositoryImplTest {
     @DisplayName("Delivery 저장")
     void save() {
         Delivery delivery1 = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
-        System.out.println(delivery1);
+
         assertTrue(deliveryRepository.save(delivery1));
         assertFalse(deliveryRepository.save(delivery1));
     }
