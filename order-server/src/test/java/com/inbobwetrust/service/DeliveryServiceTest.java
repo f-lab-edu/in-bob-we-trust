@@ -68,12 +68,4 @@ public class DeliveryServiceTest {
                 delivery.getEstimatedDeliveryFinishTime());
     }
 
-    @Test
-    void plusMinutesPerformanceTest() {
-        for (int i = 0; i < 1000000; i++) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime later = now.plusMinutes(30);
-            Assertions.assertEquals(now.plusMinutes(30), later);
-        }
-    }
 }
