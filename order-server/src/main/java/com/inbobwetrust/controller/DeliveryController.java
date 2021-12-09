@@ -13,12 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
-    @PostMapping
-    public ResponseEntity<Delivery> addDelivery(@RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.addDelivery(deliveryRequest);
-        return new ResponseEntity<>(delivery, HttpStatus.OK);
-    }
-
     @PutMapping("rider")
     public ResponseEntity<Delivery> setRider(@RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.setRider(deliveryRequest);
