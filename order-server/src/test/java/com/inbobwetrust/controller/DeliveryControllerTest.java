@@ -38,44 +38,6 @@ public class DeliveryControllerTest {
     void setUp() {}
 
     @Test
-    @DisplayName("사장님 주문접수요청 성공")
-    void addDelivery_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                post("/delivery")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andReturn();
-    }
-
-    @Test
-    @DisplayName("배달대행사 라이더배정 테스트")
-    void setRider_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                put("/delivery/rider")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andReturn();
-    }
-
-    @Test
     @DisplayName("라이더 픽업상태 변경 API")
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
