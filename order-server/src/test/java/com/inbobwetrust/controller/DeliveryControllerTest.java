@@ -44,9 +44,7 @@ public class DeliveryControllerTest {
     @DisplayName("사장님 주문접수요청 성공")
     void addDelivery_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        Delivery expectedDeliveryResponse = makeDeliveryForRequestAndResponse().get(1);
-        when(this.deliveryService.addDelivery(deliveryRequest))
-                .thenReturn(expectedDeliveryResponse);
+        when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
@@ -56,25 +54,21 @@ public class DeliveryControllerTest {
                                         .content(requestBody))
                         .andDo(print())
                         .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(
+                                jsonPath(
+                                        "$.deliveryAgentId",
+                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
-
-        Delivery responseObj =
-                mapper.readValue(result.getResponse().getContentAsString(), Delivery.class);
-        assertEquals(expectedDeliveryResponse.getOrderId(), responseObj.getOrderId());
-        assertEquals(expectedDeliveryResponse.getRiderId(), responseObj.getRiderId());
-        assertEquals(
-                expectedDeliveryResponse.getWantedPickupTime(), responseObj.getWantedPickupTime());
-        assertEquals(
-                expectedDeliveryResponse.getEstimatedDeliveryFinishTime(),
-                responseObj.getEstimatedDeliveryFinishTime());
     }
 
     @Test
     @DisplayName("배달대행사 라이더배정 테스트")
     void setRider_successTest() throws Exception {
-        Delivery dlvry = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.setRider(dlvry)).thenReturn(dlvry);
-        String requestBody = mapper.writeValueAsString(dlvry);
+        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
+        String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
                 mockMvc.perform(
@@ -83,9 +77,12 @@ public class DeliveryControllerTest {
                                         .content(requestBody))
                         .andDo(print())
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(dlvry.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(dlvry.getRiderId())))
-                        .andExpect(jsonPath("$.deliveryAgentId", is(dlvry.getDeliveryAgentId())))
+                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(
+                                jsonPath(
+                                        "$.deliveryAgentId",
+                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
 }
