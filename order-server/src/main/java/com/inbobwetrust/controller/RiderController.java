@@ -1,6 +1,6 @@
 package com.inbobwetrust.controller;
 
-import com.inbobwetrust.model.vo.RiderLocation;
+import com.inbobwetrust.model.vo.Rider;
 import com.inbobwetrust.service.RiderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +17,8 @@ public class RiderController {
     private final RiderService riderService;
 
     @PatchMapping("location")
-    public ResponseEntity<RiderLocation> setRiderLocation(@RequestBody RiderLocation body) {
-        RiderLocation riderLocation = riderService.updateLocation(body);
-        return new ResponseEntity<>(riderLocation, HttpStatus.OK);
+    public ResponseEntity<Rider> setRiderLocation(@RequestBody Rider body) {
+        Rider rider = riderService.updateLocation(body);
+        return new ResponseEntity<>(rider, HttpStatus.OK);
     }
 }
