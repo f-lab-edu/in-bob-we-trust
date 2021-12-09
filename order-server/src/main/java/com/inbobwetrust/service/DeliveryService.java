@@ -1,7 +1,6 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,47 +11,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
-    private final DeliveryProducer deliveryProducer;
-
-    public Delivery addDelivery(Delivery delivery) {
-        addEstimatedDeliveryFinishTime(delivery);
-        saveOrThrow(delivery, "Save Operation Failed : delivery with such ID exists");
-        Delivery savedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendAddDeliveryMessage(savedDelivery);
-        return savedDelivery;
-    }
-
-    public void addEstimatedDeliveryFinishTime(Delivery delivery) {
-        delivery.setEstimatedDeliveryFinishTime(delivery.getWantedPickupTime().plusMinutes(30));
-    }
-
-    public Delivery setRider(Delivery delivery) {
-        validateSetRider(delivery);
-        updateOrThrow(delivery, "setRider() Failed : No Such OrderId");
-        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendSetRiderMessage(updatedDelivery);
-        return updatedDelivery;
-    }
-
-    public Delivery setStatusPickup(Delivery delivery) {
-        validateSetStatus(delivery);
-        updateOrThrow(delivery, "setStatusPickup() Failed : No Such OrderId");
-        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
-        return updatedDelivery;
-    }
-
-    private void saveOrThrow(Delivery delivery, String msg) {
-        if (!deliveryRepository.save(delivery)) {
-            throw new RuntimeException(msg);
-        }
-    }
 
     public Delivery setStatusComplete(Delivery delivery) {
         validateSetStatus(delivery);
         updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendSetStatusCompleteMessage(updatedDelivery);
         return updatedDelivery;
     }
 

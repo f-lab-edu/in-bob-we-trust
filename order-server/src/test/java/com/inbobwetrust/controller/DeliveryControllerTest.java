@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 
-import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,84 +37,11 @@ public class DeliveryControllerTest {
     void setUp() {}
 
     @Test
-    @DisplayName("사장님 주문접수완료 API")
-    void addDelivery_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                post("/delivery")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
-                        .andReturn();
-    }
-
-    @Test
-    @DisplayName("배달대행사 라이더배정 API")
-    void setRider_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                put("/delivery/rider")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
-                        .andReturn();
-    }
-
-    @Test
-    @DisplayName("라이더 픽업완료 API")
-    void setStatusToPickup_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.setStatusPickup(deliveryRequest))
-                .thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                patch("/delivery/status/pickup")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
-                        .andReturn();
-    }
-
-    @Test
     @DisplayName("라이더 배달완료 API")
     void setStatusToComplete_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        Delivery deliveryRequest = makeSimpleNumberedDelivery(1);
         deliveryRequest.setStatus("complete");
-        when(this.deliveryService.setStatusComplete(deliveryRequest))
-                .thenReturn(deliveryRequest);
+        when(this.deliveryService.setStatusComplete(deliveryRequest)).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
