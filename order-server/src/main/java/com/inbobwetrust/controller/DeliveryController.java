@@ -31,4 +31,11 @@ public class DeliveryController {
         Delivery delivery = deliveryService.updateDeliveryStatusPickup(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
+
+    @PatchMapping("status/complete")
+    public ResponseEntity<Delivery> updateDeliveryStatusComplete(
+            @RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.updateDeliveryStatusComplete(deliveryRequest);
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
 }

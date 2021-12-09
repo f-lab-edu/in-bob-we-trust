@@ -48,6 +48,10 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
+    public Delivery updateDeliveryStatusComplete(Delivery deliveryRequest) {
+        return deliveryRequest;
+    }
+
     private void updateOrThrow(Delivery delivery, String msg) {
         if (!deliveryRepository.update(delivery)) {
             throw new RuntimeException(msg);
