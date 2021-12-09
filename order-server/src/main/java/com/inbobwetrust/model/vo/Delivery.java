@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.vo;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +15,11 @@ public class Delivery {
     private String orderId;
     private String riderId;
     private String deliveryAgentId;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime wantedPickupTime;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime estimatedDeliveryFinishTime;
 
     protected Delivery() {}

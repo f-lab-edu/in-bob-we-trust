@@ -2,6 +2,8 @@ package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.producer.OrderProducer;
+import com.inbobwetrust.producer.local.consumer.ExternalMessageConsumer;
+import com.inbobwetrust.producer.local.consumer.neworder.NewOrderRelay;
 import com.inbobwetrust.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +26,8 @@ class OrderServiceTest {
     @Mock OrderRepository orderRepository;
 
     @Mock OrderProducer orderProducer;
+    @Mock ExternalMessageConsumer orderConsumer;
+    @Mock NewOrderRelay newOrderRelay;
 
     @Test
     @DisplayName("신규주문수신 : 성공적으로 저장하는 케이스")
