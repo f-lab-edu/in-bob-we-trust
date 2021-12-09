@@ -10,13 +10,13 @@ import java.util.Optional;
 
 class TestOrderRepositoryImplTest {
 
-    private TestOrderRepositoryImpl orderRepository = new TestOrderRepositoryImpl();
+    OrderRepository orderRepository = new TestOrderRepositoryImpl();
     Order orderToSave = Order.builder().id("order-1").shopId("shop-1").build();
     Order notExistOrder = Order.builder().id("order-notexist").shopId("shop-notexist").build();
 
     @BeforeEach
     public void setUp() {
-        orderRepository.clear();
+        ((TestOrderRepositoryImpl) orderRepository).clear();
     }
 
     @Test
