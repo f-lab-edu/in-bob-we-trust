@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,12 +82,28 @@ class TestDeliveryRepositoryImplTest {
     @Test
     @DisplayName("Delivery Update 성공")
     void update_success() {
-        throw new RuntimeException("unimplemented");
+        Delivery delivery = makeSimpleNumberedDelivery(1);
+        updateSetup(delivery);
+
+        delivery.setRiderId("rider-1");
+        assertTrue(deliveryRepository.update(delivery));
+        Delivery updatedDelivery = deliveryRepository.findByOrderId(delivery.getOrderId()).get();
+        assertEquals("rider-1", updatedDelivery.getRiderId());
     }
 
     @Test
-    @DisplayName("Delivery Update 실패")
+    @DisplayName("Delivery Update 실패 : 존재하지 않는 아이디")
     void update_fail() {
-        throw new RuntimeException("unimplemented");
+        Delivery delivery = makeSimpleNumberedDelivery(1);
+        updateSetup(delivery);
+
+        assertFalse(deliveryRepository.update(makeSimpleNumberedDelivery(2)));
+    }
+
+    private void updateSetup(Delivery delivery) {
+        delivery.setRiderId(null);
+        deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.findByOrderId(delivery.getOrderId()).get();
+        assertNull(savedDelivery.getRiderId());
     }
 }
