@@ -1,4 +1,4 @@
-package com.inbobwetrust.producer;
+package com.inbobwetrust.producer.local.event;
 
 import com.inbobwetrust.model.vo.Delivery;
 import org.springframework.context.ApplicationEvent;

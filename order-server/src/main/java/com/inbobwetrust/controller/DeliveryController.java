@@ -26,9 +26,14 @@ public class DeliveryController {
     }
 
     @PatchMapping("status/pickup")
-    public ResponseEntity<Delivery> updateDeliveryStatusPickup(
-            @RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.updateDeliveryStatusPickup(deliveryRequest);
+    public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
+
+    @PatchMapping("status/complete")
+    public ResponseEntity<Delivery> setStatusComplete(@RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusComplete(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
 }

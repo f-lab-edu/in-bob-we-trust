@@ -117,7 +117,7 @@ public class DeliveryServiceTest {
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
 
-        Delivery setRiderDelivery = deliveryService.updateDeliveryStatusPickup(initialDelivery);
+        Delivery setRiderDelivery = deliveryService.setStatusPickup(initialDelivery);
 
         assertNotNull(setRiderDelivery.getRiderId());
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
@@ -132,7 +132,51 @@ public class DeliveryServiceTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> deliveryService.updateDeliveryStatusPickup(initialDelivery));
+                () -> deliveryService.setStatusPickup(initialDelivery));
+
+        verify(deliveryRepository, times(0)).update(any(Delivery.class));
+        verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태 배달완료로 업데이트 : 성공")
+    void setStatusToComplete_successTest() {
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setStatus("complete");
+        when(deliveryRepository.update(initialDelivery)).thenReturn(true);
+        when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
+                .thenReturn(Optional.of(initialDelivery));
+
+        Delivery setRiderDelivery = deliveryService.setStatusComplete(initialDelivery);
+
+        assertNotNull(setRiderDelivery.getRiderId());
+        verify(deliveryRepository, times(1)).update(any(Delivery.class));
+        verify(deliveryProducer, times(1)).sendSetStatusCompleteMessage(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태 배달완료로 업데이트 : Repository에서 save 실패")
+    void setStatusToComplete_failTest1() {
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setStatus("complete");
+
+        assertThrows(
+                RuntimeException.class,
+                () -> deliveryService.setStatusPickup(initialDelivery));
+
+        verify(deliveryRepository, times(1)).update(any(Delivery.class));
+        verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태 배달완료로 업데이트 : 값이 없어서 실패")
+    void setStatusToComplete_failTest2() {
+        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
+        initialDelivery.setStatus(null);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> deliveryService.setStatusPickup(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
         verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));

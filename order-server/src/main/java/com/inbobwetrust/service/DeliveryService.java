@@ -34,9 +34,9 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
-    public Delivery updateDeliveryStatusPickup(Delivery delivery) {
-        validateSetStatusToPickup(delivery);
-        updateOrThrow(delivery, "setStatusToPickup() Failed : No Such OrderId");
+    public Delivery setStatusPickup(Delivery delivery) {
+        validateSetStatus(delivery);
+        updateOrThrow(delivery, "setStatusPickup() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
         return updatedDelivery;
@@ -46,6 +46,12 @@ public class DeliveryService {
         if (!deliveryRepository.save(delivery)) {
             throw new RuntimeException(msg);
         }
+    public Delivery setStatusComplete(Delivery delivery) {
+        validateSetStatus(delivery);
+        updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        deliveryProducer.sendSetStatusCompleteMessage(updatedDelivery);
+        return updatedDelivery;
     }
 
     private void updateOrThrow(Delivery delivery, String msg) {
@@ -59,7 +65,7 @@ public class DeliveryService {
         agentValidation(delivery.getDeliveryAgentId());
     }
 
-    private void validateSetStatusToPickup(Delivery delivery) {
+    private void validateSetStatus(Delivery delivery) {
         riderValidation(delivery.getRiderId());
         agentValidation(delivery.getDeliveryAgentId());
         statusValidation(delivery.getStatus());

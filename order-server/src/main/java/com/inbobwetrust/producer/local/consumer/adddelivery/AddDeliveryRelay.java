@@ -1,7 +1,6 @@
 package com.inbobwetrust.producer.local.consumer.adddelivery;
 
-import com.inbobwetrust.producer.LocalAddDeliveryEvent;
-import com.inbobwetrust.producer.LocalNewOrderEvent;
+import com.inbobwetrust.producer.local.event.LocalAddDeliveryEvent;
 import com.inbobwetrust.producer.local.consumer.ExternalMessageConsumer;
 import org.springframework.stereotype.Component;
 

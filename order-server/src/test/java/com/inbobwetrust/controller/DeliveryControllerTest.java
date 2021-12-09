@@ -38,7 +38,7 @@ public class DeliveryControllerTest {
     void setUp() {}
 
     @Test
-    @DisplayName("사장님 주문접수요청 성공")
+    @DisplayName("사장님 주문접수완료 API")
     void addDelivery_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(deliveryRequest);
@@ -57,7 +57,7 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("배달대행사 라이더배정 테스트")
+    @DisplayName("배달대행사 라이더배정 API")
     void setRider_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
@@ -76,11 +76,11 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("라이더 픽업상태 변경 API")
+    @DisplayName("라이더 픽업완료 API")
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.updateDeliveryStatusPickup(deliveryRequest))
+        when(this.deliveryService.setStatusPickup(deliveryRequest))
                 .thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
@@ -94,6 +94,32 @@ public class DeliveryControllerTest {
                         .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
                         .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
                         .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
+                        .andReturn();
+    }
+
+    @Test
+    @DisplayName("라이더 배달완료 API")
+    void setStatusToComplete_successTest() throws Exception {
+        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        deliveryRequest.setStatus("complete");
+        when(this.deliveryService.setStatusComplete(deliveryRequest))
+                .thenReturn(deliveryRequest);
+        String requestBody = mapper.writeValueAsString(deliveryRequest);
+
+        MvcResult result =
+                mockMvc.perform(
+                                patch("/delivery/status/complete")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(requestBody))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
+                        .andExpect(
+                                jsonPath(
+                                        "$.deliveryAgentId",
+                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
 }

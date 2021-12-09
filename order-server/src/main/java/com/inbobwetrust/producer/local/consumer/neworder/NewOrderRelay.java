@@ -1,6 +1,6 @@
 package com.inbobwetrust.producer.local.consumer.neworder;
 
-import com.inbobwetrust.producer.LocalNewOrderEvent;
+import com.inbobwetrust.producer.local.event.LocalNewOrderEvent;
 import com.inbobwetrust.producer.local.consumer.ExternalMessageConsumer;
 import org.springframework.stereotype.Component;
 

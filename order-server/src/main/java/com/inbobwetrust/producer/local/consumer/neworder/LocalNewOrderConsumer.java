@@ -1,10 +1,9 @@
 package com.inbobwetrust.producer.local.consumer.neworder;
 
-import com.inbobwetrust.producer.LocalNewOrderEvent;
+import com.inbobwetrust.producer.local.event.LocalNewOrderEvent;
 import com.inbobwetrust.producer.local.consumer.MessageConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

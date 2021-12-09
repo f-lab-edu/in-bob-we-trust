@@ -1,6 +1,10 @@
 package com.inbobwetrust.producer;
 
 import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.producer.local.event.LocalAddDeliveryEvent;
+import com.inbobwetrust.producer.local.event.LocalSetRiderEvent;
+import com.inbobwetrust.producer.local.event.LocalSetStatusCompleteEvent;
+import com.inbobwetrust.producer.local.event.LocalSetStatusPickupEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -23,5 +27,10 @@ public class LocalDeliveryProducerImpl implements DeliveryProducer {
     @Override
     public void sendSetStatusPickupMessage(Delivery delivery) {
         applicationEventPublisher.publishEvent(new LocalSetStatusPickupEvent(delivery));
+    }
+
+    @Override
+    public void sendSetStatusCompleteMessage(Delivery delivery) {
+        applicationEventPublisher.publishEvent(new LocalSetStatusCompleteEvent(delivery));
     }
 }

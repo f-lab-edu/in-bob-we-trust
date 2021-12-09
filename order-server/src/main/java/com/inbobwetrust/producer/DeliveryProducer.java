@@ -8,4 +8,6 @@ public interface DeliveryProducer {
     void sendSetRiderMessage(Delivery delivery);
 
     void sendSetStatusPickupMessage(Delivery delivery);
+
+    void sendSetStatusCompleteMessage(Delivery updatedDelivery);
 }

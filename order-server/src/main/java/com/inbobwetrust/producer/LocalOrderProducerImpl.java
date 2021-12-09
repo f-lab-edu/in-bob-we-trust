@@ -1,6 +1,7 @@
 package com.inbobwetrust.producer;
 
 import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.producer.local.event.LocalNewOrderEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
