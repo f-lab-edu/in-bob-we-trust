@@ -5,7 +5,6 @@ import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
 
 import java.util.Optional;
 
@@ -17,15 +16,10 @@ public class DeliveryService {
 
     public Delivery addDelivery(Delivery delivery) {
         addEstimatedDeliveryFinishTime(delivery);
-        if (!deliveryRepository.save(delivery)) {
-            throw new RuntimeException("Save Operation Failed : delivery with such ID exists");
-        }
-        Optional<Delivery> savedDelivery = deliveryRepository.findByOrderId(delivery.getOrderId());
-        if (savedDelivery.isEmpty()) {
-            throw new RuntimeException("Cannot find saved Delivery");
-        }
-        deliveryProducer.sendAddDeliveryMessage(savedDelivery.get());
-        return savedDelivery.get();
+        saveOrThrow(delivery, "Save Operation Failed : delivery with such ID exists");
+        Delivery savedDelivery = findByOrderId(delivery.getOrderId());
+        deliveryProducer.sendAddDeliveryMessage(savedDelivery);
+        return savedDelivery;
     }
 
     public void addEstimatedDeliveryFinishTime(Delivery delivery) {
@@ -46,6 +40,12 @@ public class DeliveryService {
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         deliveryProducer.sendSetStatusPickupMessage(updatedDelivery);
         return updatedDelivery;
+    }
+
+    private void saveOrThrow(Delivery delivery, String msg) {
+        if (!deliveryRepository.save(delivery)) {
+            throw new RuntimeException(msg);
+        }
     }
 
     public Delivery setStatusComplete(Delivery delivery) {
@@ -76,7 +76,7 @@ public class DeliveryService {
     private Delivery findByOrderId(String orderId) {
         Optional<Delivery> updatedDelivery = deliveryRepository.findByOrderId(orderId);
         if (updatedDelivery.isEmpty()) {
-            throw new RuntimeException("Cannot find updated Delivery");
+            throw new RuntimeException("Cannot find Delivery");
         }
         return updatedDelivery.get();
     }
