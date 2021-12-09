@@ -7,4 +7,9 @@ public class LocalAddDeliveryEvent extends ApplicationEvent {
     public LocalAddDeliveryEvent(Delivery delivery) {
         super(delivery);
     }
+
+    @Override
+    public Delivery getSource() {
+        return (Delivery) super.getSource();
+    }
 }

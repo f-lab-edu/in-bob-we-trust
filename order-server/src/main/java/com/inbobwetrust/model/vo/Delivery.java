@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 public class Delivery {
     private String orderId;
     private String riderId;
+    private String deliveryAgentId;
     private LocalDateTime wantedPickupTime;
     private LocalDateTime estimatedDeliveryFinishTime;
 
-    protected Delivery() {
-    }
+    protected Delivery() {}
 
     public Delivery(String orderId, String riderId, LocalDateTime wantedPickupTime) {
         this.orderId = orderId;
@@ -28,10 +28,12 @@ public class Delivery {
     public Delivery(
             String orderId,
             String riderId,
+            String deliveryAgentId,
             LocalDateTime wantedPickupTime,
             LocalDateTime estimatedDeliveryFinishTime) {
         this.orderId = orderId;
         this.riderId = riderId;
+        this.deliveryAgentId = deliveryAgentId;
         this.wantedPickupTime = wantedPickupTime;
         this.estimatedDeliveryFinishTime = estimatedDeliveryFinishTime;
     }
