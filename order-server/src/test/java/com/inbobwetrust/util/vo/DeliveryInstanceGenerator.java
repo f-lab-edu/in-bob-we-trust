@@ -13,12 +13,14 @@ public class DeliveryInstanceGenerator {
                 Delivery.builder()
                         .orderId("order-1")
                         .riderId("rider-1")
+                        .deliveryAgentId("agent-1")
                         .wantedPickupTime(wantedPickupTime)
                         .build();
         Delivery expectedDeliveryResponse =
                 Delivery.builder()
                         .orderId(deliveryRequest.getOrderId())
                         .riderId(deliveryRequest.getRiderId())
+                        .deliveryAgentId(deliveryRequest.getDeliveryAgentId())
                         .wantedPickupTime(deliveryRequest.getWantedPickupTime())
                         .estimatedDeliveryFinishTime(estimatedDeliveryFinishTime)
                         .build();

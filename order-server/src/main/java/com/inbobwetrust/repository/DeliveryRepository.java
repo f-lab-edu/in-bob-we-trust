@@ -11,5 +11,8 @@ public interface DeliveryRepository {
     Optional<Delivery> findByOrderId(String orderId);
 
     List<Delivery> findAll();
+
+    boolean update(Delivery delivery);
+
 }
 
