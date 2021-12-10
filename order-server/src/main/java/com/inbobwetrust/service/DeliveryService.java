@@ -1,5 +1,6 @@
 package com.inbobwetrust.service;
 
+import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
@@ -46,6 +47,14 @@ public class DeliveryService {
         updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         return updatedDelivery;
+    }
+
+    public DeliveryStatus findDeliveryStatusByOrderId(String orderId) {
+        Optional<DeliveryStatus> result = deliveryRepository.findDeliveryStatusByOrderId(orderId);
+        if (result.isPresent()) {
+            return result.get();
+        }
+        throw new RuntimeException("No such delivery associated with Id");
     }
 
     private void saveOrThrow(Delivery delivery, String msg) {

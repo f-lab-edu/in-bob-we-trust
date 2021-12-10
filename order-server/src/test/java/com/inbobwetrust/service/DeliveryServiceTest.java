@@ -1,5 +1,6 @@
 package com.inbobwetrust.service;
 
+import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
@@ -195,5 +196,29 @@ public class DeliveryServiceTest {
                 () -> deliveryService.setStatusComplete(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("주문상태확인 service : 성공")
+    void findDeliveryStatusByOrderId_success() {
+        DeliveryStatus expected = new DeliveryStatus("order-1", "cooking");
+        when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
+                .thenReturn(Optional.of(expected));
+
+        DeliveryStatus actual = deliveryService.findDeliveryStatusByOrderId(expected.getOrderId());
+
+        assertEquals(expected.getStatus(), actual.getStatus());
+    }
+
+    @Test
+    @DisplayName("주문상태확인 service : 실패, 존재하지 않는 orderId")
+    void findDeliveryStatusByOrderId_fail() {
+        DeliveryStatus expected = new DeliveryStatus("order-1", "cooking");
+        when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
+                .thenReturn(Optional.ofNullable(null));
+
+        assertThrows(
+                RuntimeException.class,
+                () -> deliveryService.findDeliveryStatusByOrderId(expected.getOrderId()));
     }
 }
