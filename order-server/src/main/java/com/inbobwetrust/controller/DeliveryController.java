@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
+    @PatchMapping("status/pickup")
+    public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
+
 
     @PutMapping("rider")
     public ResponseEntity<Delivery> setRider(@RequestBody Delivery deliveryRequest) {

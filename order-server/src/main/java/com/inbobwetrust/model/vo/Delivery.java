@@ -17,7 +17,6 @@ public class Delivery {
     private String deliveryAgentId;
     private String status;
 
-
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime wantedPickupTime;
 
@@ -32,8 +31,13 @@ public class Delivery {
         this.wantedPickupTime = wantedPickupTime;
     }
 
-
-    public Delivery(String orderId, String riderId, String deliveryAgentId, String status, LocalDateTime wantedPickupTime, LocalDateTime estimatedDeliveryFinishTime) {
+    public Delivery(
+            String orderId,
+            String riderId,
+            String deliveryAgentId,
+            String status,
+            LocalDateTime wantedPickupTime,
+            LocalDateTime estimatedDeliveryFinishTime) {
         this.orderId = orderId;
         this.riderId = riderId;
         this.deliveryAgentId = deliveryAgentId;

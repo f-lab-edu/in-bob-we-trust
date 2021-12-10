@@ -18,8 +18,7 @@ import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryFor
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +34,28 @@ public class DeliveryControllerTest {
 
     @BeforeEach
     void setUp() {}
+
+    @Test
+    @DisplayName("라이더 픽업상태 변경 API")
+    void setStatusToPickup_successTest() throws Exception {
+        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        deliveryRequest.setStatus("pickedUp");
+        when(this.deliveryService.setStatusPickup(deliveryRequest))
+                .thenReturn(deliveryRequest);
+        String requestBody = mapper.writeValueAsString(deliveryRequest);
+
+        MvcResult result =
+                mockMvc.perform(
+                                patch("/delivery/status/pickup")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(requestBody))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
+                        .andReturn();
+    }
 
     @Test
     @DisplayName("배달대행사 라이더배정 테스트")

@@ -15,4 +15,3 @@ public interface DeliveryRepository {
     boolean update(Delivery delivery);
 
 }
-
