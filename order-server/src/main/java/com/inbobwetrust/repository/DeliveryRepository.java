@@ -13,4 +13,5 @@ public interface DeliveryRepository {
     List<Delivery> findAll();
 
     boolean update(Delivery delivery);
+
 }
