@@ -14,13 +14,6 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryProducer deliveryProducer;
 
-    public Delivery updateDeliveryStatusPickup(Delivery delivery) {
-        validateSetStatusToPickup(delivery);
-        updateOrThrow(delivery, "setStatusToPickup() Failed : No Such OrderId");
-        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        return updatedDelivery;
-    }
-
     public Delivery addDelivery(Delivery delivery) {
         addEstimatedDeliveryFinishTime(delivery);
         saveOrThrow(delivery, "Save Operation Failed : delivery with such ID exists");
@@ -41,18 +34,17 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
+    public Delivery setStatusPickup(Delivery delivery) {
+        validateSetStatus(delivery);
+        updateOrThrow(delivery, "setStatusPickup() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        return updatedDelivery;
+    }
+
     private void saveOrThrow(Delivery delivery, String msg) {
         if (!deliveryRepository.save(delivery)) {
             throw new RuntimeException(msg);
         }
-    }
-
-    public Delivery validateSetStatusToPickup(Delivery delivery) {
-        validateSetStatus(delivery);
-        updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
-        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendSetStatusCompleteMessage(updatedDelivery);
-        return updatedDelivery;
     }
 
     private void updateOrThrow(Delivery delivery, String msg) {

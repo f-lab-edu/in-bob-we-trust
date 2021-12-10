@@ -15,11 +15,11 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @PatchMapping("status/pickup")
-    public ResponseEntity<Delivery> updateDeliveryStatusPickup(
-            @RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.updateDeliveryStatusPickup(deliveryRequest);
+    public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
+
 
     @PutMapping("rider")
     public ResponseEntity<Delivery> setRider(@RequestBody Delivery deliveryRequest) {

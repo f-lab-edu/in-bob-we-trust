@@ -40,7 +40,7 @@ public class DeliveryControllerTest {
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.updateDeliveryStatusPickup(deliveryRequest))
+        when(this.deliveryService.setStatusPickup(deliveryRequest))
                 .thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
