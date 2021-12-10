@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
+
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
+import static org.hamcrest.Matchers.is;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,5 +106,30 @@ public class DeliveryControllerTest {
         assertEquals(
                 expectedResponse.getEstimatedDeliveryFinishTime(),
                 responseObj.getEstimatedDeliveryFinishTime());
+    }
+
+    @Test
+    @DisplayName("라이더 배달완료 API")
+    void setStatusToComplete_successTest() throws Exception {
+        Delivery deliveryRequest = makeSimpleNumberedDelivery(1);
+        deliveryRequest.setStatus("complete");
+        when(this.deliveryService.setStatusComplete(deliveryRequest)).thenReturn(deliveryRequest);
+        String requestBody = mapper.writeValueAsString(deliveryRequest);
+
+        MvcResult result =
+                mockMvc.perform(
+                                patch("/delivery/status/complete")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(requestBody))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
+                        .andExpect(
+                                jsonPath(
+                                        "$.deliveryAgentId",
+                                        is(deliveryRequest.getDeliveryAgentId())))
+                        .andReturn();
     }
 }
