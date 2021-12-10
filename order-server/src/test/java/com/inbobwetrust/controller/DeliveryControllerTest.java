@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
-
-import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
-import static org.hamcrest.Matchers.is;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDateTime;
-
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,21 +41,45 @@ public class DeliveryControllerTest {
     void setRider_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
+
+        String requestBody = mapper.writeValueAsString(deliveryRequest);
+
+        mockMvc.perform(
+                        put("/delivery/rider")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
+                .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
+                .andExpect(jsonPath("$.deliveryAgentId", is(deliveryRequest.getDeliveryAgentId())))
+                .andReturn();
+    }
+
+    @DisplayName("사장님 주문접수완료 성공")
+    void addDelivery_successTest() throws Exception {
+        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
+        Delivery expectedResponse = makeDeliveryForRequestAndResponse().get(1);
+        when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(expectedResponse);
+
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
                 mockMvc.perform(
-                                put("/delivery/rider")
+                                post("/delivery")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(requestBody))
                         .andDo(print())
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
+
+        Delivery responseObj =
+                mapper.readValue(result.getResponse().getContentAsString(), Delivery.class);
+        assertEquals(expectedResponse.getOrderId(), responseObj.getOrderId());
+        assertEquals(expectedResponse.getRiderId(), responseObj.getRiderId());
+        assertEquals(expectedResponse.getWantedPickupTime(), responseObj.getWantedPickupTime());
+        assertEquals(
+                expectedResponse.getEstimatedDeliveryFinishTime(),
+                responseObj.getEstimatedDeliveryFinishTime());
     }
 }
