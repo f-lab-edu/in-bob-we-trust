@@ -1,6 +1,8 @@
 package com.inbobwetrust.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inbobwetrust.model.vo.DeliveryStatus;
+import com.inbobwetrust.service.DeliveryService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
@@ -131,5 +133,21 @@ public class DeliveryControllerTest {
                                         "$.deliveryAgentId",
                                         is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
+    }
+
+
+    @Test
+    @DisplayName("주문상태확인 GET Request")
+    void getDeliveryStatus() throws Exception {
+        DeliveryStatus deliveryStatus = new DeliveryStatus("order-1", "cooking");
+        when(deliveryService.findDeliveryStatusByOrderId(deliveryStatus.getOrderId()))
+                .thenReturn(deliveryStatus);
+
+        mockMvc.perform(
+                        get("/delivery/status/" + deliveryStatus.getOrderId())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(deliveryStatus.getStatus())));
     }
 }

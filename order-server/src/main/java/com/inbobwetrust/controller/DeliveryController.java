@@ -1,5 +1,6 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
+    @GetMapping("status/{orderId}")
+    public ResponseEntity<DeliveryStatus> getDeliveryStatus(@PathVariable String orderId) {
+        DeliveryStatus deliveryStatus = deliveryService.findDeliveryStatusByOrderId(orderId);
+        return new ResponseEntity<>(deliveryStatus, HttpStatus.OK);
+    }
     @PatchMapping("status/pickup")
     public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
