@@ -41,6 +41,13 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
+    public Delivery setStatusComplete(Delivery delivery) {
+        validateSetStatus(delivery);
+        updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
+        Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
+        return updatedDelivery;
+    }
+
     private void saveOrThrow(Delivery delivery, String msg) {
         if (!deliveryRepository.save(delivery)) {
             throw new RuntimeException(msg);

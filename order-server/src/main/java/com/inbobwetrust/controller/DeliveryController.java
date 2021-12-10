@@ -32,4 +32,10 @@ public class DeliveryController {
         Delivery delivery = deliveryService.addDelivery(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
+
+    @PatchMapping("status/complete")
+    public ResponseEntity<Delivery> setStatusComplete(@RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusComplete(deliveryRequest);
+        return new ResponseEntity<>(delivery, HttpStatus.OK);
+    }
 }
