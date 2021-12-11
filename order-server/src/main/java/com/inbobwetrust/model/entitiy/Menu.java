@@ -1,4 +1,4 @@
-package com.inbobwetrust.entitiy;
+package com.inbobwetrust.model.entitiy;
 
 import lombok.Builder;
 import lombok.Getter;
