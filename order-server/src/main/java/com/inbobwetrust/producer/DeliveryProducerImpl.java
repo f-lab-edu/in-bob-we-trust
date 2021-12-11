@@ -7,36 +7,29 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URISyntaxException;
-import java.time.Duration;
-
 @Component
 @Slf4j
-public class DeliveryProducerImpl implements DeliveryProducer<Delivery> {
+public class DeliveryProducerImpl implements DeliveryProducer {
     private WebClient webClient;
-
-    private int retries = 3;
 
     public DeliveryProducerImpl() {
         webClient = WebClient.create();
     }
 
-    public void setRetries(int retries) {
-        this.retries = retries;
-    }
-
     @Override
-    public Delivery sendAddDeliveryMessage(Delivery delivery) throws URISyntaxException {
+    public Delivery sendAddDeliveryMessage(Delivery delivery) {
         return webClient
                 .post()
                 .uri(delivery.getShopIp())
-                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(delivery))
                 .retrieve()
                 .bodyToMono(Delivery.class)
-                .timeout(Duration.ofSeconds(1))
-                .retry(retries)
                 .block();
+    }
+
+    @Override
+    public void sendSetRiderMessage(Delivery updatedDelivery) {
+        throw new RuntimeException("unimplemented");
     }
 }

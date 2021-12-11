@@ -1,24 +1,27 @@
 package com.inbobwetrust.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inbobwetrust.model.vo.Delivery;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class DeliveryProducerImplTest {
-    DeliveryProducerImpl deliveryProducer = new DeliveryProducerImpl();
+    DeliveryProducerImpl producer = new DeliveryProducerImpl();
     MockWebServer server;
     String uri;
+    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setup() throws IOException {
@@ -30,6 +33,7 @@ public class DeliveryProducerImplTest {
                         .append(server.getHostName())
                         .append(":")
                         .append(server.getPort())
+                        .append("/")
                         .toString();
     }
 
@@ -40,32 +44,46 @@ public class DeliveryProducerImplTest {
 
     @Test
     @DisplayName("사장님에게 접수요청 전달 성공")
-    public void sendAddDeliveryMessage() throws IOException, URISyntaxException {
-        Delivery delivery = new Delivery(uri, "hi");
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setHeader("Content-Type", "application/json")
-                        .setBody(new ObjectMapper().writeValueAsString(delivery)));
+    public void sendAddDeliveryMessage() throws Exception {
+        Delivery delivery = Delivery.builder().shopIp(uri).orderId("hi").build();
+        server.enqueue(successfulResponse(delivery));
 
-        Delivery del = deliveryProducer.sendAddDeliveryMessage(delivery);
-        log.info(delivery.toString());
-        assertEquals(delivery.getShopIp(), del.getShopIp());
-        assertEquals(delivery.getOrderId(), del.getOrderId());
+        Delivery responseDelivery = producer.sendAddDeliveryMessage(delivery);
+
+        RecordedRequest recordedRequest = server.takeRequest();
+        assertEquals(uri, recordedRequest.getRequestUrl().toString());
+        assertEquals(
+                delivery,
+                mapper.readValue(recordedRequest.getBody().readByteArray(), Delivery.class));
         assertEquals(1, server.getRequestCount());
+        assertEquals(delivery.getShopIp(), responseDelivery.getShopIp());
+        assertEquals(delivery.getOrderId(), responseDelivery.getOrderId());
     }
 
     @Test
-    @DisplayName("사장님에게 접수요청 전달 실패 w/ retry")
-    public void sendAddDeliveryMessage_failTest() throws IOException, URISyntaxException {
-        int retries = 10;
-        deliveryProducer.setRetries(retries);
-        Delivery delivery = new Delivery(uri, "hi");
-        for (int i = 0; i < retries; i++) {}
+    @DisplayName("에러 응답")
+    void sendAddDeliveryMessage_failTest_error() throws Exception {
+        Delivery delivery = Delivery.builder().shopIp(uri).orderId("hi").build();
+        for (int i = 0; i < 10; i++) {
+            server.enqueue(failResponseOfStatus(HttpStatus.BAD_REQUEST));
+            assertThrows(
+                    WebClientResponseException.class,
+                    () -> producer.sendAddDeliveryMessage(delivery));
+            server.enqueue(failResponseOfStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+            assertThrows(
+                    WebClientResponseException.class,
+                    () -> producer.sendAddDeliveryMessage(delivery));
+        }
+    }
 
-        Delivery del = deliveryProducer.sendAddDeliveryMessage(delivery);
-        assertEquals(delivery.getShopIp(), del.getShopIp());
-        assertEquals(delivery.getOrderId(), del.getOrderId());
-        assertEquals(retries, server.getRequestCount());
+    private MockResponse successfulResponse(Delivery body) throws JsonProcessingException {
+        return new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody(mapper.writeValueAsString(body));
+    }
+
+    private MockResponse failResponseOfStatus(HttpStatus statusCode) {
+        return new MockResponse().setResponseCode(statusCode.value());
     }
 }
