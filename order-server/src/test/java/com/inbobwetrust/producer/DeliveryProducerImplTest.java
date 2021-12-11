@@ -21,32 +21,20 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static reactor.core.publisher.Mono.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryProducerImplTest {
     @InjectMocks DeliveryProducerImpl producer;
-
     @Mock EndpointService endpointService;
-
     MockWebServer server;
-
     String uri;
-
     ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setup() throws IOException {
         server = new MockWebServer();
         server.start(SocketUtils.findAvailableTcpPort());
-        uri =
-                new StringBuilder()
-                        .append("http://")
-                        .append(server.getHostName())
-                        .append(":")
-                        .append(server.getPort())
-                        .append("/")
-                        .toString();
+        uri = buildServerUri();
     }
 
     @AfterEach
@@ -54,9 +42,19 @@ public class DeliveryProducerImplTest {
         server.shutdown();
     }
 
+    private String buildServerUri() {
+        return new StringBuilder()
+                .append("http://")
+                .append(server.getHostName())
+                .append(":")
+                .append(server.getPort())
+                .append("/")
+                .toString();
+    }
+
     @Test
     @DisplayName("사장님에게 접수요청 전달 성공")
-    public void sendAddDeliveryMessage() throws Exception {
+    public void sendAddDeliveryMessage_successTest() throws Exception {
         Delivery delivery = Delivery.builder().orderId("order-1").build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         server.enqueue(successfulResponse(delivery));
@@ -73,16 +71,16 @@ public class DeliveryProducerImplTest {
     }
 
     @Test
-    @DisplayName("에러 응답")
-    void sendAddDeliveryMessage_failTest_error() throws Exception {
+    @DisplayName("사장님에게 접수요청 전달 : 실패 (4xx 와 5xx 리턴")
+    void sendAddDeliveryMessage_failTest_error() {
         Delivery delivery = Delivery.builder().orderId("order-1").build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         for (int i = 0; i < 10; i++) {
-            server.enqueue(failResponseOfStatus(HttpStatus.BAD_REQUEST));
+            server.enqueue(failResponse(HttpStatus.BAD_REQUEST));
             assertThrows(
                     WebClientResponseException.class,
                     () -> producer.sendAddDeliveryMessage(delivery));
-            server.enqueue(failResponseOfStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+            server.enqueue(failResponse(HttpStatus.INTERNAL_SERVER_ERROR));
             assertThrows(
                     WebClientResponseException.class,
                     () -> producer.sendAddDeliveryMessage(delivery));
@@ -96,7 +94,7 @@ public class DeliveryProducerImplTest {
                 .setBody(mapper.writeValueAsString(body));
     }
 
-    private MockResponse failResponseOfStatus(HttpStatus statusCode) {
+    private MockResponse failResponse(HttpStatus statusCode) {
         return new MockResponse().setResponseCode(statusCode.value());
     }
 }
