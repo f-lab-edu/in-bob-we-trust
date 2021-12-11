@@ -31,7 +31,6 @@ public class DeliveryService {
         validateSetRider(delivery);
         updateOrThrow(delivery, "setRider() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendSetRiderMessage(updatedDelivery);
         return updatedDelivery;
     }
 

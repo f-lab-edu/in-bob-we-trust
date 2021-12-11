@@ -1,6 +1,7 @@
 package com.inbobwetrust.producer;
 
 import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -8,19 +9,19 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-@Slf4j
 public class DeliveryProducerImpl implements DeliveryProducer {
     private WebClient webClient;
+    private final EndpointService endpointService;
 
-    public DeliveryProducerImpl() {
-        webClient = WebClient.create();
+    public DeliveryProducerImpl(EndpointService endpointService) {
+        this.endpointService = endpointService;
     }
 
     @Override
     public Delivery sendAddDeliveryMessage(Delivery delivery) {
-        return webClient
+        return getWebClient()
                 .post()
-                .uri(delivery.getShopIp())
+                .uri(endpointService.findDeliveryAgentEndpoint(delivery))
                 .accept(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(delivery))
                 .retrieve()
@@ -28,8 +29,8 @@ public class DeliveryProducerImpl implements DeliveryProducer {
                 .block();
     }
 
-    @Override
-    public void sendSetRiderMessage(Delivery updatedDelivery) {
-        throw new RuntimeException("unimplemented");
+    private WebClient getWebClient() {
+        if (this.webClient == null) this.webClient = WebClient.create();
+        return this.webClient;
     }
 }

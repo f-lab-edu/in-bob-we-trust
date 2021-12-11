@@ -78,7 +78,6 @@ public class DeliveryServiceTest {
 
         assertNotNull(setRiderDelivery.getRiderId());
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
-        verify(deliveryProducer, times(1)).sendSetRiderMessage(any(Delivery.class));
     }
 
     @Test
@@ -96,7 +95,6 @@ public class DeliveryServiceTest {
         assertThrows(RuntimeException.class, () -> deliveryService.setRider(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
-        verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
     }
 
     @Test
@@ -115,7 +113,6 @@ public class DeliveryServiceTest {
                 IllegalArgumentException.class, () -> deliveryService.setRider(initialDelivery));
 
         verify(deliveryRepository, times(0)).update(any(Delivery.class));
-        verify(deliveryProducer, times(0)).sendSetRiderMessage(any(Delivery.class));
     }
 
     @DisplayName("사장님 주문접수완료 : 성공")

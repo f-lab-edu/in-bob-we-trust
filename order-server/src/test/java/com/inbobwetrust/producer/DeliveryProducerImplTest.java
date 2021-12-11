@@ -3,11 +3,17 @@ package com.inbobwetrust.producer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -15,12 +21,18 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static reactor.core.publisher.Mono.when;
 
-@Slf4j
+@ExtendWith(MockitoExtension.class)
 public class DeliveryProducerImplTest {
-    DeliveryProducerImpl producer = new DeliveryProducerImpl();
+    @InjectMocks DeliveryProducerImpl producer;
+
+    @Mock EndpointService endpointService;
+
     MockWebServer server;
+
     String uri;
+
     ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
@@ -45,7 +57,8 @@ public class DeliveryProducerImplTest {
     @Test
     @DisplayName("사장님에게 접수요청 전달 성공")
     public void sendAddDeliveryMessage() throws Exception {
-        Delivery delivery = Delivery.builder().shopIp(uri).orderId("hi").build();
+        Delivery delivery = Delivery.builder().orderId("order-1").build();
+        Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         server.enqueue(successfulResponse(delivery));
 
         Delivery responseDelivery = producer.sendAddDeliveryMessage(delivery);
@@ -56,14 +69,14 @@ public class DeliveryProducerImplTest {
                 delivery,
                 mapper.readValue(recordedRequest.getBody().readByteArray(), Delivery.class));
         assertEquals(1, server.getRequestCount());
-        assertEquals(delivery.getShopIp(), responseDelivery.getShopIp());
         assertEquals(delivery.getOrderId(), responseDelivery.getOrderId());
     }
 
     @Test
     @DisplayName("에러 응답")
     void sendAddDeliveryMessage_failTest_error() throws Exception {
-        Delivery delivery = Delivery.builder().shopIp(uri).orderId("hi").build();
+        Delivery delivery = Delivery.builder().orderId("order-1").build();
+        Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         for (int i = 0; i < 10; i++) {
             server.enqueue(failResponseOfStatus(HttpStatus.BAD_REQUEST));
             assertThrows(
