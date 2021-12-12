@@ -1,13 +1,16 @@
 package com.inbobwetrust.producer;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.EndpointService;
-import lombok.extern.slf4j.Slf4j;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +22,6 @@ import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryProducerImplTest {

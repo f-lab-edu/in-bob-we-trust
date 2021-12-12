@@ -2,7 +2,7 @@ package com.inbobwetrust.producer;
 
 import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.service.EndpointService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
