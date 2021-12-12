@@ -43,7 +43,9 @@ class OrderControllerTest {
         mockMvc.perform(post("/order").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(orderToSave.getId())))
-                .andExpect(jsonPath("$.shopId", is(orderToSave.getShopId())));
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.error").doesNotExist())
+                .andExpect(jsonPath("$.body.id", is(orderToSave.getId())))
+                .andExpect(jsonPath("$.body.shopId", is(orderToSave.getShopId())));
     }
 }
