@@ -1,14 +1,21 @@
 package com.inbobwetrust.controller;
 
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
+import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inbobwetrust.model.vo.DeliveryStatus;
-import com.inbobwetrust.service.DeliveryService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.service.DeliveryService;
-
-import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
-import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,15 +26,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DeliveryController.class)
 public class DeliveryControllerTest {
@@ -46,8 +44,7 @@ public class DeliveryControllerTest {
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.setStatusPickup(deliveryRequest))
-                .thenReturn(deliveryRequest);
+        when(this.deliveryService.setStatusPickup(deliveryRequest)).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
@@ -134,7 +131,6 @@ public class DeliveryControllerTest {
                                         is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
-
 
     @Test
     @DisplayName("주문상태확인 GET Request")

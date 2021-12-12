@@ -3,7 +3,6 @@ package com.inbobwetrust.model.vo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Or;
 
 class OrderTest {
 
