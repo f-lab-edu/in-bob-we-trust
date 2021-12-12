@@ -46,21 +46,21 @@ public class DeliveryControllerTest {
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.setStatusPickup(deliveryRequest))
-                .thenReturn(deliveryRequest);
+        when(this.deliveryService.setStatusPickup(deliveryRequest)).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
-        MvcResult result =
-                mockMvc.perform(
-                                patch("/delivery/status/pickup")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
-                        .andReturn();
+        mockMvc.perform(
+                        patch("/delivery/status/pickup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.error").doesNotExist())
+                .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
+                .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
+                .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
+                .andReturn();
     }
 
     @Test
@@ -77,9 +77,13 @@ public class DeliveryControllerTest {
                                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                .andExpect(jsonPath("$.deliveryAgentId", is(deliveryRequest.getDeliveryAgentId())))
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.error").doesNotExist())
+                .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
+                .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
+                .andExpect(
+                        jsonPath(
+                                "$.body.deliveryAgentId", is(deliveryRequest.getDeliveryAgentId())))
                 .andReturn();
     }
 
@@ -98,6 +102,8 @@ public class DeliveryControllerTest {
                                         .content(requestBody))
                         .andDo(print())
                         .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success", is(true)))
+                        .andExpect(jsonPath("$.error").doesNotExist())
                         .andReturn();
 
         Delivery responseObj =
@@ -125,16 +131,17 @@ public class DeliveryControllerTest {
                                         .content(requestBody))
                         .andDo(print())
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(jsonPath("$.status", is(deliveryRequest.getStatus())))
+                        .andExpect(jsonPath("$.success", is(true)))
+                        .andExpect(jsonPath("$.error").doesNotExist())
+                        .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
+                        .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
+                        .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
                         .andExpect(
                                 jsonPath(
-                                        "$.deliveryAgentId",
+                                        "$.body.deliveryAgentId",
                                         is(deliveryRequest.getDeliveryAgentId())))
                         .andReturn();
     }
-
 
     @Test
     @DisplayName("주문상태확인 GET Request")
@@ -148,6 +155,8 @@ public class DeliveryControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(deliveryStatus.getStatus())));
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.error").doesNotExist())
+                .andExpect(jsonPath("$.body.status", is(deliveryStatus.getStatus())));
     }
 }

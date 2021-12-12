@@ -1,13 +1,15 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.common.ApiResult;
 import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
+
+import static com.inbobwetrust.common.ApiUtil.successResponse;
 
 @RestController
 @RequestMapping("delivery")
@@ -16,32 +18,35 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping("status/{orderId}")
-    public ResponseEntity<DeliveryStatus> getDeliveryStatus(@PathVariable String orderId) {
+    public ResponseEntity<ApiResult<DeliveryStatus>> getDeliveryStatus(
+            @PathVariable String orderId) {
         DeliveryStatus deliveryStatus = deliveryService.findDeliveryStatusByOrderId(orderId);
-        return new ResponseEntity<>(deliveryStatus, HttpStatus.OK);
-    }
-    @PatchMapping("status/pickup")
-    public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
-        return new ResponseEntity<>(delivery, HttpStatus.OK);
+        return successResponse(deliveryStatus);
     }
 
+    @PatchMapping("status/pickup")
+    public ResponseEntity<ApiResult<Delivery>> setStatusToPickup(
+            @RequestBody Delivery deliveryRequest) {
+        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
+        return successResponse(delivery);
+    }
 
     @PutMapping("rider")
-    public ResponseEntity<Delivery> setRider(@RequestBody Delivery deliveryRequest) {
+    public ResponseEntity<ApiResult<Delivery>> setRider(@RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.setRider(deliveryRequest);
-        return new ResponseEntity<>(delivery, HttpStatus.OK);
+        return successResponse(delivery);
     }
 
     @PostMapping
-    public ResponseEntity<Delivery> addDelivery(@RequestBody Delivery deliveryRequest) {
+    public ResponseEntity<ApiResult<Delivery>> addDelivery(@RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.addDelivery(deliveryRequest);
-        return new ResponseEntity<>(delivery, HttpStatus.OK);
+        return successResponse(delivery);
     }
 
     @PatchMapping("status/complete")
-    public ResponseEntity<Delivery> setStatusComplete(@RequestBody Delivery deliveryRequest) {
+    public ResponseEntity<ApiResult<Delivery>> setStatusComplete(
+            @RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.setStatusComplete(deliveryRequest);
-        return new ResponseEntity<>(delivery, HttpStatus.OK);
+        return successResponse(delivery);
     }
 }
