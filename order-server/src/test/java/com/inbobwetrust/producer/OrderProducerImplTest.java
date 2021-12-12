@@ -1,13 +1,17 @@
 package com.inbobwetrust.producer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.service.EndpointService;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +26,6 @@ import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderProducerImplTest {
