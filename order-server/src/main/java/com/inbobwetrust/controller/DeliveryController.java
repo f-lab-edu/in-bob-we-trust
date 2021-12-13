@@ -24,7 +24,6 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
 
     private final DeliveryService deliveryService;
 
-
     @PatchMapping("status/pickup")
     public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
         Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
@@ -48,5 +47,4 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
         Delivery delivery = deliveryService.setStatusComplete(deliveryRequest);
         return new ResponseEntity<>(delivery, HttpStatus.OK);
     }
-
 }

@@ -1,11 +1,14 @@
 package com.inbobwetrust.config.swagger;
 
-import com.inbobwetrust.model.vo.DeliveryStatus;
-import io.swagger.annotations.*;
-import org.springframework.http.ResponseEntity;
-
 import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
+
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+
+import com.inbobwetrust.model.vo.DeliveryStatus;
+
+import io.swagger.annotations.*;
+
+import org.springframework.http.ResponseEntity;
 
 public interface DeliveryControllerSwaggerDoc {
     @ApiOperation(
