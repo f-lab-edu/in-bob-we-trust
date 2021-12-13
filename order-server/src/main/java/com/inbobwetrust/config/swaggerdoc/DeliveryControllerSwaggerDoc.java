@@ -1,8 +1,12 @@
 package com.inbobwetrust.config.swaggerdoc;
 
+import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
+
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+
 import com.inbobwetrust.model.vo.DeliveryStatus;
+
 import io.swagger.annotations.*;
-import org.springframework.http.ResponseEntity;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
