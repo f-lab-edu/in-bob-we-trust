@@ -21,7 +21,7 @@ dependencies {
     if (System.getProperty("os.arch").equals("aarch64")) { // MockWebServer의 맥 M1 특정 DNS리졸버 버그해결
         implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
     }
-
+   
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'com.squareup.okhttp3:mockwebserver'
@@ -29,7 +29,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
-
 
 test {
     useJUnitPlatform()

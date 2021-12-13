@@ -6,8 +6,6 @@ import com.inbobwetrust.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,8 +16,7 @@ class OrderController implements OrderControllerSwaggerDoc {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> receiveNewOrder(@RequestBody Order newOrder) {
-        Order order = orderService.receiveNewOrder(newOrder);
-        return new ResponseEntity<>(order, HttpStatus.OK);
+    public Order receiveNewOrder(@RequestBody Order newOrder) {
+        return orderService.receiveNewOrder(newOrder);
     }
 }

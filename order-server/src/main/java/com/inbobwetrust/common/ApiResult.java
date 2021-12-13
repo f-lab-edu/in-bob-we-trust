@@ -1,3 +1,11 @@
 package com.inbobwetrust.common;
 
-public class ApiResult<T> {}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class ApiResult<T> {
+    private final boolean success;
+    private final T body;
+}

@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class RiderService {
@@ -34,10 +32,8 @@ public class RiderService {
     }
 
     private Rider findByRiderId(String riderId) {
-        Optional<Rider> updatedRider = riderRepository.findByRiderId(riderId);
-        if (updatedRider.isEmpty()) {
-            throw new RuntimeException("Cannot find Rider");
-        }
-        return updatedRider.get();
+        return riderRepository
+                .findByRiderId(riderId)
+                .orElseThrow(() -> new RuntimeException("Cannot find Rider"));
     }
 }

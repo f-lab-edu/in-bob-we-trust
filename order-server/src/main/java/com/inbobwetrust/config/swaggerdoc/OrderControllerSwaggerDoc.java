@@ -7,10 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-import org.springframework.http.ResponseEntity;
-
 public interface OrderControllerSwaggerDoc {
     @ApiOperation(value = "신규주문접수", notes = "배달의민족 주문서버로부터 주문정보를 전송받는 API")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    ResponseEntity<Order> receiveNewOrder(Order newOrder);
+    Order receiveNewOrder(Order newOrder);
 }
