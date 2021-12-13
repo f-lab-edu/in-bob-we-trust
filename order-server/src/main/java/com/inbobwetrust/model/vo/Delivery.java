@@ -1,10 +1,9 @@
 package com.inbobwetrust.model.vo;
 
 import lombok.*;
-import org.springframework.beans.factory.annotation.Required;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

@@ -3,6 +3,7 @@ package com.inbobwetrust.controller;
 import com.inbobwetrust.common.ApiResult;
 import com.inbobwetrust.model.vo.Rider;
 import com.inbobwetrust.service.RiderService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
