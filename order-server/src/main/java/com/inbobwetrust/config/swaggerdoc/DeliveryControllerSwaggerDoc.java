@@ -1,19 +1,15 @@
 package com.inbobwetrust.config.swaggerdoc;
 
-import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 import com.inbobwetrust.common.ApiResult;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.DeliveryStatus;
 
 import io.swagger.annotations.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public interface DeliveryControllerSwaggerDoc {
     @ApiOperation(value = "주문상태확인", notes = "주문번호에 해당하는 주문상태 반환")

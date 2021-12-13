@@ -8,16 +8,16 @@ import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.repository.OrderRepository;
 import com.inbobwetrust.repository.RiderRepository;
 import com.inbobwetrust.service.EndpointService;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class FakeClasses {
-}
+public class FakeClasses {}
 
 @Component
-class d implements EndpointService{
+class d implements EndpointService {
 
     @Override
     public String findShopEndpoint(Order order) {
@@ -31,7 +31,7 @@ class d implements EndpointService{
 }
 
 @Component
-class c implements RiderRepository{
+class c implements RiderRepository {
 
     @Override
     public boolean save(Rider rider) {
@@ -53,8 +53,9 @@ class c implements RiderRepository{
         return null;
     }
 }
+
 @Component
-class b implements OrderRepository{
+class b implements OrderRepository {
 
     @Override
     public boolean save(Order order) {
@@ -71,8 +72,9 @@ class b implements OrderRepository{
         return null;
     }
 }
+
 @Component
-class a implements DeliveryRepository{
+class a implements DeliveryRepository {
 
     @Override
     public boolean save(Delivery delivery) {

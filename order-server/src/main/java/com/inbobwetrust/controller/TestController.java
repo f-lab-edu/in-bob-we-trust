@@ -1,7 +1,7 @@
 package com.inbobwetrust.controller;
 
-import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.Order;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("test")
 public class TestController {
-
 
     @GetMapping("obj")
     public Order test2() {
