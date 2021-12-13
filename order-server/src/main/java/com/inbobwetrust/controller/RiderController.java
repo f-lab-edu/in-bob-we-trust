@@ -1,5 +1,6 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.config.swaggerdoc.RiderControllerSwaggerDoc;
 import com.inbobwetrust.model.vo.Rider;
 import com.inbobwetrust.service.RiderService;
 
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("rider")
 @RequiredArgsConstructor
-public class RiderController {
+public class RiderController implements RiderControllerSwaggerDoc {
     private final RiderService riderService;
 
     @PatchMapping("location")

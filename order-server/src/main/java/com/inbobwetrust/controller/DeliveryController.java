@@ -1,6 +1,6 @@
 package com.inbobwetrust.controller;
 
-import com.inbobwetrust.config.swagger.DeliveryControllerSwaggerDoc;
+import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.service.DeliveryService;
