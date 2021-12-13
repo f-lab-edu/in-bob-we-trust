@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("delivery")
 @RequiredArgsConstructor
 public class DeliveryController implements DeliveryControllerSwaggerDoc {
+    private final DeliveryService deliveryService;
 
     @GetMapping("status/{orderId}")
     public ResponseEntity<DeliveryStatus> getDeliveryStatus(@PathVariable String orderId) {
         DeliveryStatus deliveryStatus = deliveryService.findDeliveryStatusByOrderId(orderId);
         return new ResponseEntity<>(deliveryStatus, HttpStatus.OK);
     }
-
-    private final DeliveryService deliveryService;
 
     @PatchMapping("status/pickup")
     public ResponseEntity<Delivery> setStatusToPickup(@RequestBody Delivery deliveryRequest) {
