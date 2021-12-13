@@ -6,7 +6,6 @@ import com.inbobwetrust.model.vo.DeliveryStatus;
 
 import io.swagger.annotations.*;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface DeliveryControllerSwaggerDoc {
