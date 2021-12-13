@@ -2,9 +2,11 @@ package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.common.ApiResult;
 import com.inbobwetrust.model.vo.Rider;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 import org.springframework.http.ResponseEntity;
 
 public interface RiderControllerSwaggerDoc {
