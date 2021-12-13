@@ -46,6 +46,6 @@ public class RiderControllerTest {
                                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.success", is(true)));
     }
 }
