@@ -1,5 +1,6 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.config.swaggerdoc.OrderControllerSwaggerDoc;
 import com.inbobwetrust.model.vo.Order;
 import com.inbobwetrust.service.OrderService;
 
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("order")
 @RequiredArgsConstructor
-class OrderController {
+class OrderController implements OrderControllerSwaggerDoc {
+
     private final OrderService orderService;
 
     @PostMapping
