@@ -21,12 +21,16 @@ public class ApiUtil {
         return new ApiResult<>(true, body, null);
     }
 
-    public static ResponseEntity<ApiResult<?>> errorResponse(
-            Exception exception, HttpStatus status) {
-        return new ResponseEntity<>(error(exception, status), defaultHeaders(), status);
+    public static ResponseEntity<ApiResult<?>> errorResponse(String message, HttpStatus status) {
+        return new ResponseEntity<>(error(message, status), defaultHeaders(), status);
     }
 
-    private static ApiResult<?> error(Exception exception, HttpStatus status) {
-        return new ApiResult<>(false, null, new ApiError(exception.getMessage(), status.value()));
+    private static ApiResult<?> error(String message, HttpStatus status) {
+        return new ApiResult<>(false, null, new ApiError(message, status.value()));
+    }
+
+    public static ApiResult makeResponseBody(Object body) {
+        if (body instanceof ApiResult) return (ApiResult) body;
+        return new ApiResult<>(true, body, null);
     }
 }
