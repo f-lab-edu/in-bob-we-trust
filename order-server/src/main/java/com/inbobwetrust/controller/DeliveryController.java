@@ -1,5 +1,6 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.DeliveryStatus;
 import com.inbobwetrust.service.DeliveryService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("delivery")
 @RequiredArgsConstructor
-public class DeliveryController {
+public class DeliveryController implements DeliveryControllerSwaggerDoc {
     private final DeliveryService deliveryService;
 
     @GetMapping("status/{orderId}")
