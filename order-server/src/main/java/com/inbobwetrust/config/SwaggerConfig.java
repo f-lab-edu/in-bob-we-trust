@@ -2,76 +2,63 @@ package com.inbobwetrust.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.print.attribute.standard.Media;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
+    final List<ResponseMessage> globalResponses = getGlobalResponses();
+
     @Bean
     public Docket api() {
-        return globalConfigurationApplied(new Docket(DocumentationType.SWAGGER_2))
+        return new Docket(DocumentationType.SWAGGER_2)
+                .globalResponseMessage(RequestMethod.GET, globalResponses)
+                .globalResponseMessage(RequestMethod.POST, globalResponses)
+                .globalResponseMessage(RequestMethod.PUT, globalResponses)
+                .globalResponseMessage(RequestMethod.DELETE, globalResponses)
+                .globalResponseMessage(RequestMethod.PATCH, globalResponses)
+                .consumes(this.consumesContentTypes())
+                .produces(this.producesContentTypes())
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
                 .build();
     }
 
-    private Docket globalConfigurationApplied(Docket docket) {
-        docket = applyGlobalResponses(docket);
-        docket = applyGlobalParameter(docket);
-        return docket;
+    private Set<String> consumesContentTypes() {
+        Set<String> consumes = new HashSet<>();
+        consumes.add(MediaType.APPLICATION_JSON_VALUE);
+        return consumes;
     }
 
-    private Docket applyGlobalParameter(Docket docket) {
-        return docket.globalOperationParameters(
-                List.of(
-                        new ParameterBuilder()
-                                .name("Content-Type")
-                                .description("Content-Type")
-                                .parameterType("header")
-                                .required(false)
-                                .modelRef(new ModelRef("string"))
-                                .build()));
-    }
-
-    private Docket applyGlobalResponses(Docket docket) {
-        final List<ResponseMessage> globalResponses = getGlobalResponses();
-        return docket.globalResponseMessage(RequestMethod.GET, globalResponses)
-                .globalResponseMessage(RequestMethod.POST, globalResponses)
-                .globalResponseMessage(RequestMethod.PUT, globalResponses)
-                .globalResponseMessage(RequestMethod.DELETE, globalResponses)
-                .globalResponseMessage(RequestMethod.PATCH, globalResponses);
+    private Set<String> producesContentTypes() {
+        Set<String> produces = new HashSet<>();
+        produces.add(MediaType.APPLICATION_JSON_VALUE);
+        return produces;
     }
 
     private List<ResponseMessage> getGlobalResponses() {
         return Arrays.asList(
-                new ResponseMessageBuilder()
-                        .code(200)
-                        .message("OK")
-                        .responseModel(new ModelRef("Success"))
-                        .build(),
-                new ResponseMessageBuilder()
-                        .code(400)
-                        .message("Bad Request")
-                        .responseModel(new ModelRef("Client Error"))
-                        .build(),
-                new ResponseMessageBuilder()
-                        .code(500)
-                        .message("Internal Error")
-                        .responseModel(new ModelRef("Error"))
-                        .build());
+                new ResponseMessageBuilder().code(400).message("Bad Request").build(),
+                new ResponseMessageBuilder().code(500).message("Server Error").build());
     }
 }
