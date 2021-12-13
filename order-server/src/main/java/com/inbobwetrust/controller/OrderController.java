@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.inbobwetrust.common.ApiUtil.successResponse;
+
 
 @RestController
 @RequestMapping("order")
@@ -16,8 +16,7 @@ class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<ApiResult<Order>> receiveNewOrder(@RequestBody Order newOrder) {
-        Order order = orderService.receiveNewOrder(newOrder);
-        return successResponse(order);
+    public Order receiveNewOrder(@RequestBody Order newOrder) {
+        return orderService.receiveNewOrder(newOrder);
     }
 }

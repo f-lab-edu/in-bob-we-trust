@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import static com.inbobwetrust.common.ApiUtil.successResponse;
+
 
 @RestController
 @RequestMapping("delivery")
@@ -18,35 +18,27 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping("status/{orderId}")
-    public ResponseEntity<ApiResult<DeliveryStatus>> getDeliveryStatus(
-            @PathVariable String orderId) {
-        DeliveryStatus deliveryStatus = deliveryService.findDeliveryStatusByOrderId(orderId);
-        return successResponse(deliveryStatus);
+    public DeliveryStatus getDeliveryStatus(@PathVariable String orderId) {
+        return deliveryService.findDeliveryStatusByOrderId(orderId);
     }
 
     @PatchMapping("status/pickup")
-    public ResponseEntity<ApiResult<Delivery>> setStatusToPickup(
-            @RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.setStatusPickup(deliveryRequest);
-        return successResponse(delivery);
+    public Delivery setStatusToPickup(@RequestBody Delivery deliveryRequest) {
+        return deliveryService.setStatusPickup(deliveryRequest);
     }
 
     @PutMapping("rider")
-    public ResponseEntity<ApiResult<Delivery>> setRider(@RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.setRider(deliveryRequest);
-        return successResponse(delivery);
+    public Delivery setRider(@RequestBody Delivery deliveryRequest) {
+        return deliveryService.setRider(deliveryRequest);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResult<Delivery>> addDelivery(@RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.addDelivery(deliveryRequest);
-        return successResponse(delivery);
+    public Delivery addDelivery(@RequestBody Delivery deliveryRequest) {
+        return deliveryService.addDelivery(deliveryRequest);
     }
 
     @PatchMapping("status/complete")
-    public ResponseEntity<ApiResult<Delivery>> setStatusComplete(
-            @RequestBody Delivery deliveryRequest) {
-        Delivery delivery = deliveryService.setStatusComplete(deliveryRequest);
-        return successResponse(delivery);
+    public Delivery setStatusComplete(@RequestBody Delivery deliveryRequest) {
+        return deliveryService.setStatusComplete(deliveryRequest);
     }
 }

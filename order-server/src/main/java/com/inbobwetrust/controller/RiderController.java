@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.inbobwetrust.common.ApiUtil.successResponse;
+
 
 @RestController
 @RequestMapping("rider")
@@ -19,8 +19,7 @@ public class RiderController {
     private final RiderService riderService;
 
     @PatchMapping("location")
-    public ResponseEntity<ApiResult<Rider>> setRiderLocation(@RequestBody Rider body) {
-        Rider rider = riderService.updateLocation(body);
-        return successResponse(rider);
+    public Rider setRiderLocation(@RequestBody Rider body) {
+        return riderService.updateLocation(body);
     }
 }
