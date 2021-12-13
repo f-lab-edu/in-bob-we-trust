@@ -8,5 +8,4 @@ import lombok.Getter;
 public class ApiResult<T> {
     private final boolean success;
     private final T body;
-    private final ApiError error;
 }
