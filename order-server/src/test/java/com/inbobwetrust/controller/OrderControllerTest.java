@@ -44,7 +44,6 @@ class OrderControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.error").doesNotExist())
                 .andExpect(jsonPath("$.body.id", is(orderToSave.getId())))
                 .andExpect(jsonPath("$.body.shopId", is(orderToSave.getShopId())));
     }

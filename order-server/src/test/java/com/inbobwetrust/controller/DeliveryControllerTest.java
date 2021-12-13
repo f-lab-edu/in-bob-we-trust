@@ -54,7 +54,6 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.error").doesNotExist())
                 .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
                 .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
                 .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
@@ -76,7 +75,6 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.error").doesNotExist())
                 .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
                 .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
                 .andExpect(
@@ -101,7 +99,6 @@ public class DeliveryControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.success", is(true)))
-                        .andExpect(jsonPath("$.error").doesNotExist())
                         .andReturn();
 
         Delivery responseObj =
@@ -130,7 +127,6 @@ public class DeliveryControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.success", is(true)))
-                        .andExpect(jsonPath("$.error").doesNotExist())
                         .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
                         .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
                         .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
@@ -154,7 +150,6 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.error").doesNotExist())
                 .andExpect(jsonPath("$.body.status", is(deliveryStatus.getStatus())));
     }
 }

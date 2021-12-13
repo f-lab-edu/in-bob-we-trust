@@ -46,6 +46,5 @@ public class RiderControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.error").doesNotExist());
     }
 }
