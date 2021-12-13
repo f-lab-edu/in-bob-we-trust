@@ -49,11 +49,9 @@ public class DeliveryService {
     }
 
     public DeliveryStatus findDeliveryStatusByOrderId(String orderId) {
-        Optional<DeliveryStatus> result = deliveryRepository.findDeliveryStatusByOrderId(orderId);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new RuntimeException("No such delivery associated with Id");
+        return deliveryRepository
+                .findDeliveryStatusByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("No such delivery associated with Id"));
     }
 
     private void saveOrThrow(Delivery delivery, String msg) {
@@ -80,11 +78,9 @@ public class DeliveryService {
     }
 
     private Delivery findByOrderId(String orderId) {
-        Optional<Delivery> updatedDelivery = deliveryRepository.findByOrderId(orderId);
-        if (updatedDelivery.isEmpty()) {
-            throw new RuntimeException("Cannot find Delivery");
-        }
-        return updatedDelivery.get();
+        return deliveryRepository
+                .findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Cannot find Delivery"));
     }
 
     private void riderValidation(String rider) {

@@ -33,11 +33,9 @@ public class RiderService {
         }
     }
 
-    private Rider findByRiderId(String riderId){
-        Optional<Rider> updatedRider = riderRepository.findByRiderId(riderId);
-        if (updatedRider.isEmpty()) {
-            throw new RuntimeException("Cannot find Rider");
-        }
-        return updatedRider.get();
+    private Rider findByRiderId(String riderId) {
+        return riderRepository
+                .findByRiderId(riderId)
+                .orElseThrow(() -> new RuntimeException("Cannot find Rider"));
     }
 }
