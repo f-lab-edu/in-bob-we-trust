@@ -36,7 +36,6 @@ public class SwaggerConfig {
                 .description("content-type")
                 .parameterType("header")
                 .required(false)
-                .modelRef(new ModelRef("string"))
-                .build();
+                .modelRef(new ModelRef("string"));
     }
 }
