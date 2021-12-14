@@ -11,13 +11,14 @@ public class ConnectionTest {
     @Test
     @DisplayName("DB 연결 테스트")
     void dbConnectionTest() {
-        try(Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/inbobwetrust?characterEncoding=UTF-8&serverTimezone=UTC",
-                                                            "root",
-                                                        "1qaz@WSX")) {
+        try (Connection con =
+                DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/inbobwetrust?characterEncoding=UTF-8&serverTimezone=UTC",
+                        "root",
+                        "1qaz@WSX")) {
             System.out.println("Connection Success! : " + con);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
