@@ -139,19 +139,19 @@ CREATE TABLE IF NOT EXISTS `inbobwetrust`.`order_table` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `inbobwetrust`.`order_menu` (
   `menu_id` BIGINT(20) NOT NULL,
-  `order_id` BIGINT(20) NOT NULL,
+  `order_table_id` BIGINT(20) NOT NULL,
   `quantity` INT NOT NULL,
   PRIMARY KEY (`menu_id`, `order_table_id`),
   INDEX `fk_order_menu_menu_idx` (`menu_id` ASC) VISIBLE,
-  INDEX `fk_order_menu_order_table_idx` (`order_id` ASC) VISIBLE,
+  INDEX `fk_order_menu_order_table_idx` (`order_table_id` ASC) VISIBLE,
   CONSTRAINT `fk_order_menu_menu`
     FOREIGN KEY (`menu_id`)
     REFERENCES `inbobwetrust`.`menu` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_order_menu_order_table`
-    FOREIGN KEY (`order_id`)
-    REFERENCES `inbobwetrust`.`order` (`id`)
+    FOREIGN KEY (`order_table_id`)
+    REFERENCES `inbobwetrust`.`order_table` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 
@@ -161,19 +161,19 @@ CREATE TABLE IF NOT EXISTS `inbobwetrust`.`order_menu` (
 -- Table `inbobwetrust`.`delivery`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `inbobwetrust`.`delivery` (
-  `order_id` BIGINT(20) NOT NULL,
+  `order_table_id` BIGINT(20) NOT NULL,
   `rider_id` VARCHAR(20) NOT NULL,
   `wanted_pickup_time` DATETIME NOT NULL,
   `estimated_cooking_time` DATETIME NOT NULL,
   `estimated_delivery_finish_time` DATETIME NOT NULL,
   `reg_date` DATETIME NOT NULL,
   `mod_date` DATETIME NOT NULL,
-  INDEX `fk_delivery_order_idx` (`order_id` ASC) VISIBLE,
+  INDEX `fk_delivery_order_table_idx` (`order_table_id` ASC) VISIBLE,
   INDEX `fk_delivery_rider_idx` (`rider_id` ASC) VISIBLE,
-  PRIMARY KEY (`rider_id`, `order_id`),
-  CONSTRAINT `fk_delivery_order`
-    FOREIGN KEY (`order_id`)
-    REFERENCES `inbobwetrust`.`order` (`id`)
+  PRIMARY KEY (`rider_id`, `order_table_id`),
+  CONSTRAINT `fk_delivery_order_table`
+    FOREIGN KEY (`order_table_id`)
+    REFERENCES `inbobwetrust`.`order_table` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_delivery_rider`
