@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
+@RequiredArgsConstructor
 @Builder
 public class Order {
     private String id;

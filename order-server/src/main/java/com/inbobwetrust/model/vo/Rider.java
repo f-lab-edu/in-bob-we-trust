@@ -1,7 +1,7 @@
 package com.inbobwetrust.model.vo;
 
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
@@ -15,8 +15,7 @@ public class Rider {
     private String orderId;
     private String riderId;
     private String location;
-    @Nullable
-    private LocalDateTime lastUpdated;
+    @Nullable private LocalDateTime lastUpdated;
 
     protected Rider() {}
 
@@ -26,7 +25,8 @@ public class Rider {
         this.location = location;
     }
 
-    public Rider(String orderId, String riderId, String location, @Nullable LocalDateTime lastUpdated) {
+    public Rider(
+            String orderId, String riderId, String location, @Nullable LocalDateTime lastUpdated) {
         this.orderId = orderId;
         this.riderId = riderId;
         this.location = location;

@@ -1,13 +1,11 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.vo.Rider;
-import com.inbobwetrust.model.vo.Rider;
 import com.inbobwetrust.repository.RiderRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +31,9 @@ public class RiderService {
         }
     }
 
-    private Rider findByRiderId(String riderId){
-        Optional<Rider> updatedRider = riderRepository.findByRiderId(riderId);
-        if (updatedRider.isEmpty()) {
-            throw new RuntimeException("Cannot find Rider");
-        }
-        return updatedRider.get();
+    private Rider findByRiderId(String riderId) {
+        return riderRepository
+                .findByRiderId(riderId)
+                .orElseThrow(() -> new RuntimeException("Cannot find Rider"));
     }
 }
