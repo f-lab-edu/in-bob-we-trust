@@ -30,7 +30,16 @@ public class Rider {
     private LocalDateTime modDate;
 
     @Builder
-    public Rider(String id, Long agencyId, String name, String password, RiderStatus status, String tel, String email, LocalDateTime regDate, LocalDateTime modDate) {
+    public Rider(
+            String id,
+            Long agencyId,
+            String name,
+            String password,
+            RiderStatus status,
+            String tel,
+            String email,
+            LocalDateTime regDate,
+            LocalDateTime modDate) {
         this.id = id;
         this.agencyId = agencyId;
         this.name = name;

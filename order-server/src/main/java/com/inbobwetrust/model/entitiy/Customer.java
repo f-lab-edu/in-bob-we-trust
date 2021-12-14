@@ -30,8 +30,16 @@ public class Customer {
     private LocalDateTime modDate;
 
     @Builder
-    public Customer(String id, String name, String password, String tel, String email, String address, Long point,
-                    LocalDateTime regDate, LocalDateTime modDate) {
+    public Customer(
+            String id,
+            String name,
+            String password,
+            String tel,
+            String email,
+            String address,
+            Long point,
+            LocalDateTime regDate,
+            LocalDateTime modDate) {
         this.id = id;
         this.name = name;
         this.password = password;

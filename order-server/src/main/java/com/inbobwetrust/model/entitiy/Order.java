@@ -36,9 +36,19 @@ public class Order {
     private LocalDateTime orderStatusLastUpdated;
 
     @Builder
-    public Order(Long id, String customerId, Long shopId, String riderId, OrderStatus status, PaymentType paymentType,
-                 Long paymentPrice, String address, String customerRequest, LocalDateTime regDate, LocalDateTime modDate,
-                 LocalDateTime orderStatusLastUpdated) {
+    public Order(
+            Long id,
+            String customerId,
+            Long shopId,
+            String riderId,
+            OrderStatus status,
+            PaymentType paymentType,
+            Long paymentPrice,
+            String address,
+            String customerRequest,
+            LocalDateTime regDate,
+            LocalDateTime modDate,
+            LocalDateTime orderStatusLastUpdated) {
         this.id = id;
         this.customerId = customerId;
         this.shopId = shopId;

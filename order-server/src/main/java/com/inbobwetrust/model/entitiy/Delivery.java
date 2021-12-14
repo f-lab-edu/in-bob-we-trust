@@ -26,8 +26,14 @@ public class Delivery {
     private LocalDateTime modDate;
 
     @Builder
-    public Delivery(Long orderId, Long riderId, LocalDateTime wantedPickupTime, LocalDateTime estimatedCookingTime,
-                    LocalDateTime estimatedDeliveryFinishTime, LocalDateTime regDate, LocalDateTime modDate) {
+    public Delivery(
+            Long orderId,
+            Long riderId,
+            LocalDateTime wantedPickupTime,
+            LocalDateTime estimatedCookingTime,
+            LocalDateTime estimatedDeliveryFinishTime,
+            LocalDateTime regDate,
+            LocalDateTime modDate) {
         this.orderId = orderId;
         this.riderId = riderId;
         this.wantedPickupTime = wantedPickupTime;

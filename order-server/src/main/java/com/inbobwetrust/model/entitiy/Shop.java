@@ -34,8 +34,18 @@ public class Shop {
     private LocalDateTime workEndTime;
 
     @Builder
-    public Shop(Long id, String name, String ownerName, String tel, String address, ShopStatus status, String photo,
-                LocalDateTime regDate, LocalDateTime modDate, LocalDateTime workStartTime, LocalDateTime workEndTime) {
+    public Shop(
+            Long id,
+            String name,
+            String ownerName,
+            String tel,
+            String address,
+            ShopStatus status,
+            String photo,
+            LocalDateTime regDate,
+            LocalDateTime modDate,
+            LocalDateTime workStartTime,
+            LocalDateTime workEndTime) {
         this.id = id;
         this.name = name;
         this.ownerName = ownerName;
