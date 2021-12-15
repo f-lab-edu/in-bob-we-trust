@@ -10,5 +10,4 @@ import lombok.ToString;
 public class Rider {
     private String id;
     private Long agencyId;
-    private GeoLocation geoLocation;
 }
