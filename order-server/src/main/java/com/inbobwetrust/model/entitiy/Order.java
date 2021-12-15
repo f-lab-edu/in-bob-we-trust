@@ -1,6 +1,5 @@
 package com.inbobwetrust.model.entitiy;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -13,53 +12,19 @@ import java.time.LocalDateTime;
 public class Order {
     private Long id;
 
-    private String customerId;
+    private String customerId; // 고객아이디
 
-    private Long shopId;
+    private Long shopId; // 가게아이디
 
-    private String riderId;
+    private OrderStatus orderStatus; // 주문상태
 
-    private OrderStatus status;
+    private String address; // 배달주소
 
-    private PaymentType paymentType;
+    private String phoneNumber; // 안심번호
 
-    private Long paymentPrice;
+    private Payment payment;
 
-    private String address;
+    private LocalDateTime createdAt; // 생성일
 
-    private String customerRequest;
-
-    private LocalDateTime regDate;
-
-    private LocalDateTime modDate;
-
-    private LocalDateTime orderStatusLastUpdated;
-
-    @Builder
-    public Order(
-            Long id,
-            String customerId,
-            Long shopId,
-            String riderId,
-            OrderStatus status,
-            PaymentType paymentType,
-            Long paymentPrice,
-            String address,
-            String customerRequest,
-            LocalDateTime regDate,
-            LocalDateTime modDate,
-            LocalDateTime orderStatusLastUpdated) {
-        this.id = id;
-        this.customerId = customerId;
-        this.shopId = shopId;
-        this.riderId = riderId;
-        this.status = status;
-        this.paymentType = paymentType;
-        this.paymentPrice = paymentPrice;
-        this.address = address;
-        this.customerRequest = customerRequest;
-        this.regDate = regDate;
-        this.modDate = modDate;
-        this.orderStatusLastUpdated = orderStatusLastUpdated;
-    }
+    private LocalDateTime updatedAt; // 수정일
 }

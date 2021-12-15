@@ -11,35 +11,18 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class Delivery {
-    private Long orderId;
 
-    private Long riderId;
+    private Long orderId; // 주문번호
 
-    private LocalDateTime wantedPickupTime;
+    private String riderId; // 라이더번호 : 배차완료시 지정
 
-    private LocalDateTime estimatedCookingTime;
+    private Long agencyId; // 배달대행사번호 : 주문접수시 지정
 
-    private LocalDateTime estimatedDeliveryFinishTime;
+    private LocalDateTime pickupTime; // PickupTime
 
-    private LocalDateTime regDate;
+    private LocalDateTime finishTime; // 배달완료시간
 
-    private LocalDateTime modDate;
+    private LocalDateTime createdAt;
 
-    @Builder
-    public Delivery(
-            Long orderId,
-            Long riderId,
-            LocalDateTime wantedPickupTime,
-            LocalDateTime estimatedCookingTime,
-            LocalDateTime estimatedDeliveryFinishTime,
-            LocalDateTime regDate,
-            LocalDateTime modDate) {
-        this.orderId = orderId;
-        this.riderId = riderId;
-        this.wantedPickupTime = wantedPickupTime;
-        this.estimatedCookingTime = estimatedCookingTime;
-        this.estimatedDeliveryFinishTime = estimatedDeliveryFinishTime;
-        this.regDate = regDate;
-        this.modDate = modDate;
-    }
+    private LocalDateTime updatedAt;
 }

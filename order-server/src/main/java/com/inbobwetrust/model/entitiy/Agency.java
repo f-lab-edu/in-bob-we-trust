@@ -10,15 +10,5 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Agency {
     private Long id;
-
-    private String name;
-
-    private AgencyStatus status;
-
-    @Builder
-    public Agency(Long id, String name, AgencyStatus status) {
-        this.id = id;
-        this.name = name;
-        this.status = status;
-    }
+    private String endpoint;
 }
