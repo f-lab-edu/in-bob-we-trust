@@ -1,4 +1,4 @@
-package com.inbobwetrust.common;
+package com.inbobwetrust.aop;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @ControllerAdvice
-public class CommonResponseHandler implements ResponseBodyAdvice {
+public class ResponseBodyControllerAdvice implements ResponseBodyAdvice {
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
@@ -23,6 +23,6 @@ public class CommonResponseHandler implements ResponseBodyAdvice {
             Class selectedConverterType,
             ServerHttpRequest request,
             ServerHttpResponse response) {
-        return ApiUtil.makeResponseBody(body);
+        return ApiResult.makeFromResponseBody(body);
     }
 }

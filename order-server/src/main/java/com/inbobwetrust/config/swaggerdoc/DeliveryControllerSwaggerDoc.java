@@ -1,6 +1,6 @@
 package com.inbobwetrust.config.swaggerdoc;
 
-import com.inbobwetrust.common.ApiResult;
+import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.vo.Delivery;
 import com.inbobwetrust.model.vo.DeliveryStatus;
 
