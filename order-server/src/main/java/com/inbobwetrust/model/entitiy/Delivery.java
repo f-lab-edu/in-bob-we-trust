@@ -11,35 +11,39 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class Delivery {
+    private Long id;
+
     private Long orderId;
 
     private Long riderId;
 
-    private LocalDateTime wantedPickupTime;
+    private Long agencyId;
 
-    private LocalDateTime estimatedCookingTime;
+    private LocalDateTime pickupTime;
 
-    private LocalDateTime estimatedDeliveryFinishTime;
+    private LocalDateTime finishTime;
 
-    private LocalDateTime regDate;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime modDate;
+    private LocalDateTime updatedAt;
 
     @Builder
     public Delivery(
+            Long id,
             Long orderId,
             Long riderId,
-            LocalDateTime wantedPickupTime,
-            LocalDateTime estimatedCookingTime,
-            LocalDateTime estimatedDeliveryFinishTime,
-            LocalDateTime regDate,
-            LocalDateTime modDate) {
+            Long agencyId,
+            LocalDateTime pickupTime,
+            LocalDateTime finishTime,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this.id = id;
         this.orderId = orderId;
         this.riderId = riderId;
-        this.wantedPickupTime = wantedPickupTime;
-        this.estimatedCookingTime = estimatedCookingTime;
-        this.estimatedDeliveryFinishTime = estimatedDeliveryFinishTime;
-        this.regDate = regDate;
-        this.modDate = modDate;
+        this.agencyId = agencyId;
+        this.pickupTime = pickupTime;
+        this.finishTime = finishTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

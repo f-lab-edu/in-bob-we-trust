@@ -13,53 +13,37 @@ import java.time.LocalDateTime;
 public class Order {
     private Long id;
 
-    private String customerId;
+    private Long customerId;
 
     private Long shopId;
 
-    private String riderId;
-
-    private OrderStatus status;
-
-    private PaymentType paymentType;
-
-    private Long paymentPrice;
+    private OrderStatus orderStatus;
 
     private String address;
 
-    private String customerRequest;
+    private String phoneNumber;
 
-    private LocalDateTime regDate;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime modDate;
-
-    private LocalDateTime orderStatusLastUpdated;
+    private LocalDateTime updatedAt;
 
     @Builder
     public Order(
             Long id,
-            String customerId,
+            Long customerId,
             Long shopId,
-            String riderId,
-            OrderStatus status,
-            PaymentType paymentType,
-            Long paymentPrice,
+            OrderStatus orderStatus,
             String address,
-            String customerRequest,
-            LocalDateTime regDate,
-            LocalDateTime modDate,
-            LocalDateTime orderStatusLastUpdated) {
+            String phoneNumber,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.customerId = customerId;
         this.shopId = shopId;
-        this.riderId = riderId;
-        this.status = status;
-        this.paymentType = paymentType;
-        this.paymentPrice = paymentPrice;
+        this.orderStatus = orderStatus;
         this.address = address;
-        this.customerRequest = customerRequest;
-        this.regDate = regDate;
-        this.modDate = modDate;
-        this.orderStatusLastUpdated = orderStatusLastUpdated;
+        this.phoneNumber = phoneNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
