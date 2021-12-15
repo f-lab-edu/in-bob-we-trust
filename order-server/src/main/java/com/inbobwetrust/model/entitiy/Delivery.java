@@ -1,5 +1,6 @@
 package com.inbobwetrust.model.entitiy;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,18 +11,39 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class Delivery {
+    private Long id;
 
-    private Long orderId; // 주문번호
+    private Long orderId;
 
-    private String riderId; // 라이더번호 : 배차완료시 지정
+    private Long riderId;
 
-    private Long agencyId; // 배달대행사번호 : 주문접수시 지정
+    private Long agencyId;
 
-    private LocalDateTime pickupTime; // PickupTime
+    private LocalDateTime pickupTime;
 
-    private LocalDateTime finishTime; // 배달완료시간
+    private LocalDateTime finishTime;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Builder
+    public Delivery(
+            Long id,
+            Long orderId,
+            Long riderId,
+            Long agencyId,
+            LocalDateTime pickupTime,
+            LocalDateTime finishTime,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this.id = id;
+        this.orderId = orderId;
+        this.riderId = riderId;
+        this.agencyId = agencyId;
+        this.pickupTime = pickupTime;
+        this.finishTime = finishTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }
