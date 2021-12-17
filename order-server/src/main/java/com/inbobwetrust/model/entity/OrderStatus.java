@@ -1,4 +1,4 @@
-package com.inbobwetrust.model.entitiy;
+package com.inbobwetrust.model.entity;
 
 public enum OrderStatus {
     NEW("접수요청", "접수대기중"),

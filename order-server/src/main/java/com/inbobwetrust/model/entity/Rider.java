@@ -1,4 +1,4 @@
-package com.inbobwetrust.model.entitiy;
+package com.inbobwetrust.model.entity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,13 +8,13 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
-public class Agency {
+public class Rider {
     private Long id;
-    private String endpoint;
+    private Long agencyId;
 
     @Builder
-    public Agency(Long id, String endpoint) {
+    public Rider(Long id, Long agencyId) {
         this.id = id;
-        this.endpoint = endpoint;
+        this.agencyId = agencyId;
     }
 }
