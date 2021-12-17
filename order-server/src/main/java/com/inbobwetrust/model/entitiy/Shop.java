@@ -9,12 +9,12 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class Shop {
-    private String id;
+    private Long id;
 
     private String endpoint;
 
     @Builder
-    public Shop(String id, String endpoint) {
+    public Shop(Long id, String endpoint) {
         this.id = id;
         this.endpoint = endpoint;
     }

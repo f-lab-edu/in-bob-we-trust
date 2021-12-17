@@ -17,6 +17,8 @@ public class Order {
 
     private Long shopId;
 
+    private Long deliveryId;
+
     private OrderStatus orderStatus;
 
     private String address;
@@ -32,6 +34,7 @@ public class Order {
             Long id,
             Long customerId,
             Long shopId,
+            Long deliveryId,
             OrderStatus orderStatus,
             String address,
             String phoneNumber,
@@ -40,6 +43,7 @@ public class Order {
         this.id = id;
         this.customerId = customerId;
         this.shopId = shopId;
+        this.deliveryId = deliveryId;
         this.orderStatus = orderStatus;
         this.address = address;
         this.phoneNumber = phoneNumber;
