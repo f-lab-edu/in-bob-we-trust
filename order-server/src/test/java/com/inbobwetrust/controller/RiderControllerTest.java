@@ -1,6 +1,7 @@
 package com.inbobwetrust.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -9,7 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.model.vo.Rider;
+import com.inbobwetrust.model.entity.Location;
+import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.service.RiderService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +40,8 @@ public class RiderControllerTest {
     @Test
     @DisplayName("라이더 위치 업데이트 API")
     void addDelivery_successTest() throws Exception {
-        Rider riderLoc = Rider.builder().riderId("rider-1").location("somewhere far...").build();
-        when(this.riderService.updateLocation(riderLoc)).thenReturn(riderLoc);
+        Rider riderLoc = Rider.builder().id(1L).location(new Location(1, 2)).build();
+        when(this.riderService.updateLocation(any())).thenReturn(riderLoc);
         String requestBody = mapper.writeValueAsString(riderLoc);
 
         mockMvc.perform(
@@ -48,6 +50,7 @@ public class RiderControllerTest {
                                 .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", is(true)));
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.body").exists());
     }
 }

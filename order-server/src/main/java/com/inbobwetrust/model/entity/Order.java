@@ -1,15 +1,13 @@
 package com.inbobwetrust.model.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Order {
     private Long id;
 

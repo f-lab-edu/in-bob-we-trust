@@ -1,7 +1,7 @@
 package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.aop.ApiResult;
-import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.model.entity.Order;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

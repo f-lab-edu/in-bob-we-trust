@@ -1,6 +1,6 @@
 package com.inbobwetrust.service;
 
-import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.model.entity.Order;
 import com.inbobwetrust.producer.OrderProducer;
 import com.inbobwetrust.repository.OrderRepository;
 
