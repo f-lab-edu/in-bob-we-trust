@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.entity;
 
 import lombok.*;
+import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Alias("Order")
 public class Order {
     private Long id;
 
