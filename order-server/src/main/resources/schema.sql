@@ -60,8 +60,3 @@ CREATE TABLE IF NOT EXISTS tbl_order (
   FOREIGN KEY (delivery_id) REFERENCES tbl_delivery (id),
   FOREIGN KEY (shop_id) REFERENCES tbl_shop (id)
 );
-
-CREATE TABLE IF NOT EXISTS tbl_sample(
-  id BIGINT(20) ,
-  UNIQUE(id)
-);
