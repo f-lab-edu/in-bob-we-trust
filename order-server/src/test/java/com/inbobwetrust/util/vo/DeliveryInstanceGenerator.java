@@ -1,6 +1,6 @@
 package com.inbobwetrust.util.vo;
 
-import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.model.entity.Delivery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,31 +11,31 @@ public class DeliveryInstanceGenerator {
         LocalDateTime estimatedDeliveryFinishTime = wantedPickupTime.plusMinutes(30);
         Delivery deliveryRequest =
                 Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .deliveryAgentId("agent-1")
-                        .wantedPickupTime(wantedPickupTime)
+                        .orderId(1L)
+                        .riderId(1L)
+                        .agencyId(1L)
+                        .pickupTime(wantedPickupTime)
                         .build();
         Delivery expectedDeliveryResponse =
                 Delivery.builder()
                         .orderId(deliveryRequest.getOrderId())
                         .riderId(deliveryRequest.getRiderId())
-                        .deliveryAgentId(deliveryRequest.getDeliveryAgentId())
-                        .wantedPickupTime(deliveryRequest.getWantedPickupTime())
-                        .estimatedDeliveryFinishTime(estimatedDeliveryFinishTime)
+                        .agencyId(deliveryRequest.getAgencyId())
+                        .pickupTime(deliveryRequest.getPickupTime())
+                        .finishTime(estimatedDeliveryFinishTime)
                         .build();
         return List.of(deliveryRequest, expectedDeliveryResponse);
     }
 
-    public static Delivery makeSimpleNumberedDelivery(int num) {
+    public static Delivery makeSimpleNumberedDelivery(long num) {
         LocalDateTime now = LocalDateTime.now();
         Delivery delivery =
                 Delivery.builder()
-                        .orderId("order-" + num)
-                        .riderId("rider-" + num)
-                        .deliveryAgentId("agent-" + num)
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
+                        .orderId(num)
+                        .riderId(num)
+                        .agencyId(num)
+                        .pickupTime(now.plusMinutes(30))
+                        .finishTime(now.plusMinutes(60))
                         .build();
         return delivery;
     }

@@ -1,7 +1,7 @@
 package com.inbobwetrust.service;
 
-import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.DeliveryStatus;
+import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 
@@ -24,31 +24,28 @@ public class DeliveryService {
     }
 
     public void addEstimatedDeliveryFinishTime(Delivery delivery) {
-        delivery.setEstimatedDeliveryFinishTime(delivery.getWantedPickupTime().plusMinutes(30));
+        delivery.setFinishTime(delivery.getPickupTime().plusMinutes(30));
     }
 
     public Delivery setRider(Delivery delivery) {
-        validateSetRider(delivery);
         updateOrThrow(delivery, "setRider() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         return updatedDelivery;
     }
 
     public Delivery setStatusPickup(Delivery delivery) {
-        validateSetStatus(delivery);
         updateOrThrow(delivery, "setStatusPickup() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         return updatedDelivery;
     }
 
     public Delivery setStatusComplete(Delivery delivery) {
-        validateSetStatus(delivery);
         updateOrThrow(delivery, "setStatusComplete() Failed : No Such OrderId");
         Delivery updatedDelivery = findByOrderId(delivery.getOrderId());
         return updatedDelivery;
     }
 
-    public DeliveryStatus findDeliveryStatusByOrderId(String orderId) {
+    public DeliveryStatus findDeliveryStatusByOrderId(Long orderId) {
         return deliveryRepository
                 .findDeliveryStatusByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("No such delivery associated with Id"));
@@ -66,38 +63,9 @@ public class DeliveryService {
         }
     }
 
-    private void validateSetRider(Delivery delivery) {
-        riderValidation(delivery.getRiderId());
-        agentValidation(delivery.getDeliveryAgentId());
-    }
-
-    private void validateSetStatus(Delivery delivery) {
-        riderValidation(delivery.getRiderId());
-        agentValidation(delivery.getDeliveryAgentId());
-        statusValidation(delivery.getStatus());
-    }
-
-    private Delivery findByOrderId(String orderId) {
+    private Delivery findByOrderId(Long orderId) {
         return deliveryRepository
                 .findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Cannot find Delivery"));
-    }
-
-    private void riderValidation(String rider) {
-        validateStringOrThrow(rider, "Rider not set for delivery");
-    }
-
-    private void agentValidation(String agent) {
-        validateStringOrThrow(agent, "deliveryAgent not set for delivery");
-    }
-
-    private void statusValidation(String status) {
-        validateStringOrThrow(status, "status not set for delivery");
-    }
-
-    private void validateStringOrThrow(String str, String msg) {
-        if (str == null || str.isBlank() || str.isEmpty()) {
-            throw new IllegalArgumentException(msg);
-        }
     }
 }

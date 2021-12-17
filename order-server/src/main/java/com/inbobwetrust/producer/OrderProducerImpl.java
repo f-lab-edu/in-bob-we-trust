@@ -1,6 +1,6 @@
 package com.inbobwetrust.producer;
 
-import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.model.entity.Order;
 import com.inbobwetrust.service.EndpointService;
 
 import org.springframework.http.MediaType;

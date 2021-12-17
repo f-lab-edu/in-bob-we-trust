@@ -5,8 +5,9 @@ import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryFor
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.DeliveryStatus;
+import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.DeliveryStatus;
+import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
@@ -33,7 +34,7 @@ public class DeliveryServiceTest {
     @DisplayName("주문상태 픽업완료로 업데이트 : 성공")
     void setStatusToPickup_successTest() {
         Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-        initialDelivery.setStatus("picked up");
+        initialDelivery.setOrderStatus(OrderStatus.PICKED_UP);
         when(deliveryRepository.update(initialDelivery)).thenReturn(true);
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
@@ -45,29 +46,16 @@ public class DeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("주문상태 픽업완료로 업데이트 : 실패")
-    void setStatusToPickup_failTest() {
-        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-        initialDelivery.setStatus(null);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> deliveryService.setStatusPickup(initialDelivery));
-
-        verify(deliveryRepository, times(0)).update(any(Delivery.class));
-    }
-
-    @Test
     @DisplayName("배달대행사의 라이더배정 성공")
     void setRider_successTest() {
         LocalDateTime now = LocalDateTime.now();
         Delivery initialDelivery =
                 Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .deliveryAgentId("agent-1")
+                        .orderId(1L)
+                        .riderId(1L)
+                        .pickupTime(now.plusMinutes(30))
+                        .finishTime(now.plusMinutes(60))
+                        .agencyId(1L)
                         .build();
         when(deliveryRepository.update(initialDelivery)).thenReturn(true);
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
@@ -77,41 +65,6 @@ public class DeliveryServiceTest {
 
         assertNotNull(setRiderDelivery.getRiderId());
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
-    }
-
-    @Test
-    @DisplayName("배달대행사의 라이더배정 실패 : 라이더 아이디 누락")
-    void setRider_failTest() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .deliveryAgentId("agent-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .build();
-
-        assertThrows(RuntimeException.class, () -> deliveryService.setRider(initialDelivery));
-
-        verify(deliveryRepository, times(0)).update(any(Delivery.class));
-    }
-
-    @Test
-    @DisplayName("배달대행사의 라이더배정 실패 : 배달대행사 누락")
-    void setRider_failTest2() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId("order-1")
-                        .riderId("rider-1")
-                        .wantedPickupTime(now.plusMinutes(30))
-                        .estimatedDeliveryFinishTime(now.plusMinutes(60))
-                        .build();
-
-        assertThrows(
-                IllegalArgumentException.class, () -> deliveryService.setRider(initialDelivery));
-
-        verify(deliveryRepository, times(0)).update(any(Delivery.class));
     }
 
     @DisplayName("사장님 주문접수완료 : 성공")
@@ -145,20 +98,18 @@ public class DeliveryServiceTest {
     @DisplayName("사장님 주문접수완료 : 예상도착시간추가")
     void addEstimatedDeliveryFinishTimeTest() {
         Delivery delivery = makeDeliveryForRequestAndResponse().get(0);
-        assertNull(delivery.getEstimatedDeliveryFinishTime());
+        assertNull(delivery.getFinishTime());
 
         deliveryService.addEstimatedDeliveryFinishTime(delivery);
 
-        assertEquals(
-                delivery.getWantedPickupTime().plusMinutes(30),
-                delivery.getEstimatedDeliveryFinishTime());
+        assertEquals(delivery.getPickupTime().plusMinutes(30), delivery.getFinishTime());
     }
 
     @Test
     @DisplayName("주문상태 배달완료로 업데이트 : 성공")
     void setStatusToComplete_successTest() {
         Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-        initialDelivery.setStatus("complete");
+        initialDelivery.setOrderStatus(OrderStatus.COMPLETE);
         when(deliveryRepository.update(initialDelivery)).thenReturn(true);
         when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
                 .thenReturn(Optional.of(initialDelivery));
@@ -173,7 +124,7 @@ public class DeliveryServiceTest {
     @DisplayName("주문상태 배달완료로 업데이트 : Repository에서 save 실패")
     void setStatusToComplete_failTest1() {
         Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-        initialDelivery.setStatus("complete");
+        initialDelivery.setOrderStatus(OrderStatus.COMPLETE);
 
         assertThrows(
                 RuntimeException.class, () -> deliveryService.setStatusComplete(initialDelivery));
@@ -182,39 +133,14 @@ public class DeliveryServiceTest {
     }
 
     @Test
-    @DisplayName("주문상태 배달완료로 업데이트 : 값이 없어서 실패")
-    void setStatusToComplete_failTest2() {
-        Delivery initialDelivery = DeliveryInstanceGenerator.makeSimpleNumberedDelivery(1);
-        initialDelivery.setStatus(null);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> deliveryService.setStatusComplete(initialDelivery));
-
-        verify(deliveryRepository, times(0)).update(any(Delivery.class));
-    }
-
-    @Test
     @DisplayName("주문상태확인 service : 성공")
     void findDeliveryStatusByOrderId_success() {
-        DeliveryStatus expected = new DeliveryStatus("order-1", "cooking");
+        DeliveryStatus expected = new DeliveryStatus(1L, OrderStatus.ACCEPTED);
         when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
                 .thenReturn(Optional.of(expected));
 
         DeliveryStatus actual = deliveryService.findDeliveryStatusByOrderId(expected.getOrderId());
 
-        assertEquals(expected.getStatus(), actual.getStatus());
-    }
-
-    @Test
-    @DisplayName("주문상태확인 service : 실패, 존재하지 않는 orderId")
-    void findDeliveryStatusByOrderId_fail() {
-        DeliveryStatus expected = new DeliveryStatus("order-1", "cooking");
-        when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
-                .thenReturn(Optional.ofNullable(null));
-
-        assertThrows(
-                RuntimeException.class,
-                () -> deliveryService.findDeliveryStatusByOrderId(expected.getOrderId()));
+        assertEquals(expected.getOrderStatus(), actual.getOrderStatus());
     }
 }

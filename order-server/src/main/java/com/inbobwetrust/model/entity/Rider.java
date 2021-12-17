@@ -11,10 +11,12 @@ import lombok.ToString;
 public class Rider {
     private Long id;
     private Long agencyId;
+    private Location location;
 
     @Builder
-    public Rider(Long id, Long agencyId) {
+    public Rider(Long id, Long agencyId, Location location) {
         this.id = id;
         this.agencyId = agencyId;
+        this.location = location;
     }
 }

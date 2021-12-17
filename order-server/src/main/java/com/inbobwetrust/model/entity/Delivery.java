@@ -1,15 +1,14 @@
 package com.inbobwetrust.model.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Delivery {
     private Long id;
 
@@ -18,6 +17,8 @@ public class Delivery {
     private Long riderId;
 
     private Long agencyId;
+
+    private OrderStatus orderStatus;
 
     private LocalDateTime pickupTime;
 

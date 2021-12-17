@@ -1,8 +1,8 @@
 package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
-import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.DeliveryStatus;
+import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.service.DeliveryService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     private final DeliveryService deliveryService;
 
     @GetMapping("status/{orderId}")
-    public DeliveryStatus getDeliveryStatus(@PathVariable String orderId) {
+    public DeliveryStatus getDeliveryStatus(@PathVariable Long orderId) {
         return deliveryService.findDeliveryStatusByOrderId(orderId);
     }
 

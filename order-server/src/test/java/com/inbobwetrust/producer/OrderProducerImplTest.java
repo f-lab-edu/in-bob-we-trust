@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.model.entity.Order;
 import com.inbobwetrust.service.EndpointService;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -60,7 +60,7 @@ public class OrderProducerImplTest {
     @Test
     @DisplayName("배달대행사 라이더배정요청 성공")
     void sendNewOrderMessage_success() throws IOException, InterruptedException {
-        Order order = Order.builder().id("order-1").build();
+        Order order = Order.builder().id(1L).build();
         Mockito.when(endpointService.findShopEndpoint(order)).thenReturn(uri);
         server.enqueue(successfulResponse(order));
 
@@ -77,7 +77,7 @@ public class OrderProducerImplTest {
     @Test
     @DisplayName("배달대행사에게 라이더배정 요청 실패")
     void sendNewOrderMessage_fail() {
-        Order order = Order.builder().id("order-1").build();
+        Order order = Order.builder().id(1L).build();
         Mockito.when(endpointService.findShopEndpoint(order)).thenReturn(uri);
 
         for (int i = 0; i < 10; i++) {

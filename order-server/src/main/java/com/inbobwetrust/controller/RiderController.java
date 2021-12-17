@@ -1,7 +1,7 @@
 package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.RiderControllerSwaggerDoc;
-import com.inbobwetrust.model.vo.Rider;
+import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.service.RiderService;
 
 import lombok.RequiredArgsConstructor;

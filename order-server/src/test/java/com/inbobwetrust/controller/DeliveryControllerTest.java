@@ -5,6 +5,8 @@ import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumbe
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -13,8 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.DeliveryStatus;
+import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.DeliveryStatus;
+import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.service.DeliveryService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +48,8 @@ public class DeliveryControllerTest {
     @DisplayName("라이더 픽업상태 변경 API")
     void setStatusToPickup_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        deliveryRequest.setStatus("pickedUp");
-        when(this.deliveryService.setStatusPickup(deliveryRequest)).thenReturn(deliveryRequest);
+        deliveryRequest.setOrderStatus(OrderStatus.PICKED_UP);
+        when(this.deliveryService.setStatusPickup(any())).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         mockMvc.perform(
@@ -56,9 +59,7 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
-                .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
-                .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
+                .andExpect(jsonPath("$.body").exists())
                 .andReturn();
     }
 
@@ -66,7 +67,7 @@ public class DeliveryControllerTest {
     @DisplayName("배달대행사 라이더배정 테스트")
     void setRider_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.setRider(deliveryRequest)).thenReturn(deliveryRequest);
+        when(this.deliveryService.setRider(any())).thenReturn(deliveryRequest);
 
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
@@ -77,11 +78,7 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
-                .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
-                .andExpect(
-                        jsonPath(
-                                "$.body.deliveryAgentId", is(deliveryRequest.getDeliveryAgentId())))
+                .andExpect(jsonPath("$.body").exists())
                 .andReturn();
     }
 
@@ -89,7 +86,7 @@ public class DeliveryControllerTest {
     void addDelivery_successTest() throws Exception {
         Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
         Delivery expectedResponse = makeDeliveryForRequestAndResponse().get(1);
-        when(this.deliveryService.addDelivery(deliveryRequest)).thenReturn(expectedResponse);
+        when(this.deliveryService.addDelivery(any())).thenReturn(expectedResponse);
 
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
@@ -101,24 +98,23 @@ public class DeliveryControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.success", is(true)))
+                        .andExpect(jsonPath("$.body").exists())
                         .andReturn();
 
         Delivery responseObj =
                 mapper.readValue(result.getResponse().getContentAsString(), Delivery.class);
         assertEquals(expectedResponse.getOrderId(), responseObj.getOrderId());
         assertEquals(expectedResponse.getRiderId(), responseObj.getRiderId());
-        assertEquals(expectedResponse.getWantedPickupTime(), responseObj.getWantedPickupTime());
-        assertEquals(
-                expectedResponse.getEstimatedDeliveryFinishTime(),
-                responseObj.getEstimatedDeliveryFinishTime());
+        assertEquals(expectedResponse.getPickupTime(), responseObj.getPickupTime());
+        assertEquals(expectedResponse.getFinishTime(), responseObj.getFinishTime());
     }
 
     @Test
     @DisplayName("라이더 배달완료 API")
     void setStatusToComplete_successTest() throws Exception {
         Delivery deliveryRequest = makeSimpleNumberedDelivery(1);
-        deliveryRequest.setStatus("complete");
-        when(this.deliveryService.setStatusComplete(deliveryRequest)).thenReturn(deliveryRequest);
+        deliveryRequest.setOrderStatus(OrderStatus.COMPLETE);
+        when(this.deliveryService.setStatusComplete(any())).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
         MvcResult result =
@@ -129,20 +125,14 @@ public class DeliveryControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.success", is(true)))
-                        .andExpect(jsonPath("$.body.orderId", is(deliveryRequest.getOrderId())))
-                        .andExpect(jsonPath("$.body.riderId", is(deliveryRequest.getRiderId())))
-                        .andExpect(jsonPath("$.body.status", is(deliveryRequest.getStatus())))
-                        .andExpect(
-                                jsonPath(
-                                        "$.body.deliveryAgentId",
-                                        is(deliveryRequest.getDeliveryAgentId())))
+                        .andExpect(jsonPath("$.body").exists())
                         .andReturn();
     }
 
     @Test
     @DisplayName("주문상태확인 GET Request")
     void getDeliveryStatus() throws Exception {
-        DeliveryStatus deliveryStatus = new DeliveryStatus("order-1", "cooking");
+        DeliveryStatus deliveryStatus = new DeliveryStatus(1L, OrderStatus.ACCEPTED);
         when(deliveryService.findDeliveryStatusByOrderId(deliveryStatus.getOrderId()))
                 .thenReturn(deliveryStatus);
 
@@ -152,6 +142,6 @@ public class DeliveryControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body.status", is(deliveryStatus.getStatus())));
+                .andExpect(jsonPath("$.body").exists());
     }
 }

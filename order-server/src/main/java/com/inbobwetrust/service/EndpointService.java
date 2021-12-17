@@ -1,7 +1,7 @@
 package com.inbobwetrust.service;
 
-import com.inbobwetrust.model.vo.Delivery;
-import com.inbobwetrust.model.vo.Order;
+import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.Order;
 
 import org.springframework.stereotype.Component;
 

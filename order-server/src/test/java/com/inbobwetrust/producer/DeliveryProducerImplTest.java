@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inbobwetrust.model.vo.Delivery;
+import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.service.EndpointService;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -56,7 +56,7 @@ public class DeliveryProducerImplTest {
     @Test
     @DisplayName("사장님에게 접수요청 전달 성공")
     public void sendAddDeliveryMessage_successTest() throws Exception {
-        Delivery delivery = Delivery.builder().orderId("order-1").build();
+        Delivery delivery = Delivery.builder().orderId(1L).build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         server.enqueue(successfulResponse(delivery));
 
@@ -74,7 +74,7 @@ public class DeliveryProducerImplTest {
     @Test
     @DisplayName("사장님에게 접수요청 전달 : 실패 (4xx 와 5xx 리턴")
     void sendAddDeliveryMessage_failTest_error() {
-        Delivery delivery = Delivery.builder().orderId("order-1").build();
+        Delivery delivery = Delivery.builder().orderId(1L).build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         for (int i = 0; i < 10; i++) {
             server.enqueue(failResponse(HttpStatus.BAD_REQUEST));

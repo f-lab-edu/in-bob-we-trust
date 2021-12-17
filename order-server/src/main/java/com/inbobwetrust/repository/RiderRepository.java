@@ -1,6 +1,6 @@
 package com.inbobwetrust.repository;
 
-import com.inbobwetrust.model.vo.Rider;
+import com.inbobwetrust.model.entity.Rider;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ public interface RiderRepository {
 
     boolean update(Rider rider);
 
-    Optional<Rider> findByRiderId(String riderId);
+    Optional<Rider> findByRiderId(Long riderId);
 
     List<Rider> findAll();
 }
