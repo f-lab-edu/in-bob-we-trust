@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.vo;
 
 import com.inbobwetrust.model.entity.Order;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

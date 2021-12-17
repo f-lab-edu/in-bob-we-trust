@@ -34,5 +34,4 @@ class RiderServiceTest {
 
         verify(riderRepository, times(1)).update(rider);
     }
-
 }
