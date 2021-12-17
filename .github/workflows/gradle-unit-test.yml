@@ -1,4 +1,4 @@
-name: Gradle Build Test
+name: Gradle Unit Test
 
 on: [ push, pull_request ]
 
@@ -13,6 +13,8 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+          cache: 'gradle'
+
       - name: Start Logging
         run: echo Gradle Build Test Start
 
@@ -21,13 +23,3 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew --info test
-
-      - name: Build with Gradle
-        run: ./gradlew build
-
-#      추후 테스트 결과 여부를 리포트 형식으로 보기 위해 추가
-#      - name: Publish Unit Test Results
-#        uses: EnricoMi/publish-unit-test-result-action@v1
-#        if: ${{ always() }}
-#        with:
-#          files: build/test-results/**/*.xml

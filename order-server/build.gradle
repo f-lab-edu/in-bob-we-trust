@@ -12,6 +12,12 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok'
@@ -21,7 +27,7 @@ dependencies {
     if (System.getProperty("os.arch").equals("aarch64")) { // MockWebServer의 맥 M1 특정 DNS리졸버 버그해결
         implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
     }
-   
+
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'mysql:mysql-connector-java'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -32,7 +38,26 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+//    integrationTestImplementation 'com.google.code.gson:gson:2.8.6' // integration테스트를 위한 디펜던시 추가 예시
 }
+
+sourceSets {
+    integrationTest {
+        java.srcDir "$projectDir/src/integrationTest/java"
+        resources.srcDir "$projectDir/src/integrationTest/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+}
+
+check.dependsOn integrationTest
 
 test {
     useJUnitPlatform()
