@@ -9,7 +9,7 @@ spring:
     password: 1qaz@WSX
 
 mybatis:
-  type-aliases-package: com.inbobwetrust.model.entitiy
+  type-aliases-package: com.inbobwetrust.model.entity
   mapper-locations:
     - classpath:mybatis/mapper/*.xml
 
