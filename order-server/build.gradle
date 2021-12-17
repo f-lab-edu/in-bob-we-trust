@@ -38,6 +38,7 @@ dependencies {
     testImplementation 'com.squareup.okhttp3:mockwebserver'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
 //    integrationTestImplementation 'com.google.code.gson:gson:2.8.6' // integration테스트를 위한 디펜던시 추가 예시
