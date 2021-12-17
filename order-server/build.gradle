@@ -34,9 +34,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
 
+    testRuntimeOnly 'com.h2database:h2'
     testImplementation 'com.squareup.okhttp3:mockwebserver'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
 //    integrationTestImplementation 'com.google.code.gson:gson:2.8.6' // integration테스트를 위한 디펜던시 추가 예시

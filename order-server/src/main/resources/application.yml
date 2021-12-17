@@ -7,3 +7,9 @@ spring:
     url: jdbc:mysql://localhost:3306/inbobwetrust?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 1qaz@WSX
+
+mybatis:
+  type-aliases-package: com.inbobwetrust.model.entitiy
+  mapper-locations:
+    - classpath:mybatis/mapper/*.xml
+
