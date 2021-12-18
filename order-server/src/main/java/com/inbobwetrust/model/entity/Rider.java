@@ -1,11 +1,11 @@
 package com.inbobwetrust.model.entity;
 
-import lombok.*;
-
-import org.apache.ibatis.type.Alias;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 public class Rider {
