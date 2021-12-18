@@ -3,9 +3,8 @@
 <mapper namespace="com.inbobwetrust.repository.RiderLocationRepository">
     <update id="putIfAbsentLocation" parameterType="RiderLocation">
         INSERT INTO tbl_rider_location (rider_id, longitude, latitude)
-        VALUES (#{riderId}, #{longitude}, #{latitude}) AS values
-        ON DUPLICATE KEY
-        UPDATE longitude = values.longitude, latitude = values.latitude
+        VALUES (#{riderId}, #{longitude}, #{latitude})
+        ON DUPLICATE KEY UPDATE longitude = VALUES(longitude), latitude = VALUES(latitude)
     </update>
 
     <delete id="deleteAll">

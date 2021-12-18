@@ -48,11 +48,16 @@ public class RiderLocationRepositoryTest {
     private Rider insertAndGetOneRider() {
         int affectedRows = riderRepository.save(makeRider()); // 라이더 한명 저장
         assertEquals(1, affectedRows);
-        return riderRepository.findAll().get(0);
+        List<Rider> riders = riderRepository.findAll();
+        return riders.get(riders.size() - 1);
     }
 
     private RiderLocation makeLocationOfRider(Rider rider) {
-        return RiderLocation.builder().riderId(rider.getId()).latitude(1).longitude(0).build();
+        return RiderLocation.builder()
+                .riderId(rider.getId())
+                .latitude(Double.valueOf(1))
+                .longitude(Double.valueOf(2))
+                .build();
     }
 
     @Test
@@ -93,11 +98,10 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공 : 변경된 라이더위치, 위치값은\"주관적으로 적당히\" 1% 증가시킴")
+    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공 : 변경된 라이더위치")
     void putIfAbsentLocationTest_success_update() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
-        insertNewRiderLocation(rider, location);
 
         RiderLocation changedLocationMax =
                 RiderLocation.builder()
@@ -113,27 +117,27 @@ public class RiderLocationRepositoryTest {
                         .build();
         assertDoesNotThrow(
                 () -> {
+                    assertTrue(locationRepository.findByRiderId(rider.getId()).isEmpty());
+                    int affectedRowsMin =
+                            locationRepository.putIfAbsentLocation(changedLocationMax);
+                    assertEquals(1, affectedRowsMin);
+                });
+        assertDoesNotThrow(
+                () -> {
                     int affectedRowsMin =
                             locationRepository.putIfAbsentLocation(changedLocationMin);
-                    assertEquals(1, affectedRowsMin);
-                    int affectedRowsMax =
-                            locationRepository.putIfAbsentLocation(changedLocationMax);
-                    assertEquals(2, affectedRowsMax);
+                    assertEquals(2, affectedRowsMin);
                 });
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공 : 같은 라이더 위치")
+    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공")
     void putIfAbsentLocationTest_success_update2() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
-        insertNewRiderLocation(rider, location);
+        assertTrue(locationRepository.findByRiderId(rider.getId()).isEmpty());
 
-        assertDoesNotThrow(
-                () -> {
-                    int affectedRows = locationRepository.putIfAbsentLocation(location);
-                    assertEquals(1, affectedRows);
-                });
+        assertEquals(1, locationRepository.putIfAbsentLocation(location));
     }
 
     private void insertNewRiderLocation(Rider rider, RiderLocation location) {
@@ -203,18 +207,16 @@ public class RiderLocationRepositoryTest {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
         insertNewRiderLocation(rider, location);
-        List<RiderLocation> invalidLocationList = makeMissingLongOrLatLocations(rider, location);
 
-        for (RiderLocation invalidLocation : invalidLocationList) {
-            assertThrows(
-                    DataIntegrityViolationException.class,
-                    () -> locationRepository.putIfAbsentLocation(invalidLocation));
-        }
-    }
-
-    private List<RiderLocation> makeMissingLongOrLatLocations(Rider rider, RiderLocation location) {
-        return List.of(
-                RiderLocation.builder().riderId(rider.getId()).latitude(LATITUDE_MAX).build(),
-                RiderLocation.builder().riderId(rider.getId()).longitude(LONGITUDE_MAX).build());
+        RiderLocation noLong =
+                RiderLocation.builder().riderId(rider.getId()).latitude(LATITUDE_MAX).build();
+        assertThrows(
+                DataIntegrityViolationException.class,
+                () -> locationRepository.putIfAbsentLocation(noLong));
+        RiderLocation noLat =
+                RiderLocation.builder().riderId(rider.getId()).longitude(LONGITUDE_MAX).build();
+        assertThrows(
+                DataIntegrityViolationException.class,
+                () -> locationRepository.putIfAbsentLocation(noLat));
     }
 }

@@ -1,10 +1,10 @@
 package com.inbobwetrust.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.inbobwetrust.model.entity.Location;
 import com.inbobwetrust.model.entity.Rider;
+import com.inbobwetrust.model.entity.RiderLocation;
+import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.repository.RiderRepository;
 
 import org.junit.jupiter.api.DisplayName;
@@ -19,19 +19,20 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class RiderServiceTest {
 
-    @InjectMocks RiderService riderService;
+    @InjectMocks RiderLocationService riderLocationService;
 
-    @Mock RiderRepository riderRepository;
+    @Mock RiderLocationRepository riderLocationRepository;
 
     @Test
     @DisplayName("라이더 위치 업데이트 : 성공")
-    void updateLocation_successTest() {
-        Rider rider = Rider.builder().id(1L).location(new Location(1, 2)).build();
-        when(riderRepository.update(rider)).thenReturn(true);
-        when(riderRepository.findByRiderId(rider.getId())).thenReturn(Optional.of(rider));
+    void putIfAbsentLocation_successTest() {
+        Rider rider = Rider.builder().id(1L).build();
+        RiderLocation riderLocation =
+                RiderLocation.builder().riderId(rider.getId()).latitude(1.0).longitude(2.0).build();
+        when(riderLocationRepository.putIfAbsentLocation(any())).thenReturn(1);
 
-        Rider updatedRider = riderService.updateLocation(rider);
+        RiderLocation updateLocation = riderLocationService.updateLocation(riderLocation);
 
-        verify(riderRepository, times(1)).update(rider);
+        verify(riderLocationRepository, times(1)).putIfAbsentLocation(any());
     }
 }
