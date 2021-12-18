@@ -1,22 +1,22 @@
 package com.inbobwetrust.model.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 public class Rider {
     private Long id;
     private Long agencyId;
+    private Location location;
 
     @Builder
-    public Rider(Long id, Long agencyId) {
+    public Rider(Long id, Long agencyId, Location location) {
         this.id = id;
         this.agencyId = agencyId;
-    }
-
-    public boolean hasSameID(Rider rider) {
-        return id.longValue() == rider.id.longValue();
+        this.location = location;
     }
 }
