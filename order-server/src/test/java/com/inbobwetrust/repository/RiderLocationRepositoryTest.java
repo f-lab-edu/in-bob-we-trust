@@ -30,8 +30,7 @@ public class RiderLocationRepositoryTest {
     private static final double LATITUDE_MIN = -90.0;
 
     @BeforeEach
-    void setUp() {
-    }
+    void setUp() {}
 
     private void assertLocationTableIsEmpty() {
         assertEquals(0, locationRepository.findAll().size());
@@ -174,8 +173,8 @@ public class RiderLocationRepositoryTest {
 
     @Test
     @DisplayName(
-            "[RiderLocationRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180),"
-                    + " Latitude(-90 ~ 90]")
+            "[RiderLocationRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~"
+                + " 180), Latitude(-90 ~ 90]")
     void putIfAbsentLocationTest_fail3() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
