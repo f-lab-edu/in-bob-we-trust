@@ -31,10 +31,6 @@ public class RiderLocationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        locationRepository.deleteAll();
-        riderRepository.deleteAll();
-        assertLocationTableIsEmpty();
-        assertRiderTableIsEmpty();
     }
 
     private void assertLocationTableIsEmpty() {
@@ -74,7 +70,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.findByRiderId] 실패 : 존재하지 않는 라이더")
+    @DisplayName("[RiderLocationRepository.findByRiderId] 실패 : 존재하지 않는 라이더")
     void findById_fail() {
         assertThrows(
                 IllegalArgumentException.class,
@@ -84,7 +80,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공 : 라이더위치 신규 추가")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 성공 : 라이더위치 신규 추가")
     void putIfAbsentLocationTest_success_insert() {
         Rider rider = insertAndGetOneRider();
         assertTrue(locationRepository.findByRiderId(rider.getId()).isEmpty());
@@ -98,7 +94,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공 : 변경된 라이더위치")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 성공 : 변경된 라이더위치")
     void putIfAbsentLocationTest_success_update() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
@@ -131,7 +127,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 성공")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 성공")
     void putIfAbsentLocationTest_success_update2() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
@@ -148,7 +144,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 실패 : 정보 전체 누락")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 실패 : 정보 전체 누락")
     void putIfAbsentLocationTest_fail1() {
         assertThrows(
                 DataIntegrityViolationException.class,
@@ -156,7 +152,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 실패 : 라이더 ID 누락")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 실패 : 라이더 ID 누락")
     void putIfAbsentLocationTest_fail2() {
         assertThrows(
                 DataIntegrityViolationException.class,
@@ -164,7 +160,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 실패 : 라이더 ID 존재하지 않음")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 실패 : 라이더 ID 존재하지 않음")
     void putIfAbsentLocationTest_fail21() {
         long notExistRiderId = (long) Integer.MAX_VALUE;
         Rider rider = Rider.builder().id(notExistRiderId).agencyId(PRESET_AGENCY_ID).build();
@@ -178,7 +174,7 @@ public class RiderLocationRepositoryTest {
 
     @Test
     @DisplayName(
-            "[RiderRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180),"
+            "[RiderLocationRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180),"
                     + " Latitude(-90 ~ 90]")
     void putIfAbsentLocationTest_fail3() {
         Rider rider = insertAndGetOneRider();
@@ -202,7 +198,7 @@ public class RiderLocationRepositoryTest {
     }
 
     @Test
-    @DisplayName("[RiderRepository.putIfAbsentLocation] 실패 : Longitude 누락, 또는 Latitude 누락")
+    @DisplayName("[RiderLocationRepository.putIfAbsentLocation] 실패 : Longitude 누락, 또는 Latitude 누락")
     void putIfAbsentLocationTest_fail4() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
