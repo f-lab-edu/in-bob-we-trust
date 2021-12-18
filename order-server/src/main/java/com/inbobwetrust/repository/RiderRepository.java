@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RiderRepository {
-    int save(Rider rider);
+    boolean save(Rider rider);
+
+    boolean update(Rider rider);
 
     Optional<Rider> findByRiderId(Long riderId);
 
     List<Rider> findAll();
-
-    int deleteAll();
 }
