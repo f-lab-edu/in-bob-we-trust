@@ -1,9 +1,8 @@
 package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.aop.ApiResult;
-import com.inbobwetrust.model.entity.Rider;
-
 import com.inbobwetrust.model.entity.RiderLocation;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;

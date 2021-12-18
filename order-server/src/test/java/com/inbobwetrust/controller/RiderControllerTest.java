@@ -10,10 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.model.entity.RiderLocation;
 import com.inbobwetrust.service.RiderLocationService;
-import com.inbobwetrust.service.RiderService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

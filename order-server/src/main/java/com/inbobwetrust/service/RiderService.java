@@ -1,7 +1,6 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.entity.Rider;
-import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.repository.RiderRepository;
 
 import lombok.RequiredArgsConstructor;

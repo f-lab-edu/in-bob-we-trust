@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.model.entity.RiderLocation;
 import com.inbobwetrust.repository.RiderLocationRepository;
-import com.inbobwetrust.repository.RiderRepository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class RiderServiceTest {

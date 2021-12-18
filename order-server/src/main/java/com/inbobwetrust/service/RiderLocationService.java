@@ -3,7 +3,9 @@ package com.inbobwetrust.service;
 import com.inbobwetrust.exceptions.NoAffectedRowsSqlException;
 import com.inbobwetrust.model.entity.RiderLocation;
 import com.inbobwetrust.repository.RiderLocationRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
