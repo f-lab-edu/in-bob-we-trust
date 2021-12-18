@@ -1,22 +1,17 @@
 package com.inbobwetrust.model.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.apache.ibatis.type.Alias;
 
-@Getter
-@ToString
-@NoArgsConstructor
+@Data
+@Alias("Rider")
 public class Rider {
     private Long id;
     private Long agencyId;
-    private Location location;
 
     @Builder
-    public Rider(Long id, Long agencyId, Location location) {
+    public Rider(Long id, Long agencyId) {
         this.id = id;
         this.agencyId = agencyId;
-        this.location = location;
     }
 }

@@ -9,11 +9,11 @@ import java.util.Optional;
 
 @Mapper
 public interface RiderRepository {
-    boolean save(Rider rider);
-
-    boolean update(Rider rider);
+    int save(Rider rider);
 
     Optional<Rider> findByRiderId(Long riderId);
 
     List<Rider> findAll();
+
+    int deleteAll();
 }

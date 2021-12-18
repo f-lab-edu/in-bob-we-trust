@@ -1,6 +1,7 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.entity.Rider;
+import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.repository.RiderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,10 @@ import org.springframework.stereotype.Service;
 public class RiderService {
 
     private final RiderRepository riderRepository;
+    private final RiderLocationRepository riderLocationRepository;
 
     public Rider updateLocation(Rider rider) {
-        riderRepository.update(rider);
+        riderLocationRepository.putIfAbsentLocation(null);
         return findByRiderId(rider.getId());
     }
 
