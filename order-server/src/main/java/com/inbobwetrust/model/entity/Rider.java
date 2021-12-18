@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.entity;
 
 import lombok.*;
+
 import org.apache.ibatis.type.Alias;
 
 @Getter
