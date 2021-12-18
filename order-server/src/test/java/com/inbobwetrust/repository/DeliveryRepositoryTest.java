@@ -1,8 +1,11 @@
 package com.inbobwetrust.repository;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inbobwetrust.exceptions.EmptyResultSetSqlException;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
+
 import org.apache.ibatis.executor.result.ResultMapException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest

@@ -1,10 +1,10 @@
 package com.inbobwetrust.model.entity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class DeliveryTest {
 
