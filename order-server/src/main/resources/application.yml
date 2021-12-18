@@ -12,4 +12,6 @@ mybatis:
   type-aliases-package: com.inbobwetrust.model.entity
   mapper-locations:
     - classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
 
