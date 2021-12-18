@@ -175,7 +175,7 @@ public class RiderLocationRepositoryTest {
     @Test
     @DisplayName(
             "[RiderRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180),"
-                + " Latitude(-90 ~ 90]")
+                    + " Latitude(-90 ~ 90]")
     void putIfAbsentLocationTest_fail3() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);
