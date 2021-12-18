@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inbobwetrust.repository.RiderRepository">
+    <insert id="save" parameterType="Rider">
+        INSERT INTO tbl_rider (
+        <if test="id !=null">id,</if>
+        agency_id)
+        VALUES (
+        <if test="id !=null">#{id},</if>
+        #{agencyId}
+        )
+    </insert>
+
+    <select id="findAll" resultType="Rider">
+        SELECT id, agency_id
+        FROM tbl_rider
+    </select>
+
+    <select id="findByRiderId" resultType="Rider">
+        SELECT id, agency_id
+        FROM tbl_rider
+        WHERE id = #{riderId}
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM tbl_rider
+    </delete>
+
+</mapper>

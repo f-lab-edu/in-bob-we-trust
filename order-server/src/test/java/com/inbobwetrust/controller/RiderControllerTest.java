@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.model.entity.Location;
 import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.service.RiderService;
 
@@ -40,7 +39,7 @@ public class RiderControllerTest {
     @Test
     @DisplayName("라이더 위치 업데이트 API")
     void addDelivery_successTest() throws Exception {
-        Rider riderLoc = Rider.builder().id(1L).location(new Location(1, 2)).build();
+        Rider riderLoc = Rider.builder().id(1L).build();
         when(this.riderService.updateLocation(any())).thenReturn(riderLoc);
         String requestBody = mapper.writeValueAsString(riderLoc);
 
