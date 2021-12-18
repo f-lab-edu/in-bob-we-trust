@@ -1,8 +1,12 @@
 package com.inbobwetrust.repository;
 
-import com.inbobwetrust.exceptions.EmptyResultSetException;
+import static com.inbobwetrust.repository.RiderRepositoryTest.makeRider;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.model.entity.RiderLocation;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,11 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.inbobwetrust.repository.RiderRepositoryTest.makeRider;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -174,7 +174,8 @@ public class RiderLocationRepositoryTest {
 
     @Test
     @DisplayName(
-            "[RiderRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180), Latitude(-90 ~ 90]")
+            "[RiderRepository.putIfAbsentLocation] 실패 : 범위초과 [허용된 범위는 각 Longitude(-180 ~ 180),"
+                + " Latitude(-90 ~ 90]")
     void putIfAbsentLocationTest_fail3() {
         Rider rider = insertAndGetOneRider();
         RiderLocation location = makeLocationOfRider(rider);

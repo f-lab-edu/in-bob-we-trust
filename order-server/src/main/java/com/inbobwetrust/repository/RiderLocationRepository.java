@@ -1,7 +1,7 @@
 package com.inbobwetrust.repository;
 
-import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.model.entity.RiderLocation;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
