@@ -18,7 +18,7 @@ public class OrderStatusTest {
     }
 
     @Test
-    @DisplayName("[OrderStatus.getNext] 다음 상태를 리턴, 비즈니스로직 명시적")
+    @DisplayName("[OrderStatus.getNext] 다음 주문상태를 리턴, 비즈니스로직 명시적")
     void getNextTest() {
         OrderStatus.NEW.getNext().equals(OrderStatus.ACCEPTED);
         OrderStatus.ACCEPTED.getNext().equals(OrderStatus.DECLINED);
