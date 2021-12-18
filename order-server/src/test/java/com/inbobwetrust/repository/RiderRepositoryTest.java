@@ -1,7 +1,9 @@
 package com.inbobwetrust.repository;
 
-import com.inbobwetrust.exceptions.EmptyResultSetException;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inbobwetrust.model.entity.Rider;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,9 +13,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
