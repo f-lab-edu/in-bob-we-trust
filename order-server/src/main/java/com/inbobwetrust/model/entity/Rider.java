@@ -7,7 +7,6 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @ToString
 @NoArgsConstructor
-@Alias("Rider")
 public class Rider {
     private Long id;
     private Long agencyId;

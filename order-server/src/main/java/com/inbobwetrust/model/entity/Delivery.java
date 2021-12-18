@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-@Alias("Delivery")
 public class Delivery {
     private Long id;
 

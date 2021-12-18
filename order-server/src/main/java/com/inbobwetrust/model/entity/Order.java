@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-@Alias("Order")
 public class Order {
     private Long id;
 
