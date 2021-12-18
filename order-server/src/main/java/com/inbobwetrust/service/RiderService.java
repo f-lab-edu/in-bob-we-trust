@@ -16,7 +16,6 @@ public class RiderService {
     private final RiderLocationRepository riderLocationRepository;
 
     public Rider updateLocation(Rider rider) {
-        riderLocationRepository.putIfAbsentLocation(null);
         return findByRiderId(rider.getId());
     }
 

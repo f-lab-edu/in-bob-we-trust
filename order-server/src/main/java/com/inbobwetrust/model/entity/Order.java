@@ -2,15 +2,12 @@ package com.inbobwetrust.model.entity;
 
 import lombok.*;
 
-import org.apache.ibatis.type.Alias;
-
 import java.time.LocalDateTime;
 
 @Getter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-@Alias("Order")
 public class Order {
     private Long id;
 
