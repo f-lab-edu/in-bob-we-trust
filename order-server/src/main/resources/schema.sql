@@ -26,6 +26,17 @@ CREATE TABLE IF NOT EXISTS tbl_rider (
   UNIQUE(id),
   FOREIGN KEY (agency_id) REFERENCES tbl_agency (id)
 );
+
+CREATE TABLE IF NOT EXISTS tbl_rider_location (
+  rider_id BIGINT(20) NOT NULL,
+  latitude DECIMAL(10,8) NOT NULL,
+  longitude DECIMAL(11,8) NOT NULL,UNIQUE (rider_id),
+  FOREIGN KEY (rider_id) REFERENCES tbl_rider (id)
+
+);
+ALTER TABLE tbl_rider_location ADD CHECK (latitude between -90.0 and 90.0);
+ALTER TABLE tbl_rider_location ADD CHECK (longitude between -180.0 and 180.0);
+
 -- -----------------------------------------------------
 -- Table tbl_delivery
 -- -----------------------------------------------------
