@@ -12,11 +12,11 @@ import org.apache.ibatis.type.Alias;
 @Alias("RiderLocation")
 public class RiderLocation {
     private Long riderId;
-    private double longitude;
-    private double latitude;
+    private Double longitude;
+    private Double latitude;
 
     @Builder
-    public RiderLocation(Long riderId, double longitude, double latitude) {
+    public RiderLocation(Long riderId, Double longitude, Double latitude) {
         this.riderId = riderId;
         this.longitude = longitude;
         this.latitude = latitude;

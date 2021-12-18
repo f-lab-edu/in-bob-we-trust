@@ -1,7 +1,6 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.model.entity.Rider;
-import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.repository.RiderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -13,11 +12,6 @@ import org.springframework.stereotype.Service;
 public class RiderService {
 
     private final RiderRepository riderRepository;
-    private final RiderLocationRepository riderLocationRepository;
-
-    public Rider updateLocation(Rider rider) {
-        return findByRiderId(rider.getId());
-    }
 
     private Rider findByRiderId(Long riderId) {
         return riderRepository

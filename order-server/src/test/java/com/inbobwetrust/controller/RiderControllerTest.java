@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.model.entity.Rider;
-import com.inbobwetrust.service.RiderService;
+import com.inbobwetrust.model.entity.RiderLocation;
+import com.inbobwetrust.service.RiderLocationService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ public class RiderControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    @MockBean private RiderService riderService;
+    @MockBean private RiderLocationService riderLocationService;
 
     private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -39,9 +39,10 @@ public class RiderControllerTest {
     @Test
     @DisplayName("라이더 위치 업데이트 API")
     void addDelivery_successTest() throws Exception {
-        Rider riderLoc = Rider.builder().id(1L).build();
-        when(this.riderService.updateLocation(any())).thenReturn(riderLoc);
-        String requestBody = mapper.writeValueAsString(riderLoc);
+        RiderLocation riderLocation =
+                RiderLocation.builder().riderId(1L).latitude(90.0).latitude(180.0).build();
+        when(this.riderLocationService.updateLocation(any())).thenReturn(riderLocation);
+        String requestBody = mapper.writeValueAsString(riderLocation);
 
         mockMvc.perform(
                         patch("/rider/location")

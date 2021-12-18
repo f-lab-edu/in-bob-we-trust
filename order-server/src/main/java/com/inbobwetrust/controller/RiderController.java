@@ -1,8 +1,8 @@
 package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.RiderControllerSwaggerDoc;
-import com.inbobwetrust.model.entity.Rider;
-import com.inbobwetrust.service.RiderService;
+import com.inbobwetrust.model.entity.RiderLocation;
+import com.inbobwetrust.service.RiderLocationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("rider")
 @RequiredArgsConstructor
 public class RiderController implements RiderControllerSwaggerDoc {
-    private final RiderService riderService;
+    private final RiderLocationService riderService;
 
     @PatchMapping("location")
-    public Rider setRiderLocation(@RequestBody Rider body) {
+    public RiderLocation setRiderLocation(@RequestBody RiderLocation body) {
         return riderService.updateLocation(body);
     }
 }
