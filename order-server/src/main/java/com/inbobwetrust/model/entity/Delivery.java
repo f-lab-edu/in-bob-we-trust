@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class Delivery {
     private Long id;
@@ -34,17 +35,32 @@ public class Delivery {
             Long orderId,
             Long riderId,
             Long agencyId,
+            OrderStatus orderStatus,
             LocalDateTime pickupTime,
-            LocalDateTime finishTime,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime finishTime) {
         this.id = id;
         this.orderId = orderId;
         this.riderId = riderId;
         this.agencyId = agencyId;
+        this.orderStatus = orderStatus;
         this.pickupTime = pickupTime;
         this.finishTime = finishTime;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    }
+
+    public Delivery deepCopy() {
+        return new Delivery(
+                this.id,
+                this.orderId,
+                this.riderId,
+                this.agencyId,
+                this.orderStatus,
+                this.pickupTime,
+                this.finishTime,
+                this.createdAt,
+                this.updatedAt);
+    }
+
+    public DeliveryStatus toDeliveryStatus() {
+        return DeliveryStatus.builder().orderId(this.orderId).orderStatus(this.orderStatus).build();
     }
 }

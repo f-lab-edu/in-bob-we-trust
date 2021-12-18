@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DeliveryRepository {
-    boolean save(Delivery delivery);
+    int save(Delivery delivery);
 
     Optional<Delivery> findByOrderId(Long orderId);
 
     List<Delivery> findAll();
 
-    boolean update(Delivery delivery);
+    int update(Delivery delivery);
 
     Optional<DeliveryStatus> findDeliveryStatusByOrderId(Long orderId);
 }

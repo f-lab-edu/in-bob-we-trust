@@ -45,14 +45,15 @@ CREATE TABLE IF NOT EXISTS tbl_delivery (
   order_id BIGINT(20) NOT NULL,
   rider_id BIGINT(20) NULL,
   agency_id BIGINT(20) NULL,
+  order_status VARCHAR(50) NOT NULL,
   pickup_time DATETIME NULL,
   finish_time DATETIME NULL,
-  created_at DATETIME NULL,
-  updated_at DATETIME NULL,
+  created_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (id),
   FOREIGN KEY (rider_id) REFERENCES tbl_rider(id)
-);
+  );
 -- -----------------------------------------------------
 -- Table tbl_order
 -- -----------------------------------------------------
@@ -64,8 +65,8 @@ CREATE TABLE IF NOT EXISTS tbl_order (
   order_status VARCHAR(50) NULL,
   address VARCHAR(1000) NULL,
   phone_number VARCHAR(200) NULL,
-  created_at DATETIME NULL,
-  updated_at DATETIME NULL,
+  created_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (id),
   FOREIGN KEY (delivery_id) REFERENCES tbl_delivery (id),

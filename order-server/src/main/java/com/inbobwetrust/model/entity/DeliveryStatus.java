@@ -5,6 +5,7 @@ import lombok.*;
 @Getter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 public class DeliveryStatus {
     private Long orderId;
     private OrderStatus orderStatus;
