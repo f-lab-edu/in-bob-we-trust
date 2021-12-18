@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inbobwetrust.repository.RiderLocationRepository">
+    <update id="putIfAbsentLocation" parameterType="RiderLocation">
+        INSERT INTO tbl_rider_location (rider_id, longitude, latitude)
+        VALUES (#{riderId}, #{longitude}, #{latitude}) AS values
+        ON DUPLICATE KEY
+        UPDATE longitude = values.longitude, latitude = values.latitude
+    </update>
+
+    <delete id="deleteAll">
+        DELETE FROM tbl_rider_location
+    </delete>
+
+
+    <select id="findByRiderId" parameterType="java.lang.Long" resultType="RiderLocation">
+        SELECT rider_id, longitude, latitude
+        FROM tbl_rider_location
+        WHERE rider_id = #{riderId}
+    </select>
+
+    <select id="findAll" resultType="RiderLocation">
+        SELECT rider_id, longitude, latitude
+        FROM tbl_rider_location
+    </select>
+</mapper>
