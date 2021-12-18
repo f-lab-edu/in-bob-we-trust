@@ -1,6 +1,10 @@
 package com.inbobwetrust.model.entity;
 
 import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
