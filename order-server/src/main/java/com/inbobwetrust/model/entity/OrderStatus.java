@@ -26,4 +26,21 @@ public enum OrderStatus {
     public String getCustomerPerspective() {
         return customerPerspective;
     }
+
+    public OrderStatus getNext() {
+        boolean isLast = OrderStatus.values().length - 1 == this.ordinal();
+        if (isLast) throw new IllegalStateException("Last Progress Reached");
+        return OrderStatus.values()[this.ordinal() + 1];
+    }
+
+    public OrderStatus returnSomethingElse() {
+        OrderStatus[] options = OrderStatus.values();
+        return options.length == this.ordinal() + 1
+                ? options[this.ordinal() - 1]
+                : options[this.ordinal() + 1];
+    }
+
+    public static Object getInitial() {
+        return OrderStatus.NEW;
+    }
 }
