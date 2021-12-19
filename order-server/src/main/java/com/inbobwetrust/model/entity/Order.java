@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.entity;
 
 import lombok.*;
+
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
@@ -35,8 +36,7 @@ public class Order {
             Long shopId,
             OrderStatus orderStatus,
             String address,
-            String phoneNumber
-            ) {
+            String phoneNumber) {
         this.id = id;
         this.customerId = customerId;
         this.shopId = shopId;

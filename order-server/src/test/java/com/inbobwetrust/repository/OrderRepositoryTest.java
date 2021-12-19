@@ -1,8 +1,11 @@
 package com.inbobwetrust.repository;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inbobwetrust.exceptions.EmptyResultSetSqlException;
 import com.inbobwetrust.model.entity.Order;
 import com.inbobwetrust.model.entity.OrderStatus;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
