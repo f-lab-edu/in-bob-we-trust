@@ -16,4 +16,6 @@ public interface DeliveryRepository {
     boolean update(Delivery delivery);
 
     Optional<DeliveryStatus> findDeliveryStatusByOrderId(Long orderId);
+
+    Optional<Delivery> findById(Long orderId);
 }
