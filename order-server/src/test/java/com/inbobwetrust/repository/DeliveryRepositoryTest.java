@@ -6,8 +6,11 @@ import com.inbobwetrust.exceptions.EmptyResultSetSqlException;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 
+import com.inbobwetrust.model.entity.Order;
 import org.apache.ibatis.executor.result.ResultMapException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,9 +23,8 @@ import java.util.List;
 class DeliveryRepositoryTest {
 
     @Autowired DeliveryRepository deliveryRepository;
-    @Autowired RiderRepository riderRepository;
+    @Autowired OrderRepository orderRepository;
 
-    private static final Long PRESET_RIDER_ID = 1L;
     private Delivery LAST_DELIVERY;
     List<Delivery> dels;
 
@@ -33,6 +35,7 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(2)
     @DisplayName("[DeliveryRepository.save] 성공")
     void saveTest_success() {
         Delivery newDelivery = makeFrom(LAST_DELIVERY);
@@ -44,6 +47,7 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(3)
     @DisplayName("[DeliveryRepository.save] 실패 : 주문번호 누락")
     void saveTest_fail1() {
         Delivery newDelivery = makeFrom(LAST_DELIVERY);
@@ -54,6 +58,7 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(4)
     @DisplayName("[DeliveryRepository.save] 실패 : 주문상ㅗ태 누락")
     void saveTest_fail2() {
         Delivery newDelivery = makeFrom(LAST_DELIVERY);
@@ -64,6 +69,9 @@ class DeliveryRepositoryTest {
     }
 
     private Delivery makeFrom(Delivery ref) {
+        Order sampleOrder = orderRepository.findAll().get(0);
+        orderRepository.save(sampleOrder);
+
         return Delivery.builder()
                 .orderId(ref.getOrderId() + 1)
                 .riderId(ref.getRiderId())
@@ -75,9 +83,11 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(5)
     @DisplayName("[DeliveryRepository.findAll] 성공 : 10회 추가저장")
     void findAllTest_success() {
         int cnt = 10;
+
         for (int i = 0; i < cnt; i++) {
             List<Delivery> existingList = deliveryRepository.findAll();
             int expected = existingList.size() + 1;
@@ -90,6 +100,7 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(6)
     @DisplayName("[DeliveryRepository.findByOrderId] 성공")
     void findByOrderId_success() {
         List<Delivery> existingList = deliveryRepository.findAll();
@@ -103,47 +114,36 @@ class DeliveryRepositoryTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(7)
     @DisplayName("[DeliveryRepository.update] 성공")
     void updateTest_success() {
-        List<Delivery> existingList = deliveryRepository.findAll();
-        Delivery original = existingList.get(existingList.size() - 1);
-        Delivery expected = makeChangedCopy(original.deepCopy());
+        Delivery expected = deliveryRepository.findAll().get(0);
+        expected.setOrderStatus(expected.getOrderStatus().returnSomethingElse());
 
-        assertDoesNotThrow(() -> deliveryRepository.update(expected));
-        assertEquals(existingList.size(), deliveryRepository.findAll().size());
-        var temp = deliveryRepository.findAll();
+        deliveryRepository.update(expected);
+
         Delivery actual =
                 deliveryRepository
-                        .findByOrderId(expected.getOrderId())
+                        .findById(expected.getOrderId())
                         .orElseThrow(EmptyResultSetSqlException::new);
-        assertEquals(actual.getId(), expected.getId());
-        assertEquals(actual.getOrderId(), expected.getOrderId());
-        assertEquals(actual.getRiderId(), expected.getRiderId());
-        assertEquals(actual.getAgencyId(), expected.getAgencyId());
-        assertEquals(actual.getOrderStatus(), expected.getOrderStatus());
-        assertEquals(actual.getPickupTime(), expected.getPickupTime());
-        assertEquals(actual.getFinishTime(), expected.getFinishTime());
-        assertEquals(actual.getCreatedAt(), expected.getCreatedAt());
-        assertNotEquals(actual.getUpdatedAt(), expected.getUpdatedAt());
-    }
 
-    private Delivery makeChangedCopy(Delivery copy) {
-        copy.setOrderStatus(copy.getOrderStatus().returnSomethingElse());
-        copy.setPickupTime(copy.getPickupTime().plusMinutes(1));
-        copy.setFinishTime(copy.getFinishTime().plusMinutes(1));
-        return copy;
+        assertNotEquals(expected.getUpdatedAt(), actual.getUpdatedAt());
+        assertEquals(expected.getCreatedAt(), actual.getCreatedAt());
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getOrderStatus(), actual.getOrderStatus());
     }
 
     @Test
+    @org.junit.jupiter.api.Order(8)
     @DisplayName("[DeliveryRepository.findDeliveryStatusByOrderId] 성공")
     void findDeliveryStatusByOrderId_success() {
         List<Delivery> existingList = deliveryRepository.findAll();
-        DeliveryStatus original = existingList.get(existingList.size() - 1).toDeliveryStatus();
+        DeliveryStatus expected = existingList.get(existingList.size() - 1).toDeliveryStatus();
 
         DeliveryStatus actual =
                 deliveryRepository
-                        .findDeliveryStatusByOrderId(original.getOrderId())
+                        .findDeliveryStatusByOrderId(expected.getOrderId())
                         .orElseThrow(EmptyResultSetSqlException::new);
-        assertEquals(original, actual);
+        assertEquals(expected, actual);
     }
 }

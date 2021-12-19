@@ -4,7 +4,7 @@
     <insert id="save" parameterType="Delivery">
         INSERT INTO tbl_delivery
         (order_id, rider_id, agency_id, order_status, pickup_time, finish_time)
-        VALUES(#{orderId}, #{riderId}, #{agencyId}, #{orderStatus}, #{pickupTime},#{finishTime});
+        VALUES(#{orderId}, #{riderId}, #{agencyId}, #{orderStatus}, #{pickupTime},#{finishTime})
     </insert>
 
     <select id="findByOrderId" parameterType="java.lang.Long" resultType="Delivery">
@@ -28,7 +28,11 @@
         UPDATE tbl_delivery
         SET order_id=#{orderId}, rider_id=#{riderId}, agency_id=#{agencyId}, order_status=#{orderStatus},
         pickup_time=#{pickupTime}, finish_time=#{finishTime}
-        WHERE id=#{id};
-
+        WHERE id=#{id}
     </update>
+    <select id="findById" resultType="Delivery">
+        SELECT id, order_id, rider_id, agency_id, order_status, pickup_time, finish_time, created_at, updated_at
+        FROM tbl_delivery
+        WHERE id = #{id}
+    </select>
 </mapper>
