@@ -1,4 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.demo.rest.repository.OrderRepository">
+<mapper namespace="com.inbobwetrust.repository.OrderRepository">
+    <insert id="save">
+        INSERT INTO tbl_order
+        (customer_id, shop_id, order_status, address, phone_number)
+        VALUES (#{customerId}, #{shopId}, #{orderStatus}, #{address}, #{phoneNumber})
+    </insert>
+    <select id="findByOrderId" parameterType="java.lang.Long" resultType="Order">
+        SELECT id, customer_id, shop_id, order_status, address, phone_number, created_at, updated_at
+        FROM tbl_order
+        WHERE id = #{orderId}
+    </select>
+    <select id="findAll" resultType="Order">
+        SELECT id, customer_id, shop_id, order_status, address, phone_number, created_at, updated_at
+        FROM tbl_order
+    </select>
+    <update id="update" parameterType="Order">
+        UPDATE tbl_order
+        SET customer_id = #{customerId}, shop_id = #{shopId}, order_status = #{orderStatus}, address = #{address},
+        phone_number = #{phoneNumber}
+        WHERE id = #{id};
+    </update>
 </mapper>

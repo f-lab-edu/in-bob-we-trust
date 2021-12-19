@@ -2,20 +2,22 @@ package com.inbobwetrust.model.entity;
 
 import lombok.*;
 
+import org.apache.ibatis.type.Alias;
+
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Alias("Order")
 public class Order {
     private Long id;
 
     private Long customerId;
 
     private Long shopId;
-
-    private Long deliveryId;
 
     private OrderStatus orderStatus;
 
@@ -32,20 +34,14 @@ public class Order {
             Long id,
             Long customerId,
             Long shopId,
-            Long deliveryId,
             OrderStatus orderStatus,
             String address,
-            String phoneNumber,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            String phoneNumber) {
         this.id = id;
         this.customerId = customerId;
         this.shopId = shopId;
-        this.deliveryId = deliveryId;
         this.orderStatus = orderStatus;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }
