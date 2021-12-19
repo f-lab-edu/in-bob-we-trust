@@ -11,4 +11,6 @@ public interface OrderRepository {
     Optional<Order> findByOrderId(Long id);
 
     List<Order> findAll();
+
+    int update(Order lastOrder);
 }
