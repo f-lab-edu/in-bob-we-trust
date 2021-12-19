@@ -5,7 +5,7 @@
     <insert id="save">
         INSERT INTO tbl_order
         (customer_id, shop_id, order_status, address, phone_number)
-        VALUES(#{customerId}, #{shopId}, #{orderStatus}, #{address}, #{phoneNumber})_
+        VALUES (#{customerId}, #{shopId}, #{orderStatus}, #{address}, #{phoneNumber})
     </insert>
     <select id="findByOrderId" parameterType="java.lang.Long" resultType="Order">
         SELECT id, customer_id, shop_id, order_status, address, phone_number, created_at, updated_at
