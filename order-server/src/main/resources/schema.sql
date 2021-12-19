@@ -52,7 +52,9 @@ CREATE TABLE IF NOT EXISTS tbl_delivery (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (id),
-  FOREIGN KEY (rider_id) REFERENCES tbl_rider(id)
+  UNIQUE (order_id),
+  FOREIGN KEY (rider_id) REFERENCES tbl_rider(id),
+  FOREIGN KEY (order_id) REFERENCES tbl_order(id)
   );
 -- -----------------------------------------------------
 -- Table tbl_order
