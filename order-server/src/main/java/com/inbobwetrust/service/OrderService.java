@@ -15,7 +15,7 @@ public class OrderService {
     private final OrderProducer orderProducer;
 
     public Order receiveNewOrder(Order order) {
-        if (!orderRepository.save(order)) {
+        if (orderRepository.save(order) != 1) {
             throw new RuntimeException("Save Operation Failed : order with such ID exists");
         }
         Order savedOrder =

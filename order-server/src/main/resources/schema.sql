@@ -36,6 +36,22 @@ CREATE TABLE IF NOT EXISTS tbl_rider_location (
 );
 ALTER TABLE tbl_rider_location ADD CHECK (latitude between -90.0 and 90.0);
 ALTER TABLE tbl_rider_location ADD CHECK (longitude between -180.0 and 180.0);
+-- -----------------------------------------------------
+-- Table tbl_order
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS tbl_order (
+  id BIGINT(20) NOT NULL AUTO_INCREMENT,
+  customer_id BIGINT(20) NOT NULL,
+  shop_id BIGINT(20) NOT NULL,
+  order_status VARCHAR(50) NULL,
+  address VARCHAR(1000) NULL,
+  phone_number VARCHAR(200) NULL,
+  created_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE (id),
+  FOREIGN KEY (shop_id) REFERENCES tbl_shop (id)
+);
 
 -- -----------------------------------------------------
 -- Table tbl_delivery
@@ -56,21 +72,3 @@ CREATE TABLE IF NOT EXISTS tbl_delivery (
   FOREIGN KEY (rider_id) REFERENCES tbl_rider(id),
   FOREIGN KEY (order_id) REFERENCES tbl_order(id)
   );
--- -----------------------------------------------------
--- Table tbl_order
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS tbl_order (
-  id BIGINT(20) NOT NULL AUTO_INCREMENT,
-  customer_id BIGINT(20) NOT NULL,
-  shop_id BIGINT(20) NOT NULL,
-  delivery_id BIGINT(20) NULL,
-  order_status VARCHAR(50) NULL,
-  address VARCHAR(1000) NULL,
-  phone_number VARCHAR(200) NULL,
-  created_at DATETIME  DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE (id),
-  FOREIGN KEY (delivery_id) REFERENCES tbl_delivery (id),
-  FOREIGN KEY (shop_id) REFERENCES tbl_shop (id)
-);

@@ -40,7 +40,7 @@ public enum OrderStatus {
                 : options[this.ordinal() + 1];
     }
 
-    public static Object getInitial() {
+    public static OrderStatus getInitial() {
         return OrderStatus.NEW;
     }
 }
