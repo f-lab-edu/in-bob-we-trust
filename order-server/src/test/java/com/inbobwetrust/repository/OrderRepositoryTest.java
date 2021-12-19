@@ -18,20 +18,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ActiveProfiles("test")
 @SpringBootTest
 public class OrderRepositoryTest {
     @Autowired OrderRepository orderRepository;
 
-    Comparator<Order> descendingByIdComparator =
-            (o1, o2) -> {
-                Long idDiff = o2.getId() - o1.getId();
-                if (idDiff == 0) return 0;
-                if (idDiff < 0) return -1;
-                if (idDiff > 0) return 1;
-                throw new RuntimeException("[OrderRepositoryTest] UndefinedCompring result");
-            };
+    Comparator<Order> descendingByIdComparator = (o1, o2) -> ((int) (o2.getId() - o1.getId()));
+    Comparator<Order> ascendingByIdComparator = (o1, o2) -> ((int) (o1.getId() - o2.getId()));
 
     private void assertDatetimeExist(Order order) {
         assertNotNull(order.getUpdatedAt());
@@ -73,27 +68,6 @@ public class OrderRepositoryTest {
         }
     }
 
-    @Test
-    @DisplayName("[tbl_order] 주문테이블 AutoIncrement 테스트, 1부터 시작해야한다.")
-    void autoIncrementTest() {
-        List<Order> orders = orderRepository.findAll();
-        Order newOrder = makeNewOrderFrom(orders.get(orders.size() - 1));
-        assertTrue(!orders.isEmpty());
-
-        int addedRows = 100;
-        for (int i = 0; i < addedRows; i++) {
-            orderRepository.save(newOrder);
-        }
-        List<Order> newOrders = orderRepository.findAll();
-        int expectedNumRows = orders.size() + addedRows;
-        int actualNumRows = newOrders.size();
-        assertEquals(expectedNumRows, actualNumRows);
-        for (int expectedId = 1; expectedId <= actualNumRows; expectedId++) {
-            Long actualId = newOrders.get(expectedId - 1).getId();
-            assertEquals(expectedId, actualId);
-        }
-    }
-
     private Order makeNewOrderFrom(Order lastOrder) {
         return Order.builder()
                 .shopId(lastOrder.getShopId())
@@ -116,25 +90,30 @@ public class OrderRepositoryTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    @DisplayName("[OrderRepository.save] 주문저장시 생성일, 수정일 신규값 생성")
-    void saveTest_4() {
+    private Order getOrderWithLastId() {
         List<Order> savedOrders = orderRepository.findAll();
         Collections.sort(savedOrders, descendingByIdComparator);
-        Order newOrder = makeNewOrderFrom(savedOrders.get(0));
-        String uniqueInformation = LocalDateTime.now().toString();
-        newOrder.setAddress(uniqueInformation);
+        return savedOrders.get(0);
+    }
 
-        assertNull(newOrder.getUpdatedAt());
-        assertNull(newOrder.getCreatedAt());
-        orderRepository.save(newOrder);
-        Order savedOrder =
+    @Test
+    @DisplayName("[OrderRepository.update] 수정시 수정일 갱신 신규값 생성")
+    void updateTest_5() {
+        final Order lastOrder = getOrderWithLastId();
+        final OrderStatus newStatus = lastOrder.getOrderStatus().returnSomethingElse();
+        lastOrder.setOrderStatus(newStatus);
+
+        int affectedRow = orderRepository.update(lastOrder);
+        assertEquals(1, affectedRow);
+
+        Order updatedOrder =
                 orderRepository
-                        .findByOrderId(savedOrders.get(0).getId() + 1)
+                        .findByOrderId(lastOrder.getId())
                         .orElseThrow(EmptyResultSetSqlException::new);
-        assertTrue(savedOrder.getAddress().equals(uniqueInformation));
-        assertNotNull(savedOrder.getCreatedAt());
-        assertNotNull(savedOrder.getCreatedAt());
+        assertNotEquals(lastOrder.getUpdatedAt(), updatedOrder.getUpdatedAt());
+        assertEquals(lastOrder.getId(), updatedOrder.getId());
+        assertEquals(lastOrder.getOrderStatus(), updatedOrder.getOrderStatus());
+        assertEquals(lastOrder.getShopId(), updatedOrder.getShopId());
     }
 
     @Test
@@ -245,20 +224,14 @@ public class OrderRepositoryTest {
     @DisplayName("[OrderRepository.findByOrderId] 주문 조회 성공")
     void findByOrderIdTest() {
         final List<Order> savedOrders = orderRepository.findAll();
-        final int expectedSize = savedOrders.size() + 1;
-        final Order lastOrder = savedOrders.get(savedOrders.size() - 1);
-        final Order newOrder = makeNewOrderFrom(lastOrder);
-        newOrder.setOrderStatus(newOrder.getOrderStatus().returnSomethingElse());
+        final Order expected = getOrderWithLastId();
 
-        assertDoesNotThrow(() -> orderRepository.save(newOrder));
-
-        final int actualSize = orderRepository.findAll().size();
-        assertEquals(expectedSize, actualSize);
-        Order order =
+        Order actual =
                 orderRepository
-                        .findByOrderId(lastOrder.getId() + 1)
+                        .findByOrderId(expected.getId())
                         .orElseThrow(EmptyResultSetSqlException::new);
-        assertDatetimeExist(order);
+
+        assertEquals(expected, actual);
     }
 
     @Test
