@@ -1,6 +1,5 @@
 package com.inbobwetrust.controller;
 
-import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse;
 import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumberedDelivery;
 
 import static org.hamcrest.Matchers.is;

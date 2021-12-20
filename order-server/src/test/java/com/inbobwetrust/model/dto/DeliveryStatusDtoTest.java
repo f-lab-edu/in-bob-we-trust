@@ -1,15 +1,16 @@
 package com.inbobwetrust.model.dto;
 
 import com.inbobwetrust.model.entity.OrderStatus;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 public class DeliveryStatusDtoTest {
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
