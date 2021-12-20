@@ -1,10 +1,10 @@
 package com.inbobwetrust.model.dto;
 
+import static com.inbobwetrust.model.dto.DeliveryStatusDtoTest.checkViolations;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static com.inbobwetrust.model.dto.DeliveryStatusDtoTest.checkViolations;
 
 public class DeliveryGetStatusDtoTest {
     @Test
