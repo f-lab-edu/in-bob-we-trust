@@ -291,7 +291,7 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("[DeliveryController.setStatusToComplete] 실패 : 정보누락")
+    @DisplayName("[DeliveryController.setStatusToComplete] 실패 : 배달완료 정보누락")
     void setStatusToCompleteTest_fail() throws Exception {
         String requestBody = mapper.writeValueAsString(new DeliveryStatusDto());
 
@@ -303,7 +303,7 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("[DeliveryController.getDeliveryStatus] 실패 : 정보누락")
+    @DisplayName("[DeliveryController.getDeliveryStatus] 실패 : 배달상태확인 정보누락")
     void getDeliveryStatusTest_fail() throws Exception {
         DeliveryGetStatusDto deliveryGetStatusDto = DeliveryGetStatusDto.builder().build();
         String requestBody = mapper.writeValueAsString(deliveryGetStatusDto);
