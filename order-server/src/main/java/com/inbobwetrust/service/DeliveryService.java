@@ -1,7 +1,7 @@
 package com.inbobwetrust.service;
 
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 
@@ -45,7 +45,7 @@ public class DeliveryService {
         return updatedDelivery;
     }
 
-    public DeliveryStatus findDeliveryStatusByOrderId(Long orderId) {
+    public DeliveryStatusDto findDeliveryStatusByOrderId(Long orderId) {
         return deliveryRepository
                 .findDeliveryStatusByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("No such delivery associated with Id"));

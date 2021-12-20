@@ -3,8 +3,8 @@ package com.inbobwetrust.controller;
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.model.mapper.DeliveryMapper;
 import com.inbobwetrust.service.DeliveryService;
 
@@ -22,7 +22,7 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     private final DeliveryMapper deliveryMapper;
 
     @GetMapping("status/{orderId}")
-    public DeliveryStatus getDeliveryStatus(@PathVariable Long orderId) {
+    public DeliveryStatusDto getDeliveryStatus(@PathVariable Long orderId) {
         return deliveryService.findDeliveryStatusByOrderId(orderId);
     }
 
@@ -45,7 +45,8 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     }
 
     @PatchMapping("status/complete")
-    public Delivery setStatusComplete(@RequestBody Delivery deliveryRequest) {
-        return deliveryService.setStatusComplete(deliveryRequest);
+    public DeliveryStatusDto setStatusComplete(@RequestBody DeliveryStatusDto deliveryStatusDto) {
+        deliveryService.updateStatus(deliveryStatusDto);
+        return deliveryStatusDto;
     }
 }

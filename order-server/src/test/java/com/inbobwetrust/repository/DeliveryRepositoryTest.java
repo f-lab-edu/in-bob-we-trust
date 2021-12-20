@@ -3,8 +3,8 @@ package com.inbobwetrust.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.inbobwetrust.exceptions.EmptyResultSetSqlException;
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.model.entity.Order;
 
 import org.apache.ibatis.executor.result.ResultMapException;
@@ -138,9 +138,9 @@ class DeliveryRepositoryTest {
     @DisplayName("[DeliveryRepository.findDeliveryStatusByOrderId] 성공")
     void findDeliveryStatusByOrderId_success() {
         List<Delivery> existingList = deliveryRepository.findAll();
-        DeliveryStatus expected = existingList.get(existingList.size() - 1).toDeliveryStatus();
+        DeliveryStatusDto expected = existingList.get(existingList.size() - 1).toDeliveryStatus();
 
-        DeliveryStatus actual =
+        DeliveryStatusDto actual =
                 deliveryRepository
                         .findDeliveryStatusByOrderId(expected.getOrderId())
                         .orElseThrow(EmptyResultSetSqlException::new);
