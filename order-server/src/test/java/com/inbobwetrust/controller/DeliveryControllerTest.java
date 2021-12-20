@@ -94,15 +94,8 @@ public class DeliveryControllerTest {
         String requestBody = mapper.writeValueAsString(expected);
 
         String responseBody =
-                mockMvc.perform(
-                                put("/delivery/rider")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.success", is(true)))
-                        .andExpect(jsonPath("$.body").exists())
-                        .andReturn()
+                buildRequest_expectStatus_GetMvcResult(
+                                put("/delivery/rider"), requestBody, status().isOk())
                         .getResponse()
                         .getContentAsString();
 
@@ -110,37 +103,6 @@ public class DeliveryControllerTest {
                 mapper.writeValueAsString(mapper.readValue(responseBody, Map.class).get("body"));
         DeliverySetRiderDto actual = mapper.readValue(bodyString, DeliverySetRiderDto.class);
         assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("[DeliveryController.setRider] 실패 : 전부 MIN(1) 벗어난 값들 전송")
-    void setRider_failTest2() throws Exception {
-        DeliverySetRiderDto invalid =
-                DeliverySetRiderDto.builder().riderId(0L).orderId(0L).agencyId(0L).build();
-        String bodyInvalid = mapper.writeValueAsString(invalid);
-
-        testInvalidValueRange(put("/delivery/rider"), bodyInvalid, status().isNotAcceptable());
-    }
-
-    @Test
-    @DisplayName("[DeliveryController.setRider] 실패 : invalid 값")
-    void setRider_failTest() throws Exception {
-        DeliverySetRiderDto empty = DeliverySetRiderDto.builder().build();
-        String bodyEmpty = mapper.writeValueAsString(empty);
-
-        testInvalidValueRange(put("/delivery/rider"), bodyEmpty, status().isNotAcceptable());
-    }
-
-    void testInvalidValueRange(
-            MockHttpServletRequestBuilder requestBuilder,
-            String requestBody,
-            ResultMatcher resultStatus)
-            throws Exception {
-        mockMvc.perform(requestBuilder.contentType(MediaType.APPLICATION_JSON).content(requestBody))
-                .andDo(print())
-                .andExpect(resultStatus)
-                .andExpect(jsonPath("$.success", is(false)))
-                .andExpect(jsonPath("$.body").exists());
     }
 
     private DeliveryCreateDto makeSimpleDeliveryCreateDto() {
@@ -285,5 +247,40 @@ public class DeliveryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.body").exists());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setRider] 실패 : 전부 MIN(1) 벗어난 값들 전송")
+    void setRider_failTest2() throws Exception {
+        DeliverySetRiderDto invalid =
+                DeliverySetRiderDto.builder().riderId(0L).orderId(0L).agencyId(0L).build();
+        String bodyInvalid = mapper.writeValueAsString(invalid);
+
+        buildRequest_expectStatus_GetMvcResult(
+                put("/delivery/rider"), bodyInvalid, status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setRider] 실패 : invalid 값")
+    void setRider_failTest() throws Exception {
+        DeliverySetRiderDto empty = DeliverySetRiderDto.builder().build();
+        String bodyEmpty = mapper.writeValueAsString(empty);
+
+        buildRequest_expectStatus_GetMvcResult(
+                put("/delivery/rider"), bodyEmpty, status().isNotAcceptable());
+    }
+
+    MvcResult buildRequest_expectStatus_GetMvcResult(
+            MockHttpServletRequestBuilder requestBuilder,
+            String requestBody,
+            ResultMatcher resultStatus)
+            throws Exception {
+        return mockMvc.perform(
+                        requestBuilder.contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andDo(print())
+                .andExpect(resultStatus)
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.body").exists())
+                .andReturn();
     }
 }
