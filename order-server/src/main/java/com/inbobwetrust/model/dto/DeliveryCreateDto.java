@@ -10,10 +10,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
+@NoArgsConstructor
 public class DeliveryCreateDto {
     @NotNull(message = "주문번호는 필수값입니다.")
     @Min(value = 1, message = "주문번호는 최소 1 이상이어야 합니다.")
@@ -30,12 +28,12 @@ public class DeliveryCreateDto {
     @Max(Long.MAX_VALUE)
     private Long agencyId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @NotNull(message = "(조리완료시간==픽업요청시간)는 필수값입니다.")
     private LocalDateTime pickupTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @NotNull(message = "배달건 생성일시는 필수값입니다.")
     private LocalDateTime createdAt;
