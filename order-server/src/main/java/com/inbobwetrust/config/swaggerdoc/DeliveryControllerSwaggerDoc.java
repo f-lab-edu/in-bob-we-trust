@@ -4,7 +4,6 @@ import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
-import com.inbobwetrust.model.entity.Delivery;
 
 import io.swagger.annotations.*;
 
