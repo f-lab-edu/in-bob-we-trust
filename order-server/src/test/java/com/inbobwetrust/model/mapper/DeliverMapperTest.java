@@ -2,8 +2,10 @@ package com.inbobwetrust.model.mapper;
 
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
 
+import com.inbobwetrust.model.entity.OrderStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,15 +52,7 @@ public class DeliverMapperTest {
 
         Delivery actual = deliveryMapper.fromCreateDtoToEntity(expected);
 
-        Assertions.assertNull(actual.getId());
-        Assertions.assertNull(actual.getOrderId());
-        Assertions.assertNull(actual.getRiderId());
-        Assertions.assertNull(actual.getAgencyId());
-        Assertions.assertNull(actual.getOrderStatus());
-        Assertions.assertNull(actual.getPickupTime());
-        Assertions.assertNull(actual.getFinishTime());
-        Assertions.assertNull(actual.getCreatedAt());
-        Assertions.assertNull(actual.getUpdatedAt());
+        assertEmptyDeliveryObj(actual);
     }
 
     @Test
@@ -87,6 +81,40 @@ public class DeliverMapperTest {
 
         Delivery actual = deliveryMapper.fromSetRiderDtoToEntity(expected);
 
+        assertEmptyDeliveryObj(actual);
+    }
+
+    @Test
+    @DisplayName("[DeliveryMapper.fromStatusDtoToEntity] 성공")
+    void fromStatusToEntityTest() {
+        DeliveryStatusDto expected =
+                DeliveryStatusDto.builder().orderId(1L).orderStatus(OrderStatus.PICKED_UP).build();
+
+        Delivery actual = deliveryMapper.fromStatusToEntity(expected);
+
+        Assertions.assertNotNull(actual);
+        Assertions.assertNull(actual.getId());
+        Assertions.assertEquals(expected.getOrderId(), actual.getOrderId());
+        Assertions.assertNull(actual.getRiderId());
+        Assertions.assertNull(actual.getAgencyId());
+        Assertions.assertEquals(expected.getOrderStatus(), actual.getOrderStatus());
+        Assertions.assertNull(actual.getPickupTime());
+        Assertions.assertNull(actual.getFinishTime());
+        Assertions.assertNull(actual.getCreatedAt());
+        Assertions.assertNull(actual.getUpdatedAt());
+    }
+
+    @Test
+    @DisplayName("[DeliveryMapper.fromStatusToEntity] Null 값")
+    void fromStatusToEntityTest2() {
+        DeliverySetRiderDto expected = DeliverySetRiderDto.builder().build();
+
+        Delivery actual = deliveryMapper.fromSetRiderDtoToEntity(expected);
+
+        assertEmptyDeliveryObj(actual);
+    }
+
+    private void assertEmptyDeliveryObj(Delivery actual) {
         Assertions.assertNotNull(actual);
         Assertions.assertNull(actual.getId());
         Assertions.assertNull(actual.getOrderId());
