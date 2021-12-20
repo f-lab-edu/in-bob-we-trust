@@ -2,9 +2,9 @@ package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliveryGetStatusDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
-import com.inbobwetrust.model.entity.Delivery;
 
 import io.swagger.annotations.*;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DeliveryControllerSwaggerDoc {
     @ApiOperation(value = "주문상태확인", notes = "주문번호에 해당하는 주문상태 반환")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    DeliveryStatusDto getDeliveryStatus(Long orderId);
+    DeliveryStatusDto getDeliveryStatus(DeliveryGetStatusDto deliveryGetStatusDto);
 
     @ApiOperation(value = "픽업완료", notes = "주문의 상태를 픽업완료로 갱신")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
@@ -29,5 +29,5 @@ public interface DeliveryControllerSwaggerDoc {
 
     @ApiOperation(value = "배달완료", notes = "주문의 상태를 배달완료로 갱신")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    Delivery setStatusComplete(@RequestBody Delivery deliveryRequest);
+    DeliveryStatusDto setStatusComplete(@RequestBody DeliveryStatusDto deliveryRequest);
 }
