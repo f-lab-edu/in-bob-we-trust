@@ -3,6 +3,7 @@ package com.inbobwetrust.model.dto;
 import com.inbobwetrust.model.entity.OrderStatus;
 
 import lombok.*;
+
 import org.apache.ibatis.type.Alias;
 
 @Getter
