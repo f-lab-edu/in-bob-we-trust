@@ -64,6 +64,7 @@ public class DeliveryControllerTest {
         when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
         when(this.deliveryService.setRider(any())).thenReturn(delivery);
         when(this.deliveryService.setStatusPickup(any())).thenReturn(delivery);
+        when(this.deliveryService.setStatusComplete(any())).thenReturn(delivery);
     }
 
     @Test
@@ -205,24 +206,13 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("라이더 배달완료 API")
+    @DisplayName("[DeliveryController.setStatusToComplete] 성공 : 배달상태 업데이트, 배달완료")
     void setStatusToComplete_successTest() throws Exception {
-        Delivery deliveryRequest = makeSimpleNumberedDelivery(1);
-        deliveryRequest.setOrderStatus(OrderStatus.COMPLETE);
+        DeliveryStatusDto deliveryStatusDto = makeSimpleDeliveryStatusDto();
+        String requestBody = mapper.writeValueAsString(deliveryStatusDto);
 
-        when(this.deliveryService.setStatusComplete(any())).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
-                mockMvc.perform(
-                                patch("/delivery/status/complete")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(requestBody))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.success", is(true)))
-                        .andExpect(jsonPath("$.body").exists())
-                        .andReturn();
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                patch("/delivery/status/complete"), requestBody, status().isOk(), successful());
     }
 
     @Test
@@ -292,6 +282,18 @@ public class DeliveryControllerTest {
 
         testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
                 patch("/delivery/status/pickup"),
+                requestBody,
+                status().isNotAcceptable(),
+                !successful());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setStatusToComplete] 실패 : 정보누락")
+    void setStatusToCompleteTest_fail() throws Exception {
+        String requestBody = mapper.writeValueAsString(new DeliveryStatusDto());
+
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                patch("/delivery/status/complete"),
                 requestBody,
                 status().isNotAcceptable(),
                 !successful());

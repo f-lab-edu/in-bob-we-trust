@@ -29,5 +29,5 @@ public interface DeliveryControllerSwaggerDoc {
 
     @ApiOperation(value = "배달완료", notes = "주문의 상태를 배달완료로 갱신")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    Delivery setStatusComplete(@RequestBody Delivery deliveryRequest);
+    DeliveryStatusDto setStatusComplete(@RequestBody DeliveryStatusDto deliveryRequest);
 }
