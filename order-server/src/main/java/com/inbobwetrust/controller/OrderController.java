@@ -2,7 +2,6 @@ package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.OrderControllerSwaggerDoc;
 import com.inbobwetrust.model.dto.OrderDto;
-import com.inbobwetrust.model.entity.Order;
 import com.inbobwetrust.model.mapper.OrderMapper;
 import com.inbobwetrust.service.OrderService;
 
