@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.model.entity.OrderStatus;
@@ -32,6 +33,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -50,12 +53,15 @@ public class DeliveryControllerTest {
     private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     DeliveryCreateDto deliveryCreateDto = makeSimpleDeliveryCreateDto();
+    DeliverySetRiderDto deliverySetRiderDto = makeSimpleDeliverySetRiderDto();
     Delivery delivery = makeSimpleNumberedDelivery(1);
 
     @BeforeEach
     void setUp() {
         when(deliveryMapper.fromCreateDtoToEntity(deliveryCreateDto)).thenReturn(delivery);
+        when(deliveryMapper.fromSetRiderDtoToEntity(deliverySetRiderDto)).thenReturn(delivery);
         when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
+        when(this.deliveryService.setRider(any())).thenReturn(delivery);
     }
 
     @Test
@@ -77,23 +83,26 @@ public class DeliveryControllerTest {
                 .andReturn();
     }
 
+    private DeliverySetRiderDto makeSimpleDeliverySetRiderDto() {
+        return DeliverySetRiderDto.builder().orderId(1L).riderId(2L).agencyId(3L).build();
+    }
+
     @Test
-    @DisplayName("배달대행사 라이더배정 테스트")
+    @DisplayName("[DeliveryController.setRider] 성공 : 라이더배정 성공")
     void setRider_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        when(this.deliveryService.setRider(any())).thenReturn(deliveryRequest);
+        DeliverySetRiderDto expected = makeSimpleDeliverySetRiderDto();
+        String requestBody = mapper.writeValueAsString(expected);
 
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
+        String responseBody =
+                testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                                put("/delivery/rider"), requestBody, status().isOk(), successful())
+                        .getResponse()
+                        .getContentAsString();
 
-        mockMvc.perform(
-                        put("/delivery/rider")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body").exists())
-                .andReturn();
+        String bodyString =
+                mapper.writeValueAsString(mapper.readValue(responseBody, Map.class).get("body"));
+        DeliverySetRiderDto actual = mapper.readValue(bodyString, DeliverySetRiderDto.class);
+        assertEquals(expected, actual);
     }
 
     private DeliveryCreateDto makeSimpleDeliveryCreateDto() {
@@ -238,5 +247,45 @@ public class DeliveryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.body").exists());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setRider] 실패 : 전부 MIN(1) 벗어난 값들 전송")
+    void setRider_failTest2() throws Exception {
+        DeliverySetRiderDto invalid =
+                DeliverySetRiderDto.builder().riderId(0L).orderId(0L).agencyId(0L).build();
+        String bodyInvalid = mapper.writeValueAsString(invalid);
+
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                put("/delivery/rider"), bodyInvalid, status().isNotAcceptable(), !successful());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setRider] 실패 : invalid 값")
+    void setRider_failTest() throws Exception {
+        DeliverySetRiderDto empty = DeliverySetRiderDto.builder().build();
+        String bodyEmpty = mapper.writeValueAsString(empty);
+
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                put("/delivery/rider"), bodyEmpty, status().isNotAcceptable(), !successful());
+    }
+
+    MvcResult testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+            MockHttpServletRequestBuilder requestBuilder,
+            String requestBody,
+            ResultMatcher resultStatus,
+            boolean successful)
+            throws Exception {
+        return mockMvc.perform(
+                        requestBuilder.contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andDo(print())
+                .andExpect(resultStatus)
+                .andExpect(jsonPath("$.success", is(successful)))
+                .andExpect(jsonPath("$.body").exists())
+                .andReturn();
+    }
+
+    private boolean successful() {
+        return true;
     }
 }
