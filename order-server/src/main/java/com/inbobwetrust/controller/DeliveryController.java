@@ -2,6 +2,7 @@ package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliveryGetStatusDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.mapper.DeliveryMapper;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("delivery")
@@ -20,9 +24,10 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     private final DeliveryService deliveryService;
     private final DeliveryMapper deliveryMapper;
 
-    @GetMapping("status/{orderId}")
-    public DeliveryStatusDto getDeliveryStatus(@PathVariable Long orderId) {
-        return deliveryService.findDeliveryStatusByOrderId(orderId);
+    @PostMapping("status/{orderId}")
+    public DeliveryStatusDto getDeliveryStatus(
+            @RequestBody @Valid DeliveryGetStatusDto deliveryGetStatusDto) {
+        return deliveryService.findDeliveryStatusByOrderId(deliveryGetStatusDto.getOrderId());
     }
 
     @PatchMapping("status/pickup")

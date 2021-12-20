@@ -12,9 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliveryGetStatusDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
@@ -65,6 +68,8 @@ public class DeliveryControllerTest {
         when(this.deliveryService.setRider(any())).thenReturn(delivery);
         when(this.deliveryService.setStatusPickup(any())).thenReturn(delivery);
         when(this.deliveryService.setStatusComplete(any())).thenReturn(delivery);
+        when(deliveryService.findDeliveryStatusByOrderId(deliveryStatusDto.getOrderId()))
+                .thenReturn(deliveryStatusDto);
     }
 
     @Test
@@ -216,19 +221,17 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("주문상태확인 GET Request")
+    @DisplayName("[DeliveryController.getDeliveryStatus] 성공 : 배달상태확인")
     void getDeliveryStatus() throws Exception {
-        DeliveryStatusDto deliveryStatusDto = new DeliveryStatusDto(1L, OrderStatus.ACCEPTED);
-        when(deliveryService.findDeliveryStatusByOrderId(deliveryStatusDto.getOrderId()))
-                .thenReturn(deliveryStatusDto);
+        DeliveryGetStatusDto deliveryGetStatusDto =
+                DeliveryGetStatusDto.builder().orderId(1L).build();
+        String requestBody = mapper.writeValueAsString(deliveryGetStatusDto);
 
-        mockMvc.perform(
-                        get("/delivery/status/" + deliveryStatusDto.getOrderId())
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body").exists());
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                post("/delivery/status/" + deliveryStatusDto.getOrderId()),
+                requestBody,
+                status().isOk(),
+                successful());
     }
 
     @Test
@@ -297,5 +300,19 @@ public class DeliveryControllerTest {
                 requestBody,
                 status().isNotAcceptable(),
                 !successful());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.getDeliveryStatus] 실패 : 정보누락")
+    void getDeliveryStatusTest_fail() throws Exception {
+        DeliveryGetStatusDto deliveryGetStatusDto = DeliveryGetStatusDto.builder().build();
+        String requestBody = mapper.writeValueAsString(deliveryGetStatusDto);
+
+        MvcResult result =
+                testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                        post("/delivery/status/" + deliveryStatusDto.getOrderId()),
+                        requestBody,
+                        status().isNotAcceptable(),
+                        !successful());
     }
 }
