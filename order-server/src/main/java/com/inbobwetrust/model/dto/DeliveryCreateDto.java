@@ -1,14 +1,16 @@
 package com.inbobwetrust.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.inbobwetrust.model.entity.OrderStatus;
+
 import lombok.*;
+
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor

@@ -2,7 +2,7 @@ package com.inbobwetrust.model.mapper;
 
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.entity.Delivery;
-import org.junit.Assert;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
