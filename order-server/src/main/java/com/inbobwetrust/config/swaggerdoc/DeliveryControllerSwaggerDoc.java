@@ -1,6 +1,7 @@
 package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.aop.ApiResult;
+import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 
@@ -23,7 +24,7 @@ public interface DeliveryControllerSwaggerDoc {
 
     @ApiOperation(value = "주문접수완료", notes = "사장님이 주문접수완료")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    Delivery addDelivery(@RequestBody Delivery deliveryRequest);
+    DeliveryCreateDto addDelivery(@RequestBody DeliveryCreateDto deliveryRequest);
 
     @ApiOperation(value = "배달완료", notes = "주문의 상태를 배달완료로 갱신")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
