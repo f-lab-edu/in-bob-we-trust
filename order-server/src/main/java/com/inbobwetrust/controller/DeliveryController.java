@@ -2,6 +2,7 @@ package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.model.mapper.DeliveryMapper;
@@ -31,8 +32,10 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     }
 
     @PutMapping("rider")
-    public Delivery setRider(@RequestBody Delivery deliveryRequest) {
-        return deliveryService.setRider(deliveryRequest);
+    public DeliverySetRiderDto setRider(
+            @RequestBody @Valid DeliverySetRiderDto deliverySetRiderDto) {
+        deliveryService.setRider(deliveryMapper.fromSetRiderDtoToEntity(deliverySetRiderDto));
+        return deliverySetRiderDto;
     }
 
     @PostMapping

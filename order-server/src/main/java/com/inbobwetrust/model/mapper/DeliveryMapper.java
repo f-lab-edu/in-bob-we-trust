@@ -1,6 +1,7 @@
 package com.inbobwetrust.model.mapper;
 
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.entity.Delivery;
 
 import org.mapstruct.Mapper;
@@ -15,4 +16,6 @@ public interface DeliveryMapper {
 
     @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     Delivery fromCreateDtoToEntity(DeliveryCreateDto deliveryCreateDto);
+
+    Delivery fromSetRiderDtoToEntity(DeliverySetRiderDto deliverySetRiderDto);
 }
