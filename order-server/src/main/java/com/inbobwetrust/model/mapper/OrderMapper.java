@@ -5,7 +5,7 @@ import com.inbobwetrust.model.entity.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
     Order toEntity(OrderDto orderDto);
 }
