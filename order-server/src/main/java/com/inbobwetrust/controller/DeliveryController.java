@@ -45,8 +45,7 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     }
 
     @PatchMapping("status/complete")
-    public DeliveryStatusDto setStatusComplete(@RequestBody DeliveryStatusDto deliveryStatusDto) {
-        deliveryService.updateStatus(deliveryStatusDto);
-        return deliveryStatusDto;
+    public Delivery setStatusComplete(@RequestBody Delivery deliveryStatusDto) {
+        return deliveryService.setStatusComplete(deliveryStatusDto);
     }
 }
