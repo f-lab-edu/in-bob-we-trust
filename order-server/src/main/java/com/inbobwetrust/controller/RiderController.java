@@ -2,7 +2,6 @@ package com.inbobwetrust.controller;
 
 import com.inbobwetrust.config.swaggerdoc.RiderControllerSwaggerDoc;
 import com.inbobwetrust.model.dto.RiderLocationDto;
-import com.inbobwetrust.model.entity.RiderLocation;
 import com.inbobwetrust.model.mapper.RiderMapper;
 import com.inbobwetrust.service.RiderLocationService;
 

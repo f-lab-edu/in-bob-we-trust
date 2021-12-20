@@ -2,6 +2,7 @@ package com.inbobwetrust.model.mapper;
 
 import com.inbobwetrust.model.dto.RiderLocationDto;
 import com.inbobwetrust.model.entity.RiderLocation;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

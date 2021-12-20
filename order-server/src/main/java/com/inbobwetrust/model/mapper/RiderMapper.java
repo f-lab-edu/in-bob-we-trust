@@ -2,6 +2,7 @@ package com.inbobwetrust.model.mapper;
 
 import com.inbobwetrust.model.dto.RiderLocationDto;
 import com.inbobwetrust.model.entity.RiderLocation;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

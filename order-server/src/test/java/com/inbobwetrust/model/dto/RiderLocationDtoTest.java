@@ -1,15 +1,16 @@
 package com.inbobwetrust.model.dto;
 
-import com.jayway.jsonpath.internal.function.numeric.Max;
+import com.inbobwetrust.model.entity.RiderLocation;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.Set;
-import com.inbobwetrust.model.entity.RiderLocation;
 
 public class RiderLocationDtoTest {
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
