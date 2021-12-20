@@ -1,7 +1,7 @@
 package com.inbobwetrust.repository;
 
-import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
+import com.inbobwetrust.model.entity.Delivery;
 
 import java.util.List;
 import java.util.Optional;

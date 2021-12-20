@@ -1,7 +1,7 @@
 package com.inbobwetrust.service;
 
-import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
+import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 

@@ -3,8 +3,8 @@ package com.inbobwetrust.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.inbobwetrust.exceptions.EmptyResultSetSqlException;
-import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
+import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.Order;
 
 import org.apache.ibatis.executor.result.ResultMapException;

@@ -5,8 +5,8 @@ import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeDeliveryFor
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
+import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
@@ -139,7 +139,8 @@ public class DeliveryServiceTest {
         when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
                 .thenReturn(Optional.of(expected));
 
-        DeliveryStatusDto actual = deliveryService.findDeliveryStatusByOrderId(expected.getOrderId());
+        DeliveryStatusDto actual =
+                deliveryService.findDeliveryStatusByOrderId(expected.getOrderId());
 
         assertEquals(expected.getOrderStatus(), actual.getOrderStatus());
     }
