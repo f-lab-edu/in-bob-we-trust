@@ -19,15 +19,16 @@ public class OrderDtoTest {
     @Test
     @DisplayName("[OrderDto] Validation 테스트")
     void newTest() {
-        OrderDto orderDto =  OrderDto.builder()
-            .id(1L)
-            .customerId(2L)
-            .shopId(3L)
+        OrderDto orderDto =
+                OrderDto.builder()
+                        .id(1L)
+                        .customerId(2L)
+                        .shopId(3L)
                         .address("서울시 강남구 34-2 202호")
-            .phoneNumber("01032321232")
-            .phoneNumber("01032321232")
-            .createdAt(LocalDateTime.now())
-            .build();
+                        .phoneNumber("01032321232")
+                        .phoneNumber("01032321232")
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         Set<ConstraintViolation<OrderDto>> violations = validator.validate(orderDto);
         Assertions.assertEquals(0, violations.size());
