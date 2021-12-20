@@ -7,8 +7,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EqualsAndHashCode
 public class Delivery {
     private Long id;
@@ -37,7 +36,9 @@ public class Delivery {
             Long agencyId,
             OrderStatus orderStatus,
             LocalDateTime pickupTime,
-            LocalDateTime finishTime) {
+            LocalDateTime finishTime,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.id = id;
         this.orderId = orderId;
         this.riderId = riderId;
@@ -45,19 +46,22 @@ public class Delivery {
         this.orderStatus = orderStatus;
         this.pickupTime = pickupTime;
         this.finishTime = finishTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Delivery deepCopy() {
-        return new Delivery(
-                this.id,
-                this.orderId,
-                this.riderId,
-                this.agencyId,
-                this.orderStatus,
-                this.pickupTime,
-                this.finishTime,
-                this.createdAt,
-                this.updatedAt);
+        return Delivery.builder()
+                .id(id)
+                .orderId(orderId)
+                .riderId(riderId)
+                .agencyId(agencyId)
+                .orderStatus(orderStatus)
+                .pickupTime(pickupTime)
+                .finishTime(finishTime)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
     }
 
     public DeliveryStatus toDeliveryStatus() {
