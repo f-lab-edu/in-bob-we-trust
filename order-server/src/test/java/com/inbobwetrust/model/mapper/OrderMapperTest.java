@@ -21,13 +21,16 @@ public class OrderMapperTest {
     @Test
     @DisplayName("[OrderMapper.toEntity] ")
     void toEntity() {
-        OrderDto expected = new OrderDto();
-        expected.setId(1L);
-        expected.setShopId(1L);
-        expected.setCustomerId(2L);
-        expected.setAddress("someAddress");
-        expected.setPhoneNumber("01031232132");
-        expected.setCreatedAt(LocalDateTime.now());
+        OrderDto expected =
+                OrderDto.builder()
+                        .id(1L)
+                        .customerId(2L)
+                        .shopId(3L)
+                        .address("서울시 강남구 34-2 202호")
+                        .phoneNumber("01032321232")
+                        .phoneNumber("01032321232")
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         Order actual = orderMapper.toEntity(expected);
 
