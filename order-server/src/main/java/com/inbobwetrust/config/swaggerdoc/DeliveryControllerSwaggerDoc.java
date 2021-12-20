@@ -2,6 +2,7 @@ package com.inbobwetrust.config.swaggerdoc;
 
 import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
+import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 
@@ -20,7 +21,7 @@ public interface DeliveryControllerSwaggerDoc {
 
     @ApiOperation(value = "라이더배정", notes = "배달정보에 라이더 정보를 설정")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
-    Delivery setRider(@RequestBody Delivery deliveryRequest);
+    DeliverySetRiderDto setRider(@RequestBody DeliverySetRiderDto deliveryRequest);
 
     @ApiOperation(value = "주문접수완료", notes = "사장님이 주문접수완료")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "성공", response = ApiResult.class)})
