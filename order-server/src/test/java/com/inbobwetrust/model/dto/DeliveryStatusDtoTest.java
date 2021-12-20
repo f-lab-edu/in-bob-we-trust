@@ -13,7 +13,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 public class DeliveryStatusDtoTest {
-    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    public static final Validator validator =
+            Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     @DisplayName("[DeliveryStatusDto] Validation 정상")
@@ -42,7 +43,7 @@ public class DeliveryStatusDtoTest {
         Assertions.assertEquals(1, checkViolations(deliveryStatusDto).size());
     }
 
-    <T> Set<ConstraintViolation<T>> checkViolations(T dto) {
+    public static <T> Set<ConstraintViolation<T>> checkViolations(T dto) {
         Set<ConstraintViolation<T>> violations = validator.validate(dto);
         return violations;
     }
