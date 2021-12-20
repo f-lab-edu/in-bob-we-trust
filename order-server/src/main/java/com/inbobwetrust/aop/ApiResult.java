@@ -13,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 public class ApiResult<T> {
     private final boolean success;
     private final T body;
+    private final Class cause;
 
-    public static ResponseEntity<ApiResult<?>> errorResponse(String message, HttpStatus status) {
-        return new ResponseEntity<>(error(message), defaultHeaders(), status);
+    public static ResponseEntity<ApiResult<?>> errorResponse(
+            String message, Throwable cause, HttpStatus status) {
+        return new ResponseEntity<>(error(message, cause), defaultHeaders(), status);
     }
 
     public static <T> ApiResult makeFromResponseBody(T body) {
@@ -30,10 +32,10 @@ public class ApiResult<T> {
     }
 
     private static <T> ApiResult success(T body) {
-        return new ApiResult<>(true, body);
+        return new ApiResult<>(true, body, null);
     }
 
-    private static ApiResult<?> error(String message) {
-        return new ApiResult<>(false, message);
+    private static ApiResult<?> error(String message, Throwable cause) {
+        return new ApiResult<String>(false, message, cause.getClass());
     }
 }
