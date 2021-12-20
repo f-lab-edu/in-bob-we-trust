@@ -94,7 +94,7 @@ public class DeliveryControllerTest {
         String requestBody = mapper.writeValueAsString(expected);
 
         String responseBody =
-                buildRequest_expectStatus_GetMvcResult(
+                testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
                                 put("/delivery/rider"), requestBody, status().isOk(), successful())
                         .getResponse()
                         .getContentAsString();
@@ -256,7 +256,7 @@ public class DeliveryControllerTest {
                 DeliverySetRiderDto.builder().riderId(0L).orderId(0L).agencyId(0L).build();
         String bodyInvalid = mapper.writeValueAsString(invalid);
 
-        buildRequest_expectStatus_GetMvcResult(
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
                 put("/delivery/rider"), bodyInvalid, status().isNotAcceptable(), !successful());
     }
 
@@ -266,11 +266,11 @@ public class DeliveryControllerTest {
         DeliverySetRiderDto empty = DeliverySetRiderDto.builder().build();
         String bodyEmpty = mapper.writeValueAsString(empty);
 
-        buildRequest_expectStatus_GetMvcResult(
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
                 put("/delivery/rider"), bodyEmpty, status().isNotAcceptable(), !successful());
     }
 
-    MvcResult buildRequest_expectStatus_GetMvcResult(
+    MvcResult testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
             MockHttpServletRequestBuilder requestBuilder,
             String requestBody,
             ResultMatcher resultStatus,
