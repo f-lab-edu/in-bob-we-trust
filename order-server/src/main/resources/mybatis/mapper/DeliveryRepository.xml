@@ -19,7 +19,7 @@
         SELECT id, order_id, rider_id, agency_id, order_status, pickup_time, finish_time, created_at, updated_at
         FROM tbl_delivery
     </select>
-    <select id="findDeliveryStatusByOrderId" resultType="DeliveryStatus">
+    <select id="findDeliveryStatusByOrderId" resultType="DeliveryStatusDto">
         SELECT order_id, order_status
         FROM tbl_delivery
         WHERE order_id = #{orderId}
