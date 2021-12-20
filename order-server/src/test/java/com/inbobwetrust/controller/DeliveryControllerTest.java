@@ -5,6 +5,7 @@ import static com.inbobwetrust.util.vo.DeliveryInstanceGenerator.makeSimpleNumbe
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,9 +15,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.DeliveryStatus;
 import com.inbobwetrust.model.entity.OrderStatus;
+import com.inbobwetrust.model.mapper.DeliveryMapper;
 import com.inbobwetrust.service.DeliveryService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +33,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.util.Map;
+
 @WebMvcTest(DeliveryController.class)
 @AutoConfigureMybatis
 public class DeliveryControllerTest {
@@ -38,10 +45,18 @@ public class DeliveryControllerTest {
 
     @MockBean private DeliveryService deliveryService;
 
+    @MockBean private DeliveryMapper deliveryMapper;
+
     private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
+    DeliveryCreateDto deliveryCreateDto = makeSimpleDeliveryCreateDto();
+    Delivery delivery = makeSimpleNumberedDelivery(1);
+
     @BeforeEach
-    void setUp() {}
+    void setUp() {
+        when(deliveryMapper.fromCreateDtoToEntity(deliveryCreateDto)).thenReturn(delivery);
+        when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
+    }
 
     @Test
     @DisplayName("라이더 픽업상태 변경 API")
@@ -81,15 +96,24 @@ public class DeliveryControllerTest {
                 .andReturn();
     }
 
-    @DisplayName("사장님 주문접수완료 성공")
+    private DeliveryCreateDto makeSimpleDeliveryCreateDto() {
+        return DeliveryCreateDto.builder()
+                .orderId(1L)
+                .riderId(2L)
+                .agencyId(3L)
+                .pickupTime(LocalDateTime.now().plusMinutes(30))
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.addDelivery] 성공 : 사장님 주문접수완료")
     void addDelivery_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        Delivery expectedResponse = makeDeliveryForRequestAndResponse().get(1);
-        when(this.deliveryService.addDelivery(any())).thenReturn(expectedResponse);
+        when(this.deliveryService.addDelivery(any())).thenReturn(any());
+        DeliveryCreateDto expected = deliveryCreateDto;
+        String requestBody = mapper.writeValueAsString(expected);
 
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
-
-        MvcResult result =
+        String responseBody =
                 mockMvc.perform(
                                 post("/delivery")
                                         .contentType(MediaType.APPLICATION_JSON)
@@ -98,14 +122,85 @@ public class DeliveryControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.success", is(true)))
                         .andExpect(jsonPath("$.body").exists())
-                        .andReturn();
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
 
-        Delivery responseObj =
-                mapper.readValue(result.getResponse().getContentAsString(), Delivery.class);
-        assertEquals(expectedResponse.getOrderId(), responseObj.getOrderId());
-        assertEquals(expectedResponse.getRiderId(), responseObj.getRiderId());
-        assertEquals(expectedResponse.getPickupTime(), responseObj.getPickupTime());
-        assertEquals(expectedResponse.getFinishTime(), responseObj.getFinishTime());
+        String bodyString =
+                mapper.writeValueAsString(mapper.readValue(responseBody, Map.class).get("body"));
+        DeliveryCreateDto actual = mapper.readValue(bodyString, DeliveryCreateDto.class);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.addDelivery] 성공 : Map.class로 변환 후 전송")
+    void addDelivery_successTest2() throws Exception {
+        when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
+        DeliveryCreateDto expected = deliveryCreateDto;
+
+        String requestBody = mapper.writeValueAsString(mapper.convertValue(expected, Map.class));
+
+        mockMvc.perform(
+                        post("/delivery")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.body").exists());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.addDelivery] 실패: Long.MAX_VALUE 초과값 전송")
+    void addDeliveryTest_fail() throws Exception {
+        DeliveryCreateDto expected = deliveryCreateDto;
+        Map expectedMap = mapper.convertValue(expected, Map.class); // Long.MAX_VALUE 초과값 전송
+        assertTrue(expectedMap.containsKey("riderId"));
+        BigInteger greaterThanLongMaxValue =
+                new BigInteger(String.valueOf(Long.MAX_VALUE).concat("1000"));
+        expectedMap.put("riderId", greaterThanLongMaxValue);
+
+        String requestBody = mapper.writeValueAsString(expectedMap);
+
+        mockMvc.perform(
+                        post("/delivery")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.body").exists());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.addDelivery] 실패: 누락된(null) 정보")
+    void addDeliveryTest_fail1() throws Exception {
+        String requestBody =
+                mapper.writeValueAsString(new DeliveryCreateDto(null, null, null, null, null));
+
+        mockMvc.perform(
+                        post("/delivery")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.body").exists());
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.addDelivery] 실패:toJSON 오류, 전혀다른 값")
+    void addDeliveryTest_fail3() throws Exception {
+        String requestBody = "feikahflkeahfoizhlkfehawfo9iaehwofeihfoeawifhaeowihfoew37501";
+
+        mockMvc.perform(
+                        post("/delivery")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.body").exists());
     }
 
     @Test
@@ -113,6 +208,7 @@ public class DeliveryControllerTest {
     void setStatusToComplete_successTest() throws Exception {
         Delivery deliveryRequest = makeSimpleNumberedDelivery(1);
         deliveryRequest.setOrderStatus(OrderStatus.COMPLETE);
+
         when(this.deliveryService.setStatusComplete(any())).thenReturn(deliveryRequest);
         String requestBody = mapper.writeValueAsString(deliveryRequest);
 
