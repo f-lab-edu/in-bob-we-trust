@@ -27,8 +27,10 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
     }
 
     @PatchMapping("status/pickup")
-    public Delivery setStatusToPickup(@RequestBody Delivery deliveryRequest) {
-        return deliveryService.setStatusPickup(deliveryRequest);
+    public DeliveryStatusDto setStatusToPickup(
+            @RequestBody @Valid DeliveryStatusDto deliveryStatusDto) {
+        deliveryService.setStatusPickup(deliveryMapper.fromStatusToEntity(deliveryStatusDto));
+        return deliveryStatusDto;
     }
 
     @PutMapping("rider")

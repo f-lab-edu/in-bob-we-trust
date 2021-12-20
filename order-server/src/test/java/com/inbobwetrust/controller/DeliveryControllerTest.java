@@ -54,6 +54,8 @@ public class DeliveryControllerTest {
 
     DeliveryCreateDto deliveryCreateDto = makeSimpleDeliveryCreateDto();
     DeliverySetRiderDto deliverySetRiderDto = makeSimpleDeliverySetRiderDto();
+    DeliveryStatusDto deliveryStatusDto = makeSimpleDeliveryStatusDto();
+
     Delivery delivery = makeSimpleNumberedDelivery(1);
 
     @BeforeEach
@@ -62,25 +64,16 @@ public class DeliveryControllerTest {
         when(deliveryMapper.fromSetRiderDtoToEntity(deliverySetRiderDto)).thenReturn(delivery);
         when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
         when(this.deliveryService.setRider(any())).thenReturn(delivery);
+        when(this.deliveryService.setStatusPickup(any())).thenReturn(delivery);
     }
 
     @Test
     @DisplayName("라이더 픽업상태 변경 API")
     void setStatusToPickup_successTest() throws Exception {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        deliveryRequest.setOrderStatus(OrderStatus.PICKED_UP);
-        when(this.deliveryService.setStatusPickup(any())).thenReturn(deliveryRequest);
-        String requestBody = mapper.writeValueAsString(deliveryRequest);
+        String requestBody = mapper.writeValueAsString(makeSimpleDeliveryStatusDto());
 
-        mockMvc.perform(
-                        patch("/delivery/status/pickup")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.body").exists())
-                .andReturn();
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                patch("/delivery/status/pickup"), requestBody, status().isOk(), successful());
     }
 
     private DeliverySetRiderDto makeSimpleDeliverySetRiderDto() {
@@ -287,5 +280,21 @@ public class DeliveryControllerTest {
 
     private boolean successful() {
         return true;
+    }
+
+    private DeliveryStatusDto makeSimpleDeliveryStatusDto() {
+        return DeliveryStatusDto.builder().orderId(1L).orderStatus(OrderStatus.PICKED_UP).build();
+    }
+
+    @Test
+    @DisplayName("[DeliveryController.setStatusToPickup] 실패 : 정보누락")
+    void setStatusToPickupTest_fail() throws Exception {
+        String requestBody = mapper.writeValueAsString(new DeliveryStatusDto());
+
+        testRequest_withBody_expectedStatus_checkSuccessful_returnMvcResult(
+                patch("/delivery/status/pickup"),
+                requestBody,
+                status().isNotAcceptable(),
+                !successful());
     }
 }
