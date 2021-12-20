@@ -7,9 +7,6 @@ spring:
     url: jdbc:mysql://localhost:3306/inbobwetrust?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 1qaz@WSX
-  jackson:
-    serialization:
-      write_dates_as_timestamps: false
 
 mybatis:
   type-aliases-package: com.inbobwetrust.model.entity
