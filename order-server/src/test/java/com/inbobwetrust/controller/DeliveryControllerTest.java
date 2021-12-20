@@ -133,7 +133,7 @@ public class DeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("[DeliveryController.addDelivery] 성공: Map 변환 후 Stringify")
+    @DisplayName("[DeliveryController.addDelivery] 성공 : Map.class로 변환 후 전송")
     void addDelivery_successTest2() throws Exception {
         when(this.deliveryService.addDelivery(any())).thenReturn(delivery);
         DeliveryCreateDto expected = deliveryCreateDto;
