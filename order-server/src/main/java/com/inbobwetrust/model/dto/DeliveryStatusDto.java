@@ -11,10 +11,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
+@NoArgsConstructor
 @Alias("DeliveryStatusDto")
 public class DeliveryStatusDto {
     @NotNull(message = "주문번호는 필수값입니다.")
