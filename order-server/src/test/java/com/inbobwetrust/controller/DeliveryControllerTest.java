@@ -95,7 +95,7 @@ public class DeliveryControllerTest {
 
         String responseBody =
                 buildRequest_expectStatus_GetMvcResult(
-                                put("/delivery/rider"), requestBody, status().isOk())
+                                put("/delivery/rider"), requestBody, status().isOk(), successful())
                         .getResponse()
                         .getContentAsString();
 
@@ -257,7 +257,7 @@ public class DeliveryControllerTest {
         String bodyInvalid = mapper.writeValueAsString(invalid);
 
         buildRequest_expectStatus_GetMvcResult(
-                put("/delivery/rider"), bodyInvalid, status().isNotAcceptable());
+                put("/delivery/rider"), bodyInvalid, status().isNotAcceptable(), !successful());
     }
 
     @Test
@@ -267,20 +267,25 @@ public class DeliveryControllerTest {
         String bodyEmpty = mapper.writeValueAsString(empty);
 
         buildRequest_expectStatus_GetMvcResult(
-                put("/delivery/rider"), bodyEmpty, status().isNotAcceptable());
+                put("/delivery/rider"), bodyEmpty, status().isNotAcceptable(), !successful());
     }
 
     MvcResult buildRequest_expectStatus_GetMvcResult(
             MockHttpServletRequestBuilder requestBuilder,
             String requestBody,
-            ResultMatcher resultStatus)
+            ResultMatcher resultStatus,
+            boolean successful)
             throws Exception {
         return mockMvc.perform(
                         requestBuilder.contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andDo(print())
                 .andExpect(resultStatus)
-                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.success", is(successful)))
                 .andExpect(jsonPath("$.body").exists())
                 .andReturn();
+    }
+
+    private boolean successful() {
+        return true;
     }
 }
