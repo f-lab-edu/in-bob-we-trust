@@ -3,7 +3,6 @@ package com.inbobwetrust.model.dto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.type.Alias;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

@@ -12,10 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.inbobwetrust.aop.ApiResult;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.dto.DeliveryGetStatusDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
