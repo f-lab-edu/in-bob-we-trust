@@ -4,10 +4,13 @@ import com.inbobwetrust.model.entity.OrderStatus;
 
 import lombok.*;
 
+import org.apache.ibatis.type.Alias;
+
 @Getter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Alias("DeliveryStatusDto")
 public class DeliveryStatusDto {
     private Long orderId;
     private OrderStatus orderStatus;
