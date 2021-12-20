@@ -2,9 +2,7 @@ package com.inbobwetrust.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
 public class OrderDto {
     @NotNull(message = "주문번호는 필수값입니다.")
     @Min(value = 1, message = "주문번호는 최소 1 이상이어야 합니다.")
@@ -44,4 +43,20 @@ public class OrderDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @NotNull(message = "주문일시는 필수값입니다.")
     private LocalDateTime createdAt;
+
+    @Builder
+    public OrderDto(
+            Long id,
+            Long customerId,
+            Long shopId,
+            String address,
+            String phoneNumber,
+            LocalDateTime createdAt) {
+        this.id = id;
+        this.customerId = customerId;
+        this.shopId = shopId;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.createdAt = createdAt;
+    }
 }
