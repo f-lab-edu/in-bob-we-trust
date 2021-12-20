@@ -18,7 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.dto.DeliveryCreateDto;
 import com.inbobwetrust.model.dto.DeliverySetRiderDto;
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.DeliveryStatus;
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.model.mapper.DeliveryMapper;
 import com.inbobwetrust.service.DeliveryService;
@@ -236,12 +236,12 @@ public class DeliveryControllerTest {
     @Test
     @DisplayName("주문상태확인 GET Request")
     void getDeliveryStatus() throws Exception {
-        DeliveryStatus deliveryStatus = new DeliveryStatus(1L, OrderStatus.ACCEPTED);
-        when(deliveryService.findDeliveryStatusByOrderId(deliveryStatus.getOrderId()))
-                .thenReturn(deliveryStatus);
+        DeliveryStatusDto deliveryStatusDto = new DeliveryStatusDto(1L, OrderStatus.ACCEPTED);
+        when(deliveryService.findDeliveryStatusByOrderId(deliveryStatusDto.getOrderId()))
+                .thenReturn(deliveryStatusDto);
 
         mockMvc.perform(
-                        get("/delivery/status/" + deliveryStatus.getOrderId())
+                        get("/delivery/status/" + deliveryStatusDto.getOrderId())
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

@@ -1,5 +1,6 @@
 package com.inbobwetrust.model.entity;
 
+import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ public class Delivery {
                 .build();
     }
 
-    public DeliveryStatus toDeliveryStatus() {
-        return DeliveryStatus.builder().orderId(this.orderId).orderStatus(this.orderStatus).build();
+    public DeliveryStatusDto toDeliveryStatus() {
+        return DeliveryStatusDto.builder().orderId(this.orderId).orderStatus(this.orderStatus).build();
     }
 }
