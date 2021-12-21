@@ -18,7 +18,7 @@ import javax.validation.ConstraintViolationException;
 public class ExceptionHandlerControllerAdvice {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<?> handleIllegalArgumentException(Exception e) {
         return errorResponse(e.getMessage(), e, HttpStatus.BAD_REQUEST);
     }
