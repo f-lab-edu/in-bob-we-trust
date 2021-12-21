@@ -20,6 +20,7 @@ public class DeliveryCreateDtoTest {
         DeliveryCreateDto deliveryCreateDto =
                 DeliveryCreateDto.builder()
                         .orderId(1L)
+                        .riderId(1L)
                         .agencyId(1L)
                         .pickupTime(LocalDateTime.now().plusMinutes(30))
                         .createdAt(LocalDateTime.now())
@@ -36,6 +37,7 @@ public class DeliveryCreateDtoTest {
         DeliveryCreateDto deliveryCreateDto =
                 DeliveryCreateDto.builder()
                         .orderId(0L)
+                        .riderId(0L)
                         .agencyId(0L)
                         .pickupTime(LocalDateTime.now().plusMinutes(30))
                         .createdAt(LocalDateTime.now())
@@ -43,7 +45,7 @@ public class DeliveryCreateDtoTest {
 
         Set<ConstraintViolation<DeliveryCreateDto>> violations =
                 validator.validate(deliveryCreateDto);
-        Assertions.assertEquals(2, violations.size());
+        Assertions.assertEquals(3, violations.size());
     }
 
     @Test
@@ -53,6 +55,6 @@ public class DeliveryCreateDtoTest {
 
         Set<ConstraintViolation<DeliveryCreateDto>> violations =
                 validator.validate(deliveryCreateDto);
-        Assertions.assertEquals(4, violations.size());
+        Assertions.assertEquals(5, violations.size());
     }
 }

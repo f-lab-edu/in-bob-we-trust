@@ -1,7 +1,6 @@
 package com.inbobwetrust.util.vo;
 
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,13 +11,10 @@ public class DeliveryInstanceGenerator {
         LocalDateTime estimatedDeliveryFinishTime = wantedPickupTime.plusMinutes(30);
         Delivery deliveryRequest =
                 Delivery.builder()
-                        .id(1L)
                         .orderId(1L)
                         .riderId(1L)
                         .agencyId(1L)
-                        .orderStatus(OrderStatus.NEW)
-                        .pickupTime(LocalDateTime.now().plusMinutes(30))
-                        .finishTime(LocalDateTime.now().plusMinutes(60))
+                        .pickupTime(wantedPickupTime)
                         .build();
         Delivery expectedDeliveryResponse =
                 Delivery.builder()
@@ -35,11 +31,9 @@ public class DeliveryInstanceGenerator {
         LocalDateTime now = LocalDateTime.now();
         Delivery delivery =
                 Delivery.builder()
-                        .id(num)
                         .orderId(num)
                         .riderId(num)
                         .agencyId(num)
-                        .orderStatus(OrderStatus.NEW)
                         .pickupTime(now.plusMinutes(30))
                         .finishTime(now.plusMinutes(60))
                         .build();

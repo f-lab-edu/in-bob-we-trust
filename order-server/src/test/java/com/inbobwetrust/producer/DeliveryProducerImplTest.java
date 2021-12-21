@@ -4,11 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.service.EndpointService;
 
-import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -31,7 +29,7 @@ public class DeliveryProducerImplTest {
     @Mock EndpointService endpointService;
     MockWebServer server;
     String uri;
-    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setup() throws IOException {
@@ -58,7 +56,7 @@ public class DeliveryProducerImplTest {
     @Test
     @DisplayName("사장님에게 접수요청 전달 성공")
     public void sendAddDeliveryMessage_successTest() throws Exception {
-        Delivery delivery = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
+        Delivery delivery = Delivery.builder().orderId(1L).build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         server.enqueue(successfulResponse(delivery));
 
@@ -66,6 +64,9 @@ public class DeliveryProducerImplTest {
 
         RecordedRequest recordedRequest = server.takeRequest();
         assertEquals(uri, recordedRequest.getRequestUrl().toString());
+        assertEquals(
+                delivery,
+                mapper.readValue(recordedRequest.getBody().readByteArray(), Delivery.class));
         assertEquals(1, server.getRequestCount());
         assertEquals(delivery.getOrderId(), responseDelivery.getOrderId());
     }
@@ -73,7 +74,7 @@ public class DeliveryProducerImplTest {
     @Test
     @DisplayName("사장님에게 접수요청 전달 : 실패 (4xx 와 5xx 리턴")
     void sendAddDeliveryMessage_failTest_error() {
-        Delivery delivery = DeliveryInstanceGenerator.makeDeliveryForRequestAndResponse().get(0);
+        Delivery delivery = Delivery.builder().orderId(1L).build();
         Mockito.when(endpointService.findDeliveryAgentEndpoint(delivery)).thenReturn(uri);
         for (int i = 0; i < 10; i++) {
             server.enqueue(failResponse(HttpStatus.BAD_REQUEST));

@@ -20,6 +20,11 @@ public class DeliveryCreateDto {
     @Max(Long.MAX_VALUE)
     private Long orderId;
 
+    @NotNull(message = "rider_id는 필수값입니다.")
+    @Min(value = 1, message = "rider_id는 최소 1 이상이어야 합니다.")
+    @Max(Long.MAX_VALUE)
+    private Long riderId;
+
     @NotNull(message = "agency_id는 필수값입니다.")
     @Min(value = 1, message = "agency_id는 최소 1 이상이어야 합니다.")
     @Max(Long.MAX_VALUE)
@@ -38,10 +43,12 @@ public class DeliveryCreateDto {
     @Builder
     public DeliveryCreateDto(
             Long orderId,
+            Long riderId,
             Long agencyId,
             LocalDateTime pickupTime,
             LocalDateTime createdAt) {
         this.orderId = orderId;
+        this.riderId = riderId;
         this.agencyId = agencyId;
         this.pickupTime = pickupTime;
         this.createdAt = createdAt;
