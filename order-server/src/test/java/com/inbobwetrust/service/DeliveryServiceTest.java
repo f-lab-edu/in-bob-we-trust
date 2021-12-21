@@ -9,8 +9,10 @@ import com.inbobwetrust.exceptions.NoAffectedRowsSqlException;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.OrderStatus;
+import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.RiderRepository;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
 
 import org.junit.jupiter.api.*;
@@ -33,6 +35,8 @@ public class DeliveryServiceTest {
 
     @Mock DeliveryProducer deliveryProducer;
 
+    @Mock RiderRepository riderRepository;
+
     @Test
     @DisplayName("주문상태 픽업완료로 업데이트 : 성공")
     void setStatusToPickup_successTest() {
@@ -51,39 +55,43 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("배달대행사의 라이더배정 성공")
     void setRider_successTest() {
-        LocalDateTime now = LocalDateTime.now();
-        Delivery initialDelivery =
-                Delivery.builder()
-                        .orderId(1L)
-                        .riderId(1L)
-                        .pickupTime(now.plusMinutes(30))
-                        .finishTime(now.plusMinutes(60))
-                        .agencyId(1L)
-                        .build();
-        when(deliveryRepository.update(initialDelivery)).thenReturn(true);
-        when(deliveryRepository.findByOrderId(initialDelivery.getOrderId()))
-                .thenReturn(Optional.of(initialDelivery));
-
-        Delivery setRiderDelivery = deliveryService.setRider(initialDelivery);
-
-        assertNotNull(setRiderDelivery.getRiderId());
+        // SetUp
+        Delivery expected = makeDeliveryValid();
+        Rider rider =
+                Rider.builder().id(expected.getRiderId()).agencyId(expected.getAgencyId()).build();
+        // Stub
+        when(deliveryRepository.update(expected)).thenReturn(true);
+        when(deliveryRepository.findByOrderId(any()))
+                .thenReturn(Optional.of(makeDeliveryNullRider()))
+                .thenReturn(Optional.of(expected));
+        when(riderRepository.findByRiderId(any())).thenReturn(Optional.of(rider));
+        // Execute
+        Delivery actual = deliveryService.setRider(expected);
+        // Assert
+        Assertions.assertEquals(expected, actual);
         verify(deliveryRepository, times(1)).update(any(Delivery.class));
+        verify(deliveryRepository, times(2)).findByOrderId(any());
+        verify(riderRepository, times(1)).findByRiderId(any());
     }
 
     @Test
     @DisplayName("사장님 주문접수완료 : 성공")
     void addDelivery_successTest() {
-        Delivery deliveryRequest = makeDeliveryForRequestAndResponse().get(0);
-        deliveryRequest.setPickupTime(LocalDateTime.now().plusMinutes(30));
-        deliveryRequest.setFinishTime(null);
-        deliveryRequest.setOrderStatus(null);
+        // setup
+        Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
+        aDelivery.setPickupTime(LocalDateTime.now().plusMinutes(30));
+        aDelivery.setFinishTime(null);
+        aDelivery.setOrderStatus(null);
+
+        // stub
         when(deliveryRepository.save(any())).thenReturn(true);
-        when(deliveryRepository.findByOrderId(deliveryRequest.getOrderId()))
-                .thenReturn(Optional.of(deliveryRequest));
+        when(deliveryRepository.findByOrderId(aDelivery.getOrderId()))
+                .thenReturn(Optional.of(aDelivery));
 
-        Delivery deliverySaved = deliveryService.addDelivery(deliveryRequest);
-
-        verify(deliveryRepository, times(1)).save(deliveryRequest);
+        // execute
+        Delivery deliverySaved = deliveryService.addDelivery(aDelivery);
+        // assert
+        verify(deliveryRepository, times(1)).save(aDelivery);
         verify(deliveryProducer, times(1)).sendAddDeliveryMessage(deliverySaved);
     }
 
@@ -216,5 +224,95 @@ public class DeliveryServiceTest {
         // assert
         verify(deliveryRepository, times(0)).save(any());
         verify(deliveryProducer, times(0)).sendAddDeliveryMessage(any());
+    }
+    // 00
+
+    @Test
+    @DisplayName("[라이더배정] 실패 : 미존재 주문번호, UPDATE 아무것도 발생하지 않음")
+    void setRiderTest_fail2() {
+        Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
+        aDelivery.setId(-1L);
+        aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
+        aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
+        when(riderRepository.findByRiderId(any()))
+                .thenReturn(Optional.of(makeExpectedRider(aDelivery)));
+        when(deliveryRepository.update(any())).thenReturn(false);
+        when(deliveryRepository.findByOrderId(any()))
+                .thenReturn(Optional.of(makeDeliveryNullRider()))
+                .thenReturn(Optional.of(aDelivery));
+        // execute
+        assertThrows(NoAffectedRowsSqlException.class, () -> deliveryService.setRider(aDelivery));
+        // assert
+        verify(deliveryRepository, times(1)).update(any());
+    }
+
+    private Rider makeExpectedRider(Delivery delivery) {
+        return Rider.builder().id(delivery.getRiderId()).agencyId(delivery.getAgencyId()).build();
+    }
+
+    @Test
+    @DisplayName("[라이더배정] 성공 : 존재 주문번호, UPDATE 발생")
+    void setRiderTest_fail4() {
+        Delivery deliveryNullRider = makeDeliveryNullRider();
+        Delivery expected = makeDeliveryValid();
+        when(riderRepository.findByRiderId(any()))
+                .thenReturn(Optional.of(makeExpectedRider(expected)));
+        when(deliveryRepository.update(any())).thenReturn(true);
+        when(deliveryRepository.findByOrderId(any()))
+                .thenReturn(Optional.of(deliveryNullRider))
+                .thenReturn(Optional.of(expected));
+        // execute
+        Delivery actual = deliveryService.setRider(expected);
+        // assert
+        assertEquals(expected, actual);
+        verify(deliveryRepository, times(1)).update(any());
+    }
+
+    private Delivery makeDeliveryValid() {
+        Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
+        aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
+        aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
+        return aDelivery;
+    }
+
+    private Delivery makeDeliveryNullRider() {
+        Delivery delivery = makeDeliveryForRequestAndResponse().get(0);
+        delivery.setRiderId(null);
+        return delivery;
+    }
+
+    @Test
+    @DisplayName("[라이더배정] 실패 : 배달완료시간 미설정 UPDATE 발생")
+    void setRiderTest_fail5() {
+        Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
+        aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
+        aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
+        aDelivery.setFinishTime(null);
+
+        assertThrows(IllegalStateException.class, () -> deliveryService.setRider(aDelivery));
+
+        verify(riderRepository, times(0)).findByRiderId(any());
+        verify(deliveryRepository, times(0)).update(any());
+        verify(deliveryRepository, times(0)).findByOrderId(any());
+    }
+
+    @Test
+    @DisplayName("[라이더배정] 실패 : 이미 라이더 지정")
+    void setRiderTest_fail_alreadySetRider() {
+        // Setup (data)
+        Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
+        aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
+        aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
+        aDelivery.setRiderId(1L);
+        // Stub
+        when(riderRepository.findByRiderId(any()))
+                .thenReturn(Optional.of(makeExpectedRider(aDelivery)));
+        when(deliveryRepository.findByOrderId(any())).thenReturn(Optional.of(aDelivery));
+        // Execute
+        assertThrows(IllegalStateException.class, () -> deliveryService.setRider(aDelivery));
+        // Assert
+        verify(riderRepository, times(1)).findByRiderId(any());
+        verify(deliveryRepository, times(1)).findByOrderId(any());
+        verify(deliveryRepository, times(0)).update(any());
     }
 }
