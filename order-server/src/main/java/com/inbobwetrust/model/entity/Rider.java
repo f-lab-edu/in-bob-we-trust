@@ -15,4 +15,8 @@ public class Rider {
         this.id = id;
         this.agencyId = agencyId;
     }
+
+    public boolean hasAllData() {
+        return id != null && agencyId != null;
+    }
 }
