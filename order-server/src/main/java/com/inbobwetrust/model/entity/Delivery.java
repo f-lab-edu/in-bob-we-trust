@@ -20,7 +20,7 @@ public class Delivery {
 
     private Long agencyId;
 
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus = OrderStatus.NEW;
 
     private LocalDateTime pickupTime;
 
@@ -71,5 +71,14 @@ public class Delivery {
                 .orderId(this.orderId)
                 .orderStatus(this.orderStatus)
                 .build();
+    }
+
+    public boolean isNew() {
+        if (orderStatus == null) orderStatus = OrderStatus.NEW;
+        return orderStatus.equals(OrderStatus.NEW);
+    }
+
+    public boolean isValidPickupTime() {
+        return pickupTime.compareTo(LocalDateTime.now()) == 1;
     }
 }
