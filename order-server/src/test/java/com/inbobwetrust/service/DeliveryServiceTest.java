@@ -12,6 +12,7 @@ import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -173,7 +174,7 @@ public class DeliveryServiceTest {
         Delivery delivery = makeDeliveryForRequestAndResponse().get(0);
         when(deliveryRepository.save(any())).thenReturn(true);
         when(deliveryRepository.findByOrderId(any())).thenReturn(Optional.of(delivery));
-        
+
         delivery.setOrderStatus(OrderStatus.NEW);
         delivery.setFinishTime(null);
         delivery.setPickupTime(LocalDateTime.now().plusSeconds(10));
