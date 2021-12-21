@@ -20,7 +20,12 @@ public class DeliveryStatusDtoTest {
     @DisplayName("[DeliveryStatusDto] Validation 정상")
     void newTest_success1() {
         DeliveryStatusDto deliveryStatusDto =
-                DeliveryStatusDto.builder().orderId(1L).orderStatus(OrderStatus.PICKED_UP).build();
+                DeliveryStatusDto.builder()
+                        .orderId(1L)
+                        .riderId(1L)
+                        .deliveryId(1L)
+                        .orderStatus(OrderStatus.PICKED_UP)
+                        .build();
 
         Assertions.assertEquals(0, checkViolations(deliveryStatusDto).size());
     }
@@ -28,19 +33,18 @@ public class DeliveryStatusDtoTest {
     @Test
     @DisplayName("[DeliveryStatusDto] Validation 실패 : 주문상태 누락")
     void newTest_fail1() {
-        DeliveryStatusDto deliveryStatusDto =
-                DeliveryStatusDto.builder().orderId(1L).orderStatus(null).build();
+        DeliveryStatusDto deliveryStatusDto = DeliveryStatusDto.builder().orderId(1L).build();
 
-        Assertions.assertEquals(1, checkViolations(deliveryStatusDto).size());
+        Assertions.assertEquals(3, checkViolations(deliveryStatusDto).size());
     }
 
     @Test
     @DisplayName("[DeliveryStatusDto] Validation 실패 : 주문상태 누락")
     void newTest_fail2() {
         DeliveryStatusDto deliveryStatusDto =
-                DeliveryStatusDto.builder().orderId(1L).orderStatus(null).build();
+                DeliveryStatusDto.builder().orderId(1L).orderStatus(OrderStatus.NEW).build();
 
-        Assertions.assertEquals(1, checkViolations(deliveryStatusDto).size());
+        Assertions.assertEquals(2, checkViolations(deliveryStatusDto).size());
     }
 
     public static <T> Set<ConstraintViolation<T>> checkViolations(T dto) {
