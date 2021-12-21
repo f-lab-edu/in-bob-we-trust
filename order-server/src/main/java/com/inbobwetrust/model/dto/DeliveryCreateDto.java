@@ -37,10 +37,7 @@ public class DeliveryCreateDto {
 
     @Builder
     public DeliveryCreateDto(
-            Long orderId,
-            Long agencyId,
-            LocalDateTime pickupTime,
-            LocalDateTime createdAt) {
+            Long orderId, Long agencyId, LocalDateTime pickupTime, LocalDateTime createdAt) {
         this.orderId = orderId;
         this.agencyId = agencyId;
         this.pickupTime = pickupTime;

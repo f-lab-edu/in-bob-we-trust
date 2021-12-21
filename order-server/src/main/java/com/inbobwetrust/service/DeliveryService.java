@@ -3,7 +3,6 @@ package com.inbobwetrust.service;
 import com.inbobwetrust.exceptions.NoAffectedRowsSqlException;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
-import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 
