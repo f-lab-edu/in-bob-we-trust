@@ -152,7 +152,7 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("주문상태확인 service : 성공")
     void findDeliveryStatusByOrderId_success() {
-        DeliveryStatusDto expected = new DeliveryStatusDto(1L, OrderStatus.ACCEPTED);
+        DeliveryStatusDto expected = new DeliveryStatusDto(1L, 1L, 1L, OrderStatus.ACCEPTED);
         when(deliveryRepository.findDeliveryStatusByOrderId(expected.getOrderId()))
                 .thenReturn(Optional.of(expected));
 

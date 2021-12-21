@@ -272,7 +272,12 @@ public class DeliveryControllerTest {
     }
 
     private DeliveryStatusDto makeSimpleDeliveryStatusDto() {
-        return DeliveryStatusDto.builder().orderId(1L).orderStatus(OrderStatus.PICKED_UP).build();
+        return DeliveryStatusDto.builder()
+                .orderId(1L)
+                .deliveryId(1L)
+                .riderId(1L)
+                .orderStatus(OrderStatus.PICKED_UP)
+                .build();
     }
 
     @Test

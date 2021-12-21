@@ -19,11 +19,23 @@ public class DeliveryStatusDto {
     @Max(Long.MAX_VALUE)
     private Long orderId;
 
+    @NotNull(message = "라이더ID는 필수값입니다.")
+    @Min(value = 1, message = "라이더ID는 최소 1 이상이어야 합니다.")
+    @Max(Long.MAX_VALUE)
+    private Long riderId;
+
+    @NotNull(message = "배달ID 필수값입니다.")
+    @Min(value = 1, message = "배달ID 최소 1 이상이어야 합니다.")
+    @Max(Long.MAX_VALUE)
+    private Long deliveryId;
+
     @NotNull private OrderStatus orderStatus;
 
     @Builder
-    public DeliveryStatusDto(Long orderId, OrderStatus orderStatus) {
+    public DeliveryStatusDto(Long orderId, Long riderId, Long deliveryId, OrderStatus orderStatus) {
         this.orderId = orderId;
+        this.riderId = riderId;
+        this.deliveryId = deliveryId;
         this.orderStatus = orderStatus;
     }
 }
