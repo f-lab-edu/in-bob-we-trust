@@ -70,6 +70,5 @@ CREATE TABLE IF NOT EXISTS tbl_delivery (
   UNIQUE (id),
   UNIQUE (order_id),
   FOREIGN KEY (rider_id) REFERENCES tbl_rider(id),
-  FOREIGN KEY (agency_id) REFERENCES tbl_agency(id),
   FOREIGN KEY (order_id) REFERENCES tbl_order(id)
   );
