@@ -1,7 +1,9 @@
 package com.inbobwetrust.service;
 
+import com.inbobwetrust.exceptions.NoAffectedRowsSqlException;
 import com.inbobwetrust.model.dto.DeliveryStatusDto;
 import com.inbobwetrust.model.entity.Delivery;
+import com.inbobwetrust.model.entity.OrderStatus;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
 
@@ -16,11 +18,21 @@ public class DeliveryService {
     private final DeliveryProducer deliveryProducer;
 
     public Delivery addDelivery(Delivery delivery) {
+        canAddDelivery(delivery);
         addEstimatedDeliveryFinishTime(delivery);
-        saveOrThrow(delivery, "Save Operation Failed : delivery with such ID exists");
-        Delivery savedDelivery = findByOrderId(delivery.getOrderId());
-        deliveryProducer.sendAddDeliveryMessage(savedDelivery);
-        return savedDelivery;
+        saveOrThrow(delivery, "[신규주문접수] 실패");
+        deliveryProducer.sendAddDeliveryMessage(delivery);
+        return delivery;
+    }
+
+    private void canAddDelivery(Delivery delivery) {
+        if (!delivery.isNew())
+            throw new IllegalStateException(
+                    "신규 접수건이 아닙니다. 주문상태 : ".concat(delivery.getOrderStatus().toString()));
+        if (!delivery.isValidPickupTime())
+            throw new IllegalStateException("픽업요청이 유효성검사 시간보다 일찍입니다.");
+        if (delivery.getFinishTime() != null)
+            throw new IllegalStateException("[배달완료시간 사전설정] 배달완료시간은 어플리케이션에서 설정해야합니다.");
     }
 
     public void addEstimatedDeliveryFinishTime(Delivery delivery) {
@@ -53,7 +65,7 @@ public class DeliveryService {
 
     private void saveOrThrow(Delivery delivery, String msg) {
         if (!deliveryRepository.save(delivery)) {
-            throw new RuntimeException(msg);
+            throw new NoAffectedRowsSqlException();
         }
     }
 

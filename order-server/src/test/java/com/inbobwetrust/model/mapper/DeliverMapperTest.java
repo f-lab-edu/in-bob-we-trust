@@ -26,7 +26,6 @@ public class DeliverMapperTest {
         DeliveryCreateDto expected =
                 DeliveryCreateDto.builder()
                         .orderId(1L)
-                        .riderId(2L)
                         .agencyId(3L)
                         .pickupTime(LocalDateTime.now().plusMinutes(30))
                         .createdAt(LocalDateTime.now())
@@ -36,7 +35,6 @@ public class DeliverMapperTest {
 
         Assertions.assertNull(actual.getId());
         Assertions.assertEquals(expected.getOrderId(), actual.getOrderId());
-        Assertions.assertEquals(expected.getRiderId(), actual.getRiderId());
         Assertions.assertEquals(expected.getAgencyId(), actual.getAgencyId());
         Assertions.assertNull(actual.getOrderStatus());
         Assertions.assertEquals(expected.getPickupTime(), actual.getPickupTime());

@@ -104,7 +104,6 @@ public class DeliveryControllerTest {
     private DeliveryCreateDto makeSimpleDeliveryCreateDto() {
         return DeliveryCreateDto.builder()
                 .orderId(1L)
-                .riderId(2L)
                 .agencyId(3L)
                 .pickupTime(LocalDateTime.now().plusMinutes(30))
                 .createdAt(LocalDateTime.now())
@@ -160,10 +159,10 @@ public class DeliveryControllerTest {
     void addDeliveryTest_fail() throws Exception {
         DeliveryCreateDto expected = deliveryCreateDto;
         Map expectedMap = mapper.convertValue(expected, Map.class); // Long.MAX_VALUE 초과값 전송
-        assertTrue(expectedMap.containsKey("riderId"));
+        assertTrue(expectedMap.containsKey("orderId"));
         BigInteger greaterThanLongMaxValue =
                 new BigInteger(String.valueOf(Long.MAX_VALUE).concat("1000"));
-        expectedMap.put("riderId", greaterThanLongMaxValue);
+        expectedMap.put("orderId", greaterThanLongMaxValue);
 
         String requestBody = mapper.writeValueAsString(expectedMap);
 
@@ -181,7 +180,7 @@ public class DeliveryControllerTest {
     @DisplayName("[DeliveryController.addDelivery] 실패: 누락된(null) 정보")
     void addDeliveryTest_fail1() throws Exception {
         String requestBody =
-                mapper.writeValueAsString(new DeliveryCreateDto(null, null, null, null, null));
+                mapper.writeValueAsString(new DeliveryCreateDto(null, null, null, null));
 
         mockMvc.perform(
                         post("/delivery")
