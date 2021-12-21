@@ -81,4 +81,19 @@ public class Delivery {
     public boolean isValidPickupTime() {
         return pickupTime.compareTo(LocalDateTime.now()) == 1;
     }
+
+    public boolean matchesRider(Rider rider) {
+        if (this.riderId == null || this.agencyId == null || rider == null || !rider.hasAllData()) {
+            return false;
+        }
+        return (this.riderId.longValue() == rider.getId().longValue())
+                && (this.agencyId.longValue() == rider.getAgencyId().longValue());
+    }
+
+    public boolean canSetRider() {
+        if (orderStatus == null) return false;
+        boolean statusCan = orderStatus.equals(OrderStatus.ACCEPTED);
+        boolean finishTimeCan = finishTime != null;
+        return statusCan && finishTimeCan;
+    }
 }
