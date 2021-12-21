@@ -225,24 +225,25 @@ public class DeliveryServiceTest {
         verify(deliveryRepository, times(0)).save(any());
         verify(deliveryProducer, times(0)).sendAddDeliveryMessage(any());
     }
-    // 00
 
     @Test
     @DisplayName("[라이더배정] 실패 : 미존재 주문번호, UPDATE 아무것도 발생하지 않음")
     void setRiderTest_fail2() {
+        // SetupData
         Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
         aDelivery.setId(-1L);
         aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
         aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
+        // Stub
         when(riderRepository.findByRiderId(any()))
                 .thenReturn(Optional.of(makeExpectedRider(aDelivery)));
         when(deliveryRepository.update(any())).thenReturn(false);
         when(deliveryRepository.findByOrderId(any()))
                 .thenReturn(Optional.of(makeDeliveryNullRider()))
                 .thenReturn(Optional.of(aDelivery));
-        // execute
+        // Execute
         assertThrows(NoAffectedRowsSqlException.class, () -> deliveryService.setRider(aDelivery));
-        // assert
+        // Assert
         verify(deliveryRepository, times(1)).update(any());
     }
 
@@ -253,17 +254,19 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("[라이더배정] 성공 : 존재 주문번호, UPDATE 발생")
     void setRiderTest_fail4() {
+        // SetUpData
         Delivery deliveryNullRider = makeDeliveryNullRider();
         Delivery expected = makeDeliveryValid();
+        // Stub
         when(riderRepository.findByRiderId(any()))
                 .thenReturn(Optional.of(makeExpectedRider(expected)));
         when(deliveryRepository.update(any())).thenReturn(true);
         when(deliveryRepository.findByOrderId(any()))
                 .thenReturn(Optional.of(deliveryNullRider))
                 .thenReturn(Optional.of(expected));
-        // execute
+        // Execute
         Delivery actual = deliveryService.setRider(expected);
-        // assert
+        // Assert
         assertEquals(expected, actual);
         verify(deliveryRepository, times(1)).update(any());
     }
@@ -284,13 +287,14 @@ public class DeliveryServiceTest {
     @Test
     @DisplayName("[라이더배정] 실패 : 배달완료시간 미설정 UPDATE 발생")
     void setRiderTest_fail5() {
+        // SetUp
         Delivery aDelivery = makeDeliveryForRequestAndResponse().get(0);
         aDelivery.setFinishTime(LocalDateTime.now().plusMinutes(60));
         aDelivery.setOrderStatus(OrderStatus.ACCEPTED);
         aDelivery.setFinishTime(null);
-
+        // Exexcute
         assertThrows(IllegalStateException.class, () -> deliveryService.setRider(aDelivery));
-
+        // Assert
         verify(riderRepository, times(0)).findByRiderId(any());
         verify(deliveryRepository, times(0)).update(any());
         verify(deliveryRepository, times(0)).findByOrderId(any());
