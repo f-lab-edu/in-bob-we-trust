@@ -7,13 +7,11 @@ import com.inbobwetrust.model.entity.Delivery;
 import com.inbobwetrust.model.entity.Rider;
 import com.inbobwetrust.producer.DeliveryProducer;
 import com.inbobwetrust.repository.DeliveryRepository;
-
 import com.inbobwetrust.repository.RiderRepository;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-
-import javax.validation.ConstraintViolationException;
 
 @Service
 @RequiredArgsConstructor

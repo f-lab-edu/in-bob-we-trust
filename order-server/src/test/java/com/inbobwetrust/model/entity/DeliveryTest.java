@@ -6,14 +6,11 @@ import com.inbobwetrust.service.DeliveryServiceTest;
 import com.inbobwetrust.util.vo.DeliveryInstanceGenerator;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class DeliveryTest {
     Logger log = (Logger) LoggerFactory.getLogger(DeliveryServiceTest.class);
