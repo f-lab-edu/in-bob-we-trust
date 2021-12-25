@@ -19,32 +19,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.projectlombok:lombok'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'io.springfox:springfox-swagger2:2.7.0'
-    implementation 'io.springfox:springfox-swagger-ui:2.7.0'
-    if (System.getProperty("os.arch").equals("aarch64")) { // MockWebServer의 맥 M1 특정 DNS리졸버 버그해결
-        implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
-    }
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation "org.mapstruct:mapstruct:1.4.2.Final"
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
-    implementation 'mysql:mysql-connector-java'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-
-    testRuntimeOnly 'com.h2database:h2'
-    testImplementation 'com.squareup.okhttp3:mockwebserver'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
-//    integrationTestImplementation 'com.google.code.gson:gson:2.8.6' // integration테스트를 위한 디펜던시 추가 예시
 }
 
 sourceSets {
