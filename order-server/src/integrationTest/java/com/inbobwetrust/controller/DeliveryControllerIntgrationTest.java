@@ -1,7 +1,5 @@
 package com.inbobwetrust.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -9,7 +7,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,18 +18,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
-class DeliveryControllerIntgrationTest {
-  @Autowired WebClient webClient;
-
+class DeliveryControllerIntegrationTest {
   @Autowired WebTestClient testClient;
 
   @Autowired DeliveryRepository deliveryRepository;
@@ -53,10 +51,6 @@ class DeliveryControllerIntgrationTest {
         .phoneNumber("01031583212")
         .orderTime(LocalDateTime.now())
         .build();
-  }
-
-  private Delivery makeInvalidDelivery() {
-    return Delivery.builder().build();
   }
 
   @Test
@@ -83,7 +77,7 @@ class DeliveryControllerIntgrationTest {
             .expectBody(Delivery.class)
             .returnResult()
             .getResponseBody();
-    expected.setId(actual.getId());
+    expected.setId(Objects.requireNonNull(actual).getId());
     var savedCnt = deliveryRepository.findAll();
     // Assert
     WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
@@ -91,7 +85,7 @@ class DeliveryControllerIntgrationTest {
   }
 
   @Test
-  void sendAddDeliveryEvent_connection_refused() throws JsonProcessingException {
+  void sendAddDeliveryEvent_connection_refused() {
     // Arrange
     Delivery expected = makeValidDelivery();
     final String testUrl = "/shop/" + expected.getShopId();
@@ -118,13 +112,14 @@ class DeliveryControllerIntgrationTest {
             .getResponseBody();
     var saved = deliveryRepository.findAll();
     // Assert
-    Assertions.assertTrue(actual.contains("Push Event failed for delivery :     "));
+    Assertions.assertTrue(
+        Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
     WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
     StepVerifier.create(saved).expectNextCount(1).verifyComplete();
   }
 
   @Test
-  void sendAddDeliveryEvent_server_error() throws JsonProcessingException {
+  void sendAddDeliveryEvent_server_error() {
     // Arrange
     Delivery delivery = makeValidDelivery();
     final String testUrl = "/shop/" + delivery.getShopId();
@@ -152,7 +147,9 @@ class DeliveryControllerIntgrationTest {
             .getResponseBody();
     var saved = deliveryRepository.findAll().blockFirst();
     // Assert
-    var expected = "Shop operation failed for delivery :     ".concat(saved.toString());
+    var expected =
+        "Shop operation failed for delivery :     "
+            .concat(Objects.requireNonNull(saved).toString());
     Assertions.assertEquals(expected, actual);
     WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
   }
