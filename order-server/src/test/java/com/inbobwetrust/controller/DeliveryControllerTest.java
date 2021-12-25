@@ -26,6 +26,7 @@ public class DeliveryControllerTest {
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
+        .shopId("shop1234")
         .orderId("order-1234")
         .customerId("customer-1234")
         .address("서울시 강남구 삼성동 봉은사로 12-41")
@@ -79,7 +80,8 @@ public class DeliveryControllerTest {
             .expectBody(Delivery.class)
             .returnResult()
             .getResponseBody();
-
+    // asesrt
+    expected.setOrderTime(actual.getOrderTime());
     Assertions.assertEquals(expected, actual);
     verify(deliveryService, times(1)).addDelivery(any());
   }
