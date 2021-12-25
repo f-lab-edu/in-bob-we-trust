@@ -26,6 +26,7 @@ public class DeliveryControllerTest {
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
+        .orderId("order-1234")
         .customerId("customer-1234")
         .address("서울시 강남구 삼성동 봉은사로 12-41")
         .phoneNumber("01031583212")
