@@ -18,9 +18,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return deliveryRepository
-        .save(delivery)
-        .onErrorReturn(IllegalArgumentException.class, null)
-        .doOnNext(deliveryPublisher::sendAddDeliveryEvent);
+    return deliveryRepository.save(delivery).doOnNext(deliveryPublisher::sendAddDeliveryEvent);
   }
 }
