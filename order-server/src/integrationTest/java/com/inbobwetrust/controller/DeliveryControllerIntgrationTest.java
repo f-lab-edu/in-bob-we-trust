@@ -1,4 +1,4 @@
-package com.inbobwetrust;
+package com.inbobwetrust.controller;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -29,8 +29,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@AutoConfigureWireMock(port = 8084)
-@TestPropertySource(properties = {"restClient.proxy.shopUrl=http://localhost:8084/shop"})
+@AutoConfigureWireMock(port = 0)
 class DeliveryControllerIntgrationTest {
   @Autowired WebClient webClient;
 

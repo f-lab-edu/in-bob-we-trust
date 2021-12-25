@@ -2,3 +2,7 @@ wiremock:
   server:
     httpsPort: -1
   reset-mappings-after-each-test: true
+
+restClient:
+  proxy:
+    shopUrl: http://localhost:${wiremock.server.port}/shop
