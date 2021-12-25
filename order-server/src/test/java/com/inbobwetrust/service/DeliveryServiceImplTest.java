@@ -44,7 +44,6 @@ public class DeliveryServiceImplTest {
     Delivery expected = makeValidDelivery();
     // Stub
     when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(expected));
-    doNothing().when(deliveryPublisher).sendAddDeliveryEvent(isA(Delivery.class));
     // Act
     var result = deliveryService.addDelivery(expected);
     // Assert
