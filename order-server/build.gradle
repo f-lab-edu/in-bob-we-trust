@@ -27,11 +27,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation 'io.projectreactor:reactor-test'
-    // wiremock
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
-    if (System.getProperty("os.arch").equals("aarch64")) { // MockWebServer의 맥 M1 특정 DNS리졸버 버그해결
-        testImplementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
-    }
 }
 
 sourceSets {
