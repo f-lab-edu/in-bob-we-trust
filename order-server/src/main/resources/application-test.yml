@@ -1,0 +1,4 @@
+wiremock:
+  server:
+    httpsPort: -1
+  reset-mappings-after-each-test: true
