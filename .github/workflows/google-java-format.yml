@@ -1,14 +1,13 @@
 # Example workflow
 name: Format
 
-on: [ push, pull_request ]
+on: [ push ]
 
 jobs:
 
   formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # v2 minimum required
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--replace"
