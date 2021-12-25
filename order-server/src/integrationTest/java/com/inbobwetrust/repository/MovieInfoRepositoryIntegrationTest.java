@@ -1,20 +1,16 @@
 package com.inbobwetrust.repository;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inbobwetrust.domain.Delivery;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest // look for repository class, class available no need to  spin up whole context
 class MovieInfoRepositoryIntegrationTest {
