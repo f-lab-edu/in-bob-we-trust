@@ -16,7 +16,7 @@ public class ExceptionHandlerAdvice {
 
   @ExceptionHandler(value = {WebExchangeBindException.class})
   public ResponseEntity<String> handleConstraintViolation(WebExchangeBindException ex) {
-    log.error("Exception caught in handleRequestBodyError : {} ", ex.getMessage(), ex);
+    logException(ex);
     var error =
         ex.getBindingResult().getAllErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -24,5 +24,23 @@ public class ExceptionHandlerAdvice {
             .collect(Collectors.joining(VALIDATION_ERROR_DELIMITER));
     log.error("Error is : {}", error);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(value = {RelayClientException.class})
+  public ResponseEntity<String> handleShopConnectionFailedException(RelayClientException ex) {
+    logException(ex);
+    log.error(" caught by advice : {} ", ex.getMessage(), ex);
+    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(value = {RelayServerException.class})
+  public ResponseEntity<String> handleRelayServerException(RelayServerException ex) {
+    logException(ex);
+    log.error(" caught by advice : {} ", ex.getMessage(), ex);
+    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(ex.getMessage());
+  }
+
+  private void logException(Throwable ex) {
+    log.error("{} caught by advice : {} ", ex.getClass().getName(), ex.getMessage(), ex);
   }
 }
