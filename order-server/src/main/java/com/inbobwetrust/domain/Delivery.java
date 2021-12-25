@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Delivery {
   @Id private String id;
 
+  @NotNull(message = "주문번호는 필수 입력값입니다.")
   private String orderId;
 
   private String riderId;
