@@ -9,4 +9,8 @@ public interface DeliveryService {
   Mono<Delivery> acceptDelivery(Delivery delivery);
 
   Mono<Delivery> setDeliveryRider(Delivery delivery);
+
+  Mono<Delivery> setPickedUp(Delivery delivery);
+
+  Mono<Delivery> setComplete(Delivery delivery);
 }
