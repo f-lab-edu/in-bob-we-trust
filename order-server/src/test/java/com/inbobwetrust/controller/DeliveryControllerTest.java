@@ -85,4 +85,50 @@ public class DeliveryControllerTest {
     Assertions.assertEquals(expected, actual);
     verify(deliveryService, times(1)).addDelivery(any());
   }
+
+  @Test
+  void setDeliveryRider_successful() {
+    // given
+    var expected = makeValidDelivery();
+    // when
+    when(deliveryService.setDeliveryRider(isA(Delivery.class))).thenReturn(Mono.just(expected));
+    // then
+    var actual =
+        testClient
+            .put()
+            .uri(DELIVERY_URL + "/rider")
+            .bodyValue(expected)
+            .exchange()
+            .expectStatus()
+            .is2xxSuccessful()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
+    // asesrt
+    expected.setOrderTime(actual.getOrderTime());
+    Assertions.assertEquals(expected, actual);
+    verify(deliveryService, times(1)).setDeliveryRider(any());
+  }
+
+  @Test
+  void setDeliveryRider_fail() {
+    // given
+    var expected = makeInvalidDelivery();
+    // when
+    when(deliveryService.setDeliveryRider(isA(Delivery.class))).thenReturn(Mono.just(expected));
+    // then
+    var actual =
+        testClient
+            .put()
+            .uri(DELIVERY_URL + "/rider")
+            .bodyValue(expected)
+            .exchange()
+            .expectStatus()
+            .isBadRequest()
+            .expectBody(String.class)
+            .returnResult()
+            .getResponseBody();
+    // asesrt
+    verify(deliveryService, times(0)).setDeliveryRider(any());
+  }
 }

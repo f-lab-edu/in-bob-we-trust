@@ -22,4 +22,9 @@ public class DeliveryController {
   Mono<Delivery> acceptDelivery(@RequestBody @Valid Delivery delivery) {
     return deliveryService.acceptDelivery(delivery);
   }
+
+  @PutMapping("/rider")
+  Mono<Delivery> setDeliveryRider(@RequestBody @Valid Delivery delivery) {
+    return deliveryService.setDeliveryRider(delivery);
+  }
 }
