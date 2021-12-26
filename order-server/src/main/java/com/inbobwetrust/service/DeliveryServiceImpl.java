@@ -39,6 +39,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
+  @Override
+  public Mono<Delivery> setDeliveryRider(Delivery delivery) {
+    return null;
+  }
+
   private boolean invalidAcceptDelivery(Delivery delivery) {
     StringBuilder errorMessage = new StringBuilder("");
     errorMessage.append(Objects.nonNull(delivery.getDeliveryStatus()) ? "" : "주문상태가 null 입니다.");

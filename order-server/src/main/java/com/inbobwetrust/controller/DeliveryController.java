@@ -3,6 +3,8 @@ package com.inbobwetrust.controller;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import javax.validation.Valid;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -21,5 +23,10 @@ public class DeliveryController {
   @PutMapping("/accept")
   Mono<Delivery> acceptDelivery(@RequestBody @Valid Delivery delivery) {
     return deliveryService.acceptDelivery(delivery);
+  }
+
+  @PutMapping("/rider")
+  Mono<Delivery> setDeliveryRider(@RequestBody @Valid Delivery delivery) {
+    return deliveryService.setDeliveryRider(delivery);
   }
 }
