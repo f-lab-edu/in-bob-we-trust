@@ -4,9 +4,12 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
 import com.inbobwetrust.domain.Delivery;
+import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
 import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,11 +55,65 @@ public class DeliveryServiceImplTest {
   void addDelivery_fail_null() {
     // Arrange
     // Stub
-    when(deliveryRepository.save(any())).thenReturn(Mono.error(IllegalArgumentException::new));
-    // Act
+    when(deliveryRepository.save(any()))
+        .thenReturn(Mono.error(IllegalArgumentException::new)); // Act
     var result = deliveryService.addDelivery(null);
     // Assert
     StepVerifier.create(result).expectError(IllegalArgumentException.class);
     verify(deliveryRepository, times(1)).save(any());
+  }
+
+  @Test
+  void setDeliveryRider_success() {
+    // Arrange
+    var expected = makeValidDelivery();
+    expected.setId("aererea");
+    expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    expected.setFinishTime(LocalDateTime.now().plusMinutes(60));
+    // Stub
+    var output = Mono.just(expected);
+    when(deliveryRepository.findById(expected.getId())).thenReturn(output);
+    when(deliveryRepository.save(any(Delivery.class))).thenReturn(output);
+    // Act
+    var result = deliveryService.setDeliveryRider(expected);
+    // Assert
+    StepVerifier.create(result)
+        .consumeNextWith(
+            actual -> {
+              Assertions.assertEquals(expected, actual);
+              verify(deliveryRepository, times(1)).findById(anyString());
+              verify(deliveryRepository, times(1)).save(any());
+            })
+        .verifyComplete();
+  }
+
+  @Test
+  void setDeliveryRider_fail_invalid_delivery_information() {
+    // Arrange
+    Delivery expected = makeValidDelivery();
+    expected.setId("abcd");
+    expected.setRiderId("1234");
+    expected.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    expected.setFinishTime(null);
+    // Stub
+    when(deliveryRepository.findById(expected.getId())).thenReturn(Mono.just(expected));
+    // Act
+    var result = deliveryService.setDeliveryRider(expected);
+    // Assert
+    StepVerifier.create(result)
+        .consumeErrorWith(
+            actual -> {
+              Assertions.assertTrue(
+                  actual.getMessage().contains(DeliveryServiceImpl.MSG_RIDER_ALREADY_SET));
+              Assertions.assertTrue(
+                  actual
+                      .getMessage()
+                      .contains(DeliveryServiceImpl.MSG_INVALID_STATUS_FOR_SETRIDER));
+              Assertions.assertTrue(
+                  actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
+              verify(deliveryRepository, times(1)).findById(anyString());
+              verify(deliveryRepository, times(0)).save(any());
+            })
+        .verify();
   }
 }

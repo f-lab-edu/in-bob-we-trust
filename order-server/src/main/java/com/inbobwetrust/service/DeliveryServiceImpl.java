@@ -39,11 +39,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
-  @Override
-  public Mono<Delivery> setDeliveryRider(Delivery delivery) {
-    return null;
-  }
-
   private boolean invalidAcceptDelivery(Delivery delivery) {
     StringBuilder errorMessage = new StringBuilder("");
     errorMessage.append(Objects.nonNull(delivery.getDeliveryStatus()) ? "" : "주문상태가 null 입니다.");
@@ -56,6 +51,36 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
     if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
       return true;
+    }
+    throw new IllegalArgumentException(errorMessage.toString());
+  }
+
+  @Override
+  public Mono<Delivery> setDeliveryRider(Delivery delivery) {
+    return deliveryRepository
+        .findById(delivery.getId())
+        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
+        .flatMap(this::canSetDeliveryRider)
+        .flatMap(deliveryRepository::save);
+  }
+
+  public static final String MSG_RIDER_ALREADY_SET = "배정된 라이더가 존재합니다. 라이더ID : ";
+  public static final String MSG_INVALID_STATUS_FOR_SETRIDER = "라이더배정가능한 상태가 아닙니다. 현재상태 : ";
+  public static final String MSG_NULL_FINISHTIME = "배달완료시간이 설정되지 않았습니다.";
+
+  private Mono<Delivery> canSetDeliveryRider(Delivery delivery) {
+    StringBuilder errorMessage = new StringBuilder("");
+    if (Objects.nonNull(delivery.getRiderId())) {
+      errorMessage.append(MSG_RIDER_ALREADY_SET + delivery.getRiderId());
+    }
+    if (!delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
+      errorMessage.append(MSG_INVALID_STATUS_FOR_SETRIDER + delivery.getDeliveryStatus());
+    }
+    if (Objects.isNull(delivery.getFinishTime())) {
+      errorMessage.append(MSG_NULL_FINISHTIME);
+    }
+    if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
+      return Mono.just(delivery);
     }
     throw new IllegalArgumentException(errorMessage.toString());
   }
