@@ -1,11 +1,11 @@
 package com.inbobwetrust.domain;
 
 public enum DeliveryStatus {
+  DECLINED("접수", "접수"),
+
   NEW("접수요청", "접수대기중"),
 
   ACCEPTED("배차완료", "접수완료"),
-
-  DECLINED("접수", "접수"),
 
   PICKED_UP("픽업완료", "픽업완료"),
 
@@ -21,6 +21,6 @@ public enum DeliveryStatus {
 
   public boolean canProceedTo(DeliveryStatus deliveryStatus) {
     if (this.equals(COMPLETE) || this.equals(DECLINED)) return false;
-    return values()[(ordinal() + 1)].equals(deliveryStatus);
+    return (this.ordinal() + 1) == deliveryStatus.ordinal();
   }
 }
