@@ -44,19 +44,19 @@ public class Delivery {
   @NotNull(message = "주문일시는 필수 입력값입니다.")
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]",
+      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
       timezone = "Asia/Seoul")
   private LocalDateTime orderTime;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]",
+      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
       timezone = "Asia/Seoul")
   private LocalDateTime pickupTime;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]",
+      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
       timezone = "Asia/Seoul")
   private LocalDateTime finishTime;
 

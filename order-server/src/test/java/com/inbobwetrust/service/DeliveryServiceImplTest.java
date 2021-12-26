@@ -115,4 +115,93 @@ public class DeliveryServiceImplTest {
             })
         .verify();
   }
+
+  @Test
+  void setPickUp_success() {
+    // Arrange
+    var beforeData = makeValidSetPickUpDelivery();
+    beforeData.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    var afterData = makeValidSetPickUpDelivery();
+    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    // Stub
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
+    // Act
+    var stream = deliveryService.setPickedUp(afterData);
+    // Assert
+    StepVerifier.create(stream).expectNext(afterData).verifyComplete();
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(1)).save(any(Delivery.class));
+  }
+
+  @Test
+  void setPickUp_fail_invalid_statusChange() {
+    // Arrange
+    var beforeData = makeValidSetPickUpDelivery();
+    beforeData.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    var afterData = makeValidSetPickUpDelivery();
+    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    // Stub
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    // Act
+    var stream = deliveryService.setPickedUp(afterData);
+    // Assert
+    StepVerifier.create(stream)
+        .consumeErrorWith(
+            err -> Assertions.assertEquals(IllegalArgumentException.class, err.getClass()))
+        .verify();
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(0)).save(any(Delivery.class));
+  }
+
+  private Delivery makeValidSetPickUpDelivery() {
+    return Delivery.builder()
+        .id("id-1234")
+        .orderId("order1")
+        .riderId("rider-1234")
+        .agencyId("agency-1234")
+        .customerId("customer-1234")
+        .address("서울시 강남구...")
+        .phoneNumber("01031583977")
+        .deliveryStatus(DeliveryStatus.ACCEPTED)
+        .orderTime(LocalDateTime.now().minusMinutes(1))
+        .pickupTime(LocalDateTime.now().plusMinutes(30))
+        .finishTime(LocalDateTime.now().plusMinutes(60))
+        .build();
+  }
+
+  @Test
+  void setComplete_success() {
+    // Arrange
+    var beforeData = makeValidSetPickUpDelivery();
+    beforeData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    var afterData = makeValidSetPickUpDelivery();
+    afterData.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    // Stub
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
+    // Act
+    var stream = deliveryService.setComplete(afterData);
+    // Assert
+    StepVerifier.create(stream).expectNext(afterData).verifyComplete();
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(1)).save(any(Delivery.class));
+  }
+
+  @Test
+  void setComplete_fail_invalid_status() {
+    // Arrange
+    var beforeData = makeValidSetPickUpDelivery();
+    beforeData.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    var afterData = makeValidSetPickUpDelivery();
+    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    // Stub
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    // Act
+    var stream = deliveryService.setComplete(afterData);
+    // Assert
+    StepVerifier.create(stream).expectError(IllegalArgumentException.class).verify();
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(0)).save(any(Delivery.class));
+  }
 }
