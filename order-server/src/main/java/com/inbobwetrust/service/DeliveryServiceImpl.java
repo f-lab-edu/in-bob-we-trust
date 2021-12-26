@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -109,14 +112,9 @@ public class DeliveryServiceImpl implements DeliveryService {
       assert Objects.nonNull(before) && Objects.nonNull(after);
       var errorMessage = new StringBuilder("");
 
-      var beforeStatus = before.getDeliveryStatus();
-      var afterStatus = after.getDeliveryStatus();
-      var canUpdateStatus =
-          beforeStatus.equals(DeliveryStatus.ACCEPTED) && beforeStatus.canProceedTo(afterStatus);
-      if (!canUpdateStatus) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + afterStatus);
+      if (!canUpdateStatus(ACCEPTED, before, after)) {
+        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
       }
-
       return monoJustOrError(after, errorMessage);
     }
 
@@ -124,13 +122,16 @@ public class DeliveryServiceImpl implements DeliveryService {
       assert Objects.nonNull(before) && Objects.nonNull(after);
       StringBuilder errorMessage = new StringBuilder("");
 
-      boolean canUpdateStatus =
-          before.getDeliveryStatus().equals(DeliveryStatus.PICKED_UP)
-              && before.getDeliveryStatus().canProceedTo(after.getDeliveryStatus());
-      if (!canUpdateStatus) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE);
+      if (!canUpdateStatus(PICKED_UP, before, after)) {
+        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
       }
       return monoJustOrError(after, errorMessage);
+    }
+
+    private static boolean canUpdateStatus(
+        DeliveryStatus expectedBeforeStatus, Delivery before, Delivery after) {
+      return before.getDeliveryStatus().equals(expectedBeforeStatus)
+          && before.getDeliveryStatus().canProceedTo(after.getDeliveryStatus());
     }
 
     private static Mono<Delivery> monoJustOrError(Delivery after, StringBuilder errorMessage) {
