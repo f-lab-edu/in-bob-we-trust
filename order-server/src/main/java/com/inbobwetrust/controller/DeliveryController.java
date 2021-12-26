@@ -4,10 +4,7 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -19,5 +16,10 @@ public class DeliveryController {
   @PostMapping
   Mono<Delivery> addDelivery(@RequestBody @Valid Delivery delivery) {
     return deliveryService.addDelivery(delivery);
+  }
+
+  @PutMapping("/accept")
+  Mono<Delivery> acceptDelivery(@RequestBody @Valid Delivery delivery) {
+    return deliveryService.acceptDelivery(delivery);
   }
 }

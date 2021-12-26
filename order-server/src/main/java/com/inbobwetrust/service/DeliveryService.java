@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface DeliveryService {
   Mono<Delivery> addDelivery(Delivery delivery);
+
+  Mono<Delivery> acceptDelivery(Delivery delivery);
 }

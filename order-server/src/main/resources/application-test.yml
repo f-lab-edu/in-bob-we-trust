@@ -6,3 +6,4 @@ wiremock:
 restClient:
   proxy:
     shopUrl: http://localhost:${wiremock.server.port}/shop
+    agencyUrl: http://localhost:${wiremock.server.port}/agency
