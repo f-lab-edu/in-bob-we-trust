@@ -28,9 +28,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> acceptDelivery(Delivery delivery) {
-    if (!canAcceptDelivery(delivery)) {
+    try {
+      invalidAcceptDelivery(delivery);
+    } catch (IllegalStateException se) {
       return Mono.error(IllegalStateException::new);
     }
+
     return deliveryRepository
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
@@ -38,7 +41,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
-  private boolean canAcceptDelivery(Delivery delivery) {
+  private boolean invalidAcceptDelivery(Delivery delivery) {
     StringBuilder errorMessage = new StringBuilder("");
     errorMessage.append(Objects.nonNull(delivery.getDeliveryStatus()) ? "" : "주문상태가 null 입니다.");
 
