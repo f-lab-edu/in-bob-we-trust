@@ -133,7 +133,7 @@ class DeliveryControllerIntegrationTest {
                                 "Shop operation failed for delivery :     " + delivery)
                             .getMessage())));
     // Act
-    var actual =
+    var errorMsg =
         testClient
             .post()
             .uri("/api/delivery")
@@ -144,12 +144,8 @@ class DeliveryControllerIntegrationTest {
             .expectBody(String.class)
             .returnResult()
             .getResponseBody();
-    var saved = deliveryRepository.findAll().blockFirst();
     // Assert
-    var expected =
-        "Shop operation failed for delivery :     "
-            .concat(Objects.requireNonNull(saved).toString());
-    Assertions.assertEquals(expected, actual);
+    Assertions.assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
     WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
   }
 }
