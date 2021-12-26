@@ -1,8 +1,5 @@
 package com.inbobwetrust.service;
 
-import static java.time.LocalDateTime.now;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -19,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
+
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
   @InjectMocks DeliveryServiceImpl deliveryService;
@@ -31,7 +30,7 @@ public class DeliveryServiceImplTest {
         .customerId("customer-1234")
         .address("서울시 강남구 삼성동 봉은사로 12-41")
         .phoneNumber("01031583212")
-        .orderTime(now())
+        .orderTime(LocalDateTime.now())
         .build();
   }
 
@@ -70,7 +69,7 @@ public class DeliveryServiceImplTest {
     var expected = makeValidDelivery();
     expected.setId("aererea");
     expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
-    expected.setFinishTime(now().plusMinutes(60));
+    expected.setFinishTime(LocalDateTime.now().plusMinutes(60));
     // Stub
     var output = Mono.just(expected);
     when(deliveryRepository.findById(expected.getId())).thenReturn(output);
@@ -104,12 +103,14 @@ public class DeliveryServiceImplTest {
     StepVerifier.create(result)
         .consumeErrorWith(
             actual -> {
-              assertTrue(actual.getMessage().contains(DeliveryServiceImpl.MSG_RIDER_ALREADY_SET));
-              assertTrue(
+              Assertions.assertTrue(
+                  actual.getMessage().contains(DeliveryServiceImpl.MSG_RIDER_ALREADY_SET));
+              Assertions.assertTrue(
                   actual
                       .getMessage()
                       .contains(DeliveryServiceImpl.MSG_INVALID_STATUS_FOR_SETRIDER));
-              assertTrue(actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
+              Assertions.assertTrue(
+                  actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
               verify(deliveryRepository, times(1)).findById(anyString());
               verify(deliveryRepository, times(0)).save(any());
             })
@@ -147,7 +148,8 @@ public class DeliveryServiceImplTest {
     var stream = deliveryService.setPickedUp(afterData);
     // Assert
     StepVerifier.create(stream)
-        .consumeErrorWith(err -> assertEquals(IllegalArgumentException.class, err.getClass()))
+        .consumeErrorWith(
+            err -> Assertions.assertEquals(IllegalArgumentException.class, err.getClass()))
         .verify();
     verify(deliveryRepository, times(1)).findById(anyString());
     verify(deliveryRepository, times(0)).save(any(Delivery.class));
@@ -163,9 +165,9 @@ public class DeliveryServiceImplTest {
         .address("서울시 강남구...")
         .phoneNumber("01031583977")
         .deliveryStatus(DeliveryStatus.ACCEPTED)
-        .orderTime(now().minusMinutes(1))
-        .pickupTime(now().plusMinutes(30))
-        .finishTime(now().plusMinutes(60))
+        .orderTime(LocalDateTime.now().minusMinutes(1))
+        .pickupTime(LocalDateTime.now().plusMinutes(30))
+        .finishTime(LocalDateTime.now().plusMinutes(60))
         .build();
   }
 
