@@ -60,7 +60,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     return deliveryRepository
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(this::canSetDeliveryRider)
+        .flatMap(DeliveryServiceValidator::canSetDeliveryRider)
         .flatMap(deliveryRepository::save);
   }
 
@@ -68,20 +68,23 @@ public class DeliveryServiceImpl implements DeliveryService {
   public static final String MSG_INVALID_STATUS_FOR_SETRIDER = "라이더배정가능한 상태가 아닙니다. 현재상태 : ";
   public static final String MSG_NULL_FINISHTIME = "배달완료시간이 설정되지 않았습니다.";
 
-  private Mono<Delivery> canSetDeliveryRider(Delivery delivery) {
-    StringBuilder errorMessage = new StringBuilder("");
-    if (Objects.nonNull(delivery.getRiderId())) {
-      errorMessage.append(MSG_RIDER_ALREADY_SET + delivery.getRiderId());
+  private static class DeliveryServiceValidator {
+
+    private static Mono<Delivery> canSetDeliveryRider(Delivery delivery) {
+      StringBuilder errorMessage = new StringBuilder("");
+      if (Objects.nonNull(delivery.getRiderId())) {
+        errorMessage.append(MSG_RIDER_ALREADY_SET + delivery.getRiderId());
+      }
+      if (!delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
+        errorMessage.append(MSG_INVALID_STATUS_FOR_SETRIDER + delivery.getDeliveryStatus());
+      }
+      if (Objects.isNull(delivery.getFinishTime())) {
+        errorMessage.append(MSG_NULL_FINISHTIME);
+      }
+      if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
+        return Mono.just(delivery);
+      }
+      throw new IllegalArgumentException(errorMessage.toString());
     }
-    if (!delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
-      errorMessage.append(MSG_INVALID_STATUS_FOR_SETRIDER + delivery.getDeliveryStatus());
-    }
-    if (Objects.isNull(delivery.getFinishTime())) {
-      errorMessage.append(MSG_NULL_FINISHTIME);
-    }
-    if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
-      return Mono.just(delivery);
-    }
-    throw new IllegalArgumentException(errorMessage.toString());
   }
 }
