@@ -21,10 +21,29 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
   @Value("${restClient.proxy.shopUrl}")
   private String proxyShopUrl;
 
+  @Value("${restClient.proxy.agencyUrl}")
+  private String proxyAgencyUrl;
+
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
     return webClient
         .post()
-        .uri(proxyShopUrl.concat("/").concat(delivery.getShopId()))
+        .uri(proxyShopUrl + "/" + delivery.getShopId())
+        .retrieve()
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            clientResponse -> this.handleOn4xxStatus(delivery, clientResponse))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            serverResponse -> this.handleOn5xxStatus(delivery, serverResponse))
+        .bodyToMono(Delivery.class)
+        .log();
+  }
+
+  @Override
+  public Mono<Delivery> sendSetRiderEvent(Delivery delivery) {
+    return webClient
+        .put()
+        .uri(proxyAgencyUrl + "/" + delivery.getAgencyId())
         .retrieve()
         .onStatus(
             HttpStatus::is4xxClientError,
