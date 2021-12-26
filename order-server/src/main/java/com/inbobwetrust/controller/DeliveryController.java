@@ -27,4 +27,15 @@ public class DeliveryController {
   Mono<Delivery> setDeliveryRider(@RequestBody @Valid Delivery delivery) {
     return deliveryService.setDeliveryRider(delivery);
   }
+
+  @PutMapping("/pickup")
+  Mono<Delivery> setPickedUp(@RequestBody @Valid Delivery delivery) {
+    return deliveryService.setPickedUp(delivery);
+  }
+
+  @PutMapping("/complete")
+  Mono<Delivery> setComplete(@RequestBody @Valid Delivery delivery) {
+    return deliveryService.setComplete(delivery);
+  }
+
 }
