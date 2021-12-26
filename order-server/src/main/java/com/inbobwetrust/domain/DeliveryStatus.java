@@ -18,4 +18,9 @@ public enum DeliveryStatus {
     this.shopPerspective = shopPerspective;
     this.customerPerspective = customerPerspective;
   }
+
+  public boolean canProceedTo(DeliveryStatus deliveryStatus) {
+    if (this.equals(COMPLETE) || this.equals(DECLINED)) return false;
+    return values()[(ordinal() + 1)].equals(deliveryStatus);
+  }
 }
