@@ -4,9 +4,8 @@ import static org.mockito.Mockito.*;
 
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
-import java.time.LocalDateTime;
-
 import groovy.util.logging.Slf4j;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -37,5 +37,4 @@ public class DeliveryController {
   Mono<Delivery> setComplete(@RequestBody @Valid Delivery delivery) {
     return deliveryService.setComplete(delivery);
   }
-
 }
