@@ -90,8 +90,8 @@ class MovieInfoRepositoryIntegrationTest {
       int page = i;
       int size = 10;
       var pageable = PageRequest.of(page, size);
-      var countingStream = deliveryRepository.findByOrderIdContaining("", pageable).log();
-      var orderIdStream = deliveryRepository.findByOrderIdContaining("", pageable).log();
+      var countingStream = deliveryRepository.findAllByOrderIdContaining("", pageable).log();
+      var orderIdStream = deliveryRepository.findAllByOrderIdContaining("", pageable).log();
       // Assert
       StepVerifier.create(countingStream).expectNextCount(10).verifyComplete();
       StepVerifier.create(orderIdStream)

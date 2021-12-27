@@ -9,5 +9,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
 public interface DeliveryRepository extends ReactiveCrudRepository<Delivery, String> {
-  Flux<Delivery> findByOrderIdContaining(String id, Pageable pageable);
+  Flux<Delivery> findAllByOrderIdContaining(String id, Pageable pageable);
 }
