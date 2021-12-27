@@ -14,21 +14,24 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 public class ExceptionHandlerAdvice {
   private static final String VALIDATION_ERROR_DELIMITER = "/";
 
-  @ExceptionHandler(value = {WebExchangeBindException.class, IllegalArgumentException.class})
-  public ResponseEntity<String> handleConstraintViolation(Exception ex) {
+  @ExceptionHandler(value = {WebExchangeBindException.class})
+  public ResponseEntity<String> handleConstraintViolation(WebExchangeBindException ex) {
     logException(ex);
-    String error;
-    if (ex instanceof WebExchangeBindException) {
-      error =
-          ((WebExchangeBindException) ex)
-              .getBindingResult().getAllErrors().stream()
-                  .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                  .sorted()
-                  .collect(Collectors.joining(VALIDATION_ERROR_DELIMITER));
-      log.error("Error is : {}", error);
-    } else {
-      error = ex.getMessage();
-    }
+    var error =
+        ((WebExchangeBindException) ex)
+            .getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .sorted()
+                .collect(Collectors.joining(VALIDATION_ERROR_DELIMITER));
+    log.error("Error is : {}", error);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(value = {IllegalArgumentException.class, DeliveryNotFoundException.class})
+  public ResponseEntity<String> handleBadRequests(Exception ex) {
+    logException(ex);
+    var error = ex.getMessage();
+    log.error("Error is : {}", error);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 
@@ -42,12 +45,6 @@ public class ExceptionHandlerAdvice {
   public ResponseEntity<String> handleRelayServerException(RelayServerException ex) {
     logException(ex);
     return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(ex.getMessage());
-  }
-
-  @ExceptionHandler(value = {DeliveryNotFoundException.class})
-  public ResponseEntity<String> handleDeliveryNotFoundException(DeliveryNotFoundException ex) {
-    logException(ex);
-    return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(ex.getMessage());
   }
 
   private void logException(Throwable ex) {
