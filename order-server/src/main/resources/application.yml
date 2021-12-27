@@ -1,0 +1,4 @@
+restClient:
+  proxy:
+    shopUrl: http://localhost:8888/shop
+    agencyUrl: http://localhost:8888/agency
