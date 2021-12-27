@@ -29,8 +29,8 @@ public interface DeliveryControllerSwaggerDoc {
   public Mono<Delivery> setComplete(Delivery delivery);
 
   @Operation(summary = "모든 배달정보조회, queryParameter로 page와 size 입력필요.")
-  public Flux<Delivery> getDeliveries(@RequestParam Map<String, Object> paging);
+  public Flux<Delivery> getDeliveries(Map<String, Object> queryParams);
 
   @Operation(summary = "주문번호로 배달정보조회")
-  public Mono<Delivery> getDelivery(@PathVariable @NotBlank(message = "배달번호가 비어있습니다.") String id);
+  public Mono<Delivery> getDelivery(String id);
 }
