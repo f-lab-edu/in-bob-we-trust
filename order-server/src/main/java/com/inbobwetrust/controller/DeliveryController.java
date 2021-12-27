@@ -4,9 +4,11 @@ import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import java.util.Map;
+import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -15,6 +17,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/delivery")
 @RequiredArgsConstructor
+@Slf4j
 public class DeliveryController implements DeliveryControllerSwaggerDoc {
   private final DeliveryService deliveryService;
 
@@ -52,17 +55,12 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   public static final int MIN_SIZE = 1;
 
   @GetMapping
-  public Flux<Delivery> getDeliveries(@RequestParam Map<String, Object> paging) {
-    try {
-      int page = Integer.valueOf((String) paging.getOrDefault("page", DEFAULT_PAGE));
-      int size = Integer.valueOf((String) paging.getOrDefault("size", DEFAULT_SIZE));
-      page = page < MIN_PAGE ? MIN_PAGE : page;
-      size = size < MIN_SIZE ? MIN_SIZE : size;
-      return deliveryService.findAll(PageRequest.of(page, size));
-    } catch (NumberFormatException ne) {
-      throw new IllegalArgumentException(
-          "페이징 설정정보가 잘못되었습니다. page : " + paging.get("page") + " / size" + paging.get("size"));
-    }
+  public Flux<Delivery> getDeliveries(
+      @RequestParam(required = false, name = "page") Integer page,
+      @RequestParam(required = false, name = "size") Integer size) {
+    page = Objects.isNull(page) || page < MIN_PAGE ? MIN_PAGE : page;
+    size = Objects.isNull(size) || size < MIN_SIZE ? MIN_SIZE : size;
+    return deliveryService.findAll(PageRequest.of(page, size));
   }
 
   @GetMapping("/{id}")
