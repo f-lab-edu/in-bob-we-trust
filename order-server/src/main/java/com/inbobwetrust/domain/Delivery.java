@@ -63,4 +63,28 @@ public class Delivery {
   public void setId(String id) {
     this.id = id;
   }
+
+  public Delivery deepCopy() {
+    return Delivery.builder()
+        .id(this.id)
+        .orderId(this.orderId)
+        .riderId(this.riderId)
+        .agencyId(this.agencyId)
+        .shopId(this.shopId)
+        .customerId(this.customerId)
+        .address(this.address)
+        .phoneNumber(this.phoneNumber)
+        .comment(this.comment)
+        .deliveryStatus(this.deliveryStatus)
+        .orderTime(this.orderTime)
+        .pickupTime(this.pickupTime)
+        .finishTime(this.finishTime)
+        .build();
+  }
+
+  public void copyTimeFields(Delivery actual) {
+    setOrderTime(actual.getOrderTime());
+    setFinishTime(actual.getFinishTime());
+    setPickupTime(actual.getPickupTime());
+  }
 }

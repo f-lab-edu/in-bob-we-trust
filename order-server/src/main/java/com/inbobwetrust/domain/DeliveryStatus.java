@@ -23,4 +23,10 @@ public enum DeliveryStatus {
     if (this.equals(COMPLETE) || this.equals(DECLINED)) return false;
     return (this.ordinal() + 1) == deliveryStatus.ordinal();
   }
+
+  public DeliveryStatus getNext() {
+    boolean isLast = DeliveryStatus.values().length - 1 == this.ordinal();
+    if (isLast) return COMPLETE;
+    return DeliveryStatus.values()[this.ordinal() + 1];
+  }
 }
