@@ -5,7 +5,12 @@ import static org.mockito.Mockito.*;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import groovy.util.logging.Slf4j;
+
+import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @WebFluxTest(DeliveryController.class)
@@ -232,5 +240,69 @@ public class DeliveryControllerTest {
     LOG.info("Response is :      {}", response);
     Assertions.assertTrue(response.contains("필수 입력값입니다."));
     verify(deliveryService, times(0)).setComplete(any(Delivery.class));
+  }
+
+  @Test
+  void getDeliveries_success() {
+    // Arrange
+    int page = 0;
+    int size = 10;
+    var uri =
+        UriComponentsBuilder.fromUri(URI.create(DELIVERY_URL))
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .buildAndExpand()
+            .toUri();
+    // Stub
+    var returnDeliveryList = makeValidDeliveries(size * 10);
+    when(deliveryService.findAll(isA(PageRequest.class)))
+        .thenReturn(Flux.fromIterable(returnDeliveryList.subList(page, size)));
+    // Act
+    var response =
+        testClient
+            .get()
+            .uri(uri)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBodyList(Delivery.class)
+            .hasSize(10)
+            .returnResult()
+            .getResponseBody();
+    // Assert
+    LOG.info("Response is :      {}", response);
+    verify(deliveryService, times(1)).findAll(any());
+  }
+
+  private List<Delivery> makeValidDeliveries(int count) {
+    var deliveries = new ArrayList<Delivery>();
+    for (int i = 1; i <= count; i++) {
+      var dlvry = makeValidDelivery();
+      dlvry.setOrderId("order-" + i);
+      deliveries.add(dlvry);
+    }
+    return deliveries;
+  }
+
+  @Test
+  void getDelivery() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    delivery.setId("delivery-1234");
+    // Stub
+    when(deliveryService.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    // Act
+    var result =
+        testClient
+            .get()
+            .uri(DELIVERY_URL + "/{id}", delivery.getId())
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
+    // Assert
+    Assertions.assertEquals(delivery, result);
   }
 }
