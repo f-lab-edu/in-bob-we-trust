@@ -50,16 +50,16 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   public static final int MIN_SIZE = 1;
 
   @GetMapping
-  public Flux<Delivery> getDeliveries(@RequestParam Map<String, Object> paging) {
+  public Flux<Delivery> getDeliveries(@RequestParam Map<String, Object> params) {
     try {
-      int page = Integer.parseInt((String) paging.getOrDefault("page", DEFAULT_PAGE));
-      int size = Integer.parseInt((String) paging.getOrDefault("size", DEFAULT_SIZE));
+      int page = Integer.parseInt((String) params.getOrDefault("page", DEFAULT_PAGE));
+      int size = Integer.parseInt((String) params.getOrDefault("size", DEFAULT_SIZE));
       page = Math.max(page, MIN_PAGE);
       size = Math.max(size, MIN_SIZE);
       return deliveryService.findAll(PageRequest.of(page, size));
     } catch (NumberFormatException ne) {
       throw new IllegalArgumentException(
-          "페이징 설정정보가 잘못되었습니다. page : " + paging.get("page") + " / size" + paging.get("size"));
+          "페이징 설정정보가 잘못되었습니다. page : " + params.get("page") + " / size" + params.get("size"));
     }
   }
 
