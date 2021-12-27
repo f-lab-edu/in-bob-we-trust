@@ -12,7 +12,9 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -85,6 +87,20 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(oldDelivery -> validateFunc.apply(oldDelivery, newDelivery))
         .flatMap(deliveryRepository::save);
+  }
+
+  @Override
+  public Mono<Delivery> findById(String id) {
+    return deliveryRepository
+        .findById(id)
+        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
+  }
+
+  @Override
+  public Flux<Delivery> findAll(PageRequest pageRequest) {
+    return deliveryRepository
+        .findAllByOrderIdContaining("", pageRequest)
+        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }
 
   public static final String MSG_RIDER_ALREADY_SET = "배정된 라이더가 존재합니다. 라이더ID : ";

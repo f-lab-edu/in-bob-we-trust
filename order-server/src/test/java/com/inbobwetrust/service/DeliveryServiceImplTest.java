@@ -5,15 +5,21 @@ import static org.mockito.Mockito.*;
 
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
+import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -203,5 +209,67 @@ public class DeliveryServiceImplTest {
     StepVerifier.create(stream).expectError(IllegalArgumentException.class).verify();
     verify(deliveryRepository, times(1)).findById(anyString());
     verify(deliveryRepository, times(0)).save(any(Delivery.class));
+  }
+
+  @Test
+  void findById_success() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    // Stub
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    // Act
+    var resultStream = deliveryService.findById(delivery.getId());
+    // Assert
+    StepVerifier.create(resultStream).expectNext(delivery);
+  }
+
+  @Test
+  void findById_fail_doesNotExist() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    // Stub
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.empty());
+    // Act
+    var resultStream = deliveryService.findById(delivery.getId());
+    // Assert
+    StepVerifier.create(resultStream).expectError(DeliveryNotFoundException.class).verify();
+  }
+
+  @Test
+  void findAll_success() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    var pageable = PageRequest.of(0, 10);
+    // Stub
+    when(deliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
+        .thenReturn(Flux.fromIterable(makeValidDeliveries(10)));
+    // Act
+    var resultStream = deliveryService.findAll(pageable);
+    // Assert
+    StepVerifier.create(resultStream).expectNextCount(10).verifyComplete();
+  }
+
+  @Test
+  void findAll_fail() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    var pageable = PageRequest.of(0, 10);
+    // Stub
+    when(deliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
+        .thenReturn(Flux.empty());
+    // Act
+    var resultStream = deliveryService.findAll(pageable);
+    // Assert
+    StepVerifier.create(resultStream).expectError(DeliveryNotFoundException.class).verify();
+  }
+
+  private List<Delivery> makeValidDeliveries(int count) {
+    var deliveries = new ArrayList<Delivery>();
+    for (int i = 1; i <= count; i++) {
+      var dlvry = makeValidDelivery();
+      dlvry.setOrderId("order-" + i);
+      deliveries.add(dlvry);
+    }
+    return deliveries;
   }
 }
