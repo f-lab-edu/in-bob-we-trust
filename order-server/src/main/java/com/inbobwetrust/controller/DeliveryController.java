@@ -3,19 +3,14 @@ package com.inbobwetrust.controller;
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.Map;
 
 @RestController
@@ -50,20 +45,17 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   }
 
   public static final int DEFAULT_PAGE = 0;
-  public static final int MAX_PAGE = Integer.MAX_VALUE;
   public static final int MIN_PAGE = 0;
-
   public static final int DEFAULT_SIZE = 10;
-  public static final int MAX_SIZE = Integer.MAX_VALUE;
   public static final int MIN_SIZE = 1;
 
   @GetMapping
   public Flux<Delivery> getDeliveries(@RequestParam Map<String, Object> paging) {
     try {
-      int page = Integer.valueOf((String) paging.getOrDefault("page", DEFAULT_PAGE));
-      int size = Integer.valueOf((String) paging.getOrDefault("size", DEFAULT_SIZE));
-      page = page < MIN_PAGE ? MIN_PAGE : page;
-      size = size < MIN_SIZE ? MIN_SIZE : size;
+      int page = Integer.parseInt((String) paging.getOrDefault("page", DEFAULT_PAGE));
+      int size = Integer.parseInt((String) paging.getOrDefault("size", DEFAULT_SIZE));
+      page = Math.max(page, MIN_PAGE);
+      size = Math.max(size, MIN_SIZE);
       return deliveryService.findAll(PageRequest.of(page, size));
     } catch (NumberFormatException ne) {
       throw new IllegalArgumentException(
@@ -72,7 +64,7 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   }
 
   @GetMapping("/{id}")
-  public Mono<Delivery> getDelivery(@PathVariable @NotBlank(message = "배달번호가 비어있습니다.") String id) {
+  public Mono<Delivery> getDelivery(@PathVariable @NotBlank(message = "배달아이디가 비어있습니다.") String id) {
     return deliveryService.findById(id);
   }
 }
