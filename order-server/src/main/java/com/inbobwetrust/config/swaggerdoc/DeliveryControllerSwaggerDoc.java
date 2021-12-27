@@ -4,10 +4,7 @@ import com.inbobwetrust.domain.Delivery;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Mono;
-
-import javax.validation.Valid;
 
 public interface DeliveryControllerSwaggerDoc {
   @ApiOperation(value = "신규배달 중계추가", notes = "저장된 배달정보 반환")
