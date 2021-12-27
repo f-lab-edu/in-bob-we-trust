@@ -1,5 +1,6 @@
 package com.inbobwetrust.controller;
 
+import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import javax.validation.Valid;
@@ -10,31 +11,31 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/delivery")
 @RequiredArgsConstructor
-public class DeliveryController {
+public class DeliveryController implements DeliveryControllerSwaggerDoc {
   private final DeliveryService deliveryService;
 
   @PostMapping
-  Mono<Delivery> addDelivery(@RequestBody @Valid Delivery delivery) {
+  public Mono<Delivery> addDelivery(@RequestBody @Valid Delivery delivery) {
     return deliveryService.addDelivery(delivery);
   }
 
   @PutMapping("/accept")
-  Mono<Delivery> acceptDelivery(@RequestBody @Valid Delivery delivery) {
+  public Mono<Delivery> acceptDelivery(@RequestBody @Valid Delivery delivery) {
     return deliveryService.acceptDelivery(delivery);
   }
 
   @PutMapping("/rider")
-  Mono<Delivery> setDeliveryRider(@RequestBody @Valid Delivery delivery) {
+  public Mono<Delivery> setDeliveryRider(@RequestBody @Valid Delivery delivery) {
     return deliveryService.setDeliveryRider(delivery);
   }
 
   @PutMapping("/pickup")
-  Mono<Delivery> setPickedUp(@RequestBody @Valid Delivery delivery) {
+  public Mono<Delivery> setPickedUp(@RequestBody @Valid Delivery delivery) {
     return deliveryService.setPickedUp(delivery);
   }
 
   @PutMapping("/complete")
-  Mono<Delivery> setComplete(@RequestBody @Valid Delivery delivery) {
+  public Mono<Delivery> setComplete(@RequestBody @Valid Delivery delivery) {
     return deliveryService.setComplete(delivery);
   }
 }
