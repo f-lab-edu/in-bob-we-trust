@@ -24,7 +24,12 @@ public class TestParameterGenerator {
   static List<LocalDateTime> finishTimes = generateTimes();
 
   private static List<LocalDateTime> generateTimes() {
-    return List.of(now(), now().minusSeconds(1), now().minusMinutes(1), now().minusHours(1));
+    return List.of(
+        now(),
+        now().minusMinutes(1),
+        now().minusHours(1),
+        now().plusMinutes(1),
+        now().plusHours(1));
   }
 
   public static List<Delivery> generate() {
