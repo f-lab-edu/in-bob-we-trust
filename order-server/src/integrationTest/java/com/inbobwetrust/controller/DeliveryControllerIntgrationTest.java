@@ -11,7 +11,9 @@ import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,10 +26,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.test.StepVerifier;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.inbobwetrust.controller.TestParameterGenerator.generate;
@@ -46,20 +48,22 @@ public class DeliveryControllerIntgrationTest {
 
   private final Random random = new Random();
 
+  static Stream<Arguments> possibleDeliveryStream() {
+    return possibleDeliveries.stream().map(Arguments::of).unordered();
+  }
+
+  static Stream<Arguments> possibleAllDelivery() {
+    return Stream.of(Arguments.arguments(possibleDeliveries));
+  }
+
   @BeforeEach
   void setUp() {
     var setUpDatabase = deliveryRepository.deleteAll();
     StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
   }
 
-  @Test
-  @DisplayName("[신규주문수신 : 성공]")
-  void sendAddDeliveryEvent() throws JsonProcessingException {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      sendAddDeliveryEvent_success(delivery);
-    }
-  }
-
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_success(Delivery delivery) throws JsonProcessingException {
     // Arrange
     final String testUrl = "/shop/" + delivery.getShopId();
@@ -89,15 +93,10 @@ public class DeliveryControllerIntgrationTest {
     StepVerifier.create(savedCnt).expectNextCount(1).verifyComplete();
   }
 
-  @Test
-  @DisplayName("[서버-신규주문수신 : 실패] : 사장님 PC앱 네트워크 요청 실패")
-  void sendAddDeliveryEvent_fail() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      sendAddDeliveryEvent_connection_refused(delivery);
-    }
-  }
-
-  void sendAddDeliveryEvent_connection_refused(final Delivery expected) {
+  @DisplayName("[서버-신규주문수신]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
+  void sendAddDeliveryEvent_connection_refused(Delivery expected) {
     // Arrange
     final String testUrl = "/shop/" + expected.getShopId();
     // Stub
@@ -129,14 +128,9 @@ public class DeliveryControllerIntgrationTest {
     StepVerifier.create(saved).expectNextCount(1).verifyComplete();
   }
 
-  @Test
-  @DisplayName("[서버-신규주문수신 : 실패] 사장님 PC앱 에러")
-  void sendAddDeliveryEvent_server_error() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      sendAddDeliveryEvent_server_error(delivery);
-    }
-  }
-
+  @DisplayName("[서버-신규주문수신 : 서버에러]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_server_error(Delivery delivery) {
     // Arrange
     final String testUrl = "/shop/" + delivery.getShopId();
@@ -163,24 +157,17 @@ public class DeliveryControllerIntgrationTest {
             .returnResult()
             .getResponseBody();
     // Assert
-    assert errorMsg != null;
     Assertions.assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
     WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
   }
 
-  @Test
-  @DisplayName("[서버-신규주문수신 : 실패] 사장님 PC앱 에러")
-  void acceptDelivery() throws JsonProcessingException {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      acceptDelivery(delivery);
-    }
-  }
-
+  @DisplayName("[사장님-주문접수 : 성공]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void acceptDelivery(Delivery delivery) throws JsonProcessingException {
     // Arrange
     delivery.setDeliveryStatus(DeliveryStatus.NEW);
     var saved = deliveryRepository.save(delivery).block();
-    assert saved != null;
     var expected = saved.deepCopy();
     expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
@@ -196,15 +183,6 @@ public class DeliveryControllerIntgrationTest {
                     .withBody(mapper.writeValueAsString(expected))));
     // Act
     if (expected.getOrderTime().isAfter(expected.getPickupTime())) {
-      testClient
-          .put()
-          .uri("/api/delivery/accept")
-          .bodyValue(expected)
-          .exchange()
-          .expectStatus()
-          .isEqualTo(HttpStatus.BAD_REQUEST)
-          .expectBody(String.class);
-    } else {
       var responseBody =
           testClient
               .put()
@@ -212,28 +190,33 @@ public class DeliveryControllerIntgrationTest {
               .bodyValue(expected)
               .exchange()
               .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
-      // Assert
-      Assertions.assertEquals(expected, responseBody);
-      WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+              .isEqualTo(HttpStatus.BAD_REQUEST)
+              .expectBody(String.class)
+              .returnResult();
+      return;
     }
+    var responseBody =
+        testClient
+            .put()
+            .uri("/api/delivery/accept")
+            .bodyValue(expected)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
+    // Assert
+    Assertions.assertEquals(expected, responseBody);
+    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
   }
 
-  @Test
   @DisplayName("[배달대행사-라이더배정: 성공]")
-  void setDeliveryRider() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      setDeliveryRider(delivery);
-    }
-  }
-
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void setDeliveryRider(Delivery delivery) {
     delivery.setRiderId(null);
     var expected = deliveryRepository.save(delivery).block();
-    assert expected != null;
     // Act
     if (expected.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
       var actual =
@@ -248,7 +231,6 @@ public class DeliveryControllerIntgrationTest {
               .returnResult()
               .getResponseBody();
       // Assert
-      assert actual != null;
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
@@ -260,22 +242,18 @@ public class DeliveryControllerIntgrationTest {
           .exchange()
           .expectStatus()
           .isBadRequest()
-          .expectBody(String.class);
+          .expectBody(String.class)
+          .returnResult()
+          .getResponseBody();
     }
   }
 
-  @Test
   @DisplayName("[주문픽업 이벤트 : 성공]")
-  void setPickedUp() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      setPickedUp(delivery);
-    }
-  }
-
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void setPickedUp(Delivery delivery) {
     // Arrange
     var before = deliveryRepository.save(delivery).block();
-    assert before != null;
     var expected = before.deepCopy();
     expected.setDeliveryStatus(before.getDeliveryStatus().getNext());
     //
@@ -293,7 +271,6 @@ public class DeliveryControllerIntgrationTest {
               .returnResult()
               .getResponseBody();
       // Assert
-      assert actual != null;
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
@@ -309,18 +286,13 @@ public class DeliveryControllerIntgrationTest {
     }
   }
 
-  @Test
   @DisplayName("[배달완료 이벤트 : 성공]")
-  void setComplete() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      setComplete(delivery);
-    }
-  }
-
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void setComplete(Delivery delivery) {
     // Arrange
     var expected = deliveryRepository.save(delivery).block();
-    assert expected != null;
+
     if (expected.getDeliveryStatus().equals(DeliveryStatus.PICKED_UP)) {
       // Act
       var actual =
@@ -335,7 +307,6 @@ public class DeliveryControllerIntgrationTest {
               .returnResult()
               .getResponseBody();
       // Assert
-      assert actual != null;
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
@@ -351,10 +322,10 @@ public class DeliveryControllerIntgrationTest {
     }
   }
 
-  @Test
-  @DisplayName("[주문조회 전체 w/페이징 : 성공]")
-  void getDeliveries() {
-    var deliveries = Collections.unmodifiableList(possibleDeliveries);
+  @DisplayName("[주문조회 전체 w/ 페이징]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleAllDelivery")
+  void getDeliveries(List<Delivery> deliveries) {
     // Arrange
     var savedStream = deliveryRepository.saveAll(deliveries);
     StepVerifier.create(savedStream).expectNextCount(deliveries.size()).verifyComplete();
@@ -378,23 +349,16 @@ public class DeliveryControllerIntgrationTest {
             .returnResult()
             .getResponseBody();
     // Assert
-    assert actual != null;
     Assertions.assertEquals(expectedSize, actual.size());
   }
 
-  @Test
-  @DisplayName("[주문조회 by아이디 : 성공]")
-  void getDelivery() {
-    for (Delivery delivery : Collections.unmodifiableList(possibleDeliveries)) {
-      getDelivery(delivery);
-    }
-  }
-
+  @DisplayName("[주문조회 : by 아이디]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("possibleDeliveryStream")
   void getDelivery(Delivery delivery) {
     // Arrange
     var expected = deliveryRepository.save(delivery).block();
     boolean isIdWrong = random.nextBoolean();
-    assert expected != null;
     expected.setId(isIdWrong ? expected.getId() + "123" : expected.getId());
     // Act
     if (isIdWrong) {
@@ -416,7 +380,6 @@ public class DeliveryControllerIntgrationTest {
               .returnResult()
               .getResponseBody();
       // Assert
-      assert actual != null;
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     }
