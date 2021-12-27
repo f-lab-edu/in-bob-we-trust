@@ -1,15 +1,19 @@
 package com.inbobwetrust.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.inbobwetrust.domain.Delivery;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 
 @DataMongoTest // look for repository class, class available no need to  spin up whole context
@@ -66,5 +70,34 @@ class MovieInfoRepositoryIntegrationTest {
     // Assert
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> deliveryRepository.save(expected));
+  }
+
+  @Test
+  void findByOrderIdContaining() {
+    // Arrange
+    int TOTAL_SIZE = 100;
+    List<Delivery> deliveryList = new ArrayList<>();
+    for (int i = 1; i <= TOTAL_SIZE; i++) {
+      Delivery delivery = makeValidDelivery();
+      delivery.setOrderId("order-" + i);
+      deliveryList.add(delivery);
+      deliveryRepository.saveAll(deliveryList).blockLast();
+    }
+    // Stub
+    // Act
+    Set<String> savedOrderIds = new HashSet<>();
+    for (int i = 0; i < 10; i++) {
+      int page = i;
+      int size = 10;
+      var pageable = PageRequest.of(page, size);
+      var countingStream = deliveryRepository.findByOrderIdContaining("", pageable).log();
+      var orderIdStream = deliveryRepository.findByOrderIdContaining("", pageable).log();
+      // Assert
+      StepVerifier.create(countingStream).expectNextCount(10).verifyComplete();
+      StepVerifier.create(orderIdStream)
+          .thenConsumeWhile(delivery -> true, delivery -> savedOrderIds.add(delivery.getOrderId()))
+          .verifyComplete();
+    }
+    Assertions.assertEquals(TOTAL_SIZE, savedOrderIds.size());
   }
 }
