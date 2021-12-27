@@ -3,9 +3,6 @@ package com.inbobwetrust.config.swaggerdoc;
 import com.inbobwetrust.domain.Delivery;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Map;
-import javax.validation.constraints.NotBlank;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
