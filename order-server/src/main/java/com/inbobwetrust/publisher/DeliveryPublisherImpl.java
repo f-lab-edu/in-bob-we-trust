@@ -42,7 +42,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
   @Override
   public Mono<Delivery> sendSetRiderEvent(Delivery delivery) {
     return webClient
-        .put()
+        .post()
         .uri(proxyAgencyUrl + "/" + delivery.getAgencyId())
         .retrieve()
         .onStatus(
