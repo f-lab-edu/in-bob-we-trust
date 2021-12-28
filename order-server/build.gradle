@@ -12,12 +12,6 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    integrationTestImplementation.extendsFrom implementation
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -29,15 +23,32 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
+}
+
+
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+
+    fullIntegrationTestImplementation.extendsFrom implementation
+    fullIntegrationTestImplementation.extendsFrom testImplementation
+    fullIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 sourceSets {
     integrationTest {
         java.srcDir "$projectDir/src/integrationTest/java"
         resources.srcDir "$projectDir/src/integrationTest/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+
+    fullIntegrationTest {
+        java.srcDir "$projectDir/src/fullIntegrationTest/java"
+        resources.srcDir "$projectDir/src/fullIntegrationTest/resources"
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
@@ -49,7 +60,16 @@ task integrationTest(type: Test) {
     useJUnitPlatform()
 }
 
-check.dependsOn integrationTest
+task fullIntegrationTest(type: Test) {
+    testClassesDirs = sourceSets.fullIntegrationTest.output.classesDirs
+    classpath = sourceSets.fullIntegrationTest.runtimeClasspath
+    useJUnitPlatform()
+}
+
+check {
+    dependsOn integrationTest
+    dependsOn fullIntegrationTest
+}
 
 test {
     useJUnitPlatform()
