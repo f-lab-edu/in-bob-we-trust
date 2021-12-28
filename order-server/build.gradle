@@ -33,9 +33,9 @@ configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 
-    fullIntegrationTestImplementation.extendsFrom implementation
-    fullIntegrationTestImplementation.extendsFrom testImplementation
-    fullIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    externalIntegrationTestImplementation.extendsFrom implementation
+    externalIntegrationTestImplementation.extendsFrom testImplementation
+    externalIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 sourceSets {
@@ -46,9 +46,9 @@ sourceSets {
         runtimeClasspath += main.output + test.output
     }
 
-    fullIntegrationTest {
-        java.srcDir "$projectDir/src/fullIntegrationTest/java"
-        resources.srcDir "$projectDir/src/fullIntegrationTest/resources"
+    externalIntegrationTest {
+        java.srcDir "$projectDir/src/externalIntegrationTest/java"
+        resources.srcDir "$projectDir/src/externalIntegrationTest/resources"
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
@@ -60,15 +60,15 @@ task integrationTest(type: Test) {
     useJUnitPlatform()
 }
 
-task fullIntegrationTest(type: Test) {
-    testClassesDirs = sourceSets.fullIntegrationTest.output.classesDirs
-    classpath = sourceSets.fullIntegrationTest.runtimeClasspath
+task externalIntegrationTest(type: Test) {
+    testClassesDirs = sourceSets.externalIntegrationTest.output.classesDirs
+    classpath = sourceSets.externalIntegrationTest.runtimeClasspath
     useJUnitPlatform()
 }
 
 check {
     dependsOn integrationTest
-    dependsOn fullIntegrationTest
+    dependsOn externalIntegrationTest
 }
 
 test {
