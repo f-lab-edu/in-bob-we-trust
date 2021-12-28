@@ -12,6 +12,16 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+
+    externalIntegrationTestImplementation.extendsFrom implementation
+    externalIntegrationTestImplementation.extendsFrom testImplementation
+    externalIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -23,20 +33,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-}
-
-
-configurations {
-    integrationTestImplementation.extendsFrom implementation
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-
-    externalIntegrationTestImplementation.extendsFrom implementation
-    externalIntegrationTestImplementation.extendsFrom testImplementation
-    externalIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 sourceSets {
