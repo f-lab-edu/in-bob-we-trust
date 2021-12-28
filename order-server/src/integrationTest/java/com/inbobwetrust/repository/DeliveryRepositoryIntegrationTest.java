@@ -1,41 +1,48 @@
 package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 
-@DataMongoTest // look for repository class, class available no need to  spin up whole context
-class MovieInfoRepositoryIntegrationTest {
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-  @Autowired DeliveryRepository deliveryRepository;
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class DeliveryRepositoryIntegrationTest {
 
-  @BeforeEach
-  void setUp() {}
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   @AfterEach
   void tearDown() {
     deliveryRepository.deleteAll().block();
   }
 
+  @AfterAll
+  static void afterAll() {
+  }
+
   private Delivery makeValidDelivery() {
     return Delivery.builder()
-        .orderId("order-1234")
-        .customerId("customer-1234")
-        .address("서울시 강남구 삼성동 봉은사로 12-41")
-        .phoneNumber("01031583212")
-        .orderTime(LocalDateTime.now())
-        .build();
+      .orderId("order-1234")
+      .customerId("customer-1234")
+      .address("서울시 강남구 삼성동 봉은사로 12-41")
+      .phoneNumber("01031583212")
+      .orderTime(LocalDateTime.now())
+      .build();
   }
 
   private Delivery makeInvalidDelivery() {
@@ -50,15 +57,15 @@ class MovieInfoRepositoryIntegrationTest {
     var saved = deliveryRepository.save(expected);
     // Assert
     StepVerifier.create(saved)
-        .assertNext(
-            actual -> {
-              Assertions.assertNotNull(actual.getId());
-              Assertions.assertEquals(expected.getCustomerId(), actual.getCustomerId());
-              Assertions.assertEquals(expected.getAddress(), actual.getAddress());
-              Assertions.assertEquals(expected.getPhoneNumber(), actual.getPhoneNumber());
-              Assertions.assertEquals(expected.getOrderTime(), actual.getOrderTime());
-            })
-        .verifyComplete();
+      .assertNext(
+        actual -> {
+          Assertions.assertNotNull(actual.getId());
+          Assertions.assertEquals(expected.getCustomerId(), actual.getCustomerId());
+          Assertions.assertEquals(expected.getAddress(), actual.getAddress());
+          Assertions.assertEquals(expected.getPhoneNumber(), actual.getPhoneNumber());
+          Assertions.assertEquals(expected.getOrderTime(), actual.getOrderTime());
+        })
+      .verifyComplete();
   }
 
   @Test
@@ -68,7 +75,7 @@ class MovieInfoRepositoryIntegrationTest {
     // Act
     // Assert
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> deliveryRepository.save(expected));
+      IllegalArgumentException.class, () -> deliveryRepository.save(expected));
   }
 
   @Test
@@ -94,8 +101,8 @@ class MovieInfoRepositoryIntegrationTest {
       // Assert
       StepVerifier.create(countingStream).expectNextCount(10).verifyComplete();
       StepVerifier.create(orderIdStream)
-          .thenConsumeWhile(delivery -> true, delivery -> savedOrderIds.add(delivery.getOrderId()))
-          .verifyComplete();
+        .thenConsumeWhile(delivery -> true, delivery -> savedOrderIds.add(delivery.getOrderId()))
+        .verifyComplete();
     }
     Assertions.assertEquals(TOTAL_SIZE, savedOrderIds.size());
   }
