@@ -1,32 +1,32 @@
 package com.inbobwetrust.repository;
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
 import com.inbobwetrust.domain.Delivery;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 
-@DataMongoTest // look for repository class, class available no need to  spin up whole context
-class MovieInfoRepositoryIntegrationTest {
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class DeliveryRepositoryIntegrationTest {
 
   @Autowired DeliveryRepository deliveryRepository;
-
-  @BeforeEach
-  void setUp() {}
 
   @AfterEach
   void tearDown() {
     deliveryRepository.deleteAll().block();
   }
+
+  @AfterAll
+  static void afterAll() {}
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
