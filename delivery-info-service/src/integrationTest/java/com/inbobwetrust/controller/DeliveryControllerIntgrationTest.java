@@ -42,7 +42,12 @@ public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
   @Autowired DeliveryRepository deliveryRepository;
+
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+  private String proxyShopUrl = "/relay/v1/shop";
+
+  private String proxyAgencyUrl = "/relay/v1/agency";
 
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
 
@@ -65,10 +70,10 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_success(Delivery delivery) throws JsonProcessingException {
     // Arrange
-    final String testUrl = "/shop/" + delivery.getShopId();
+    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -88,7 +93,7 @@ public class DeliveryControllerIntgrationTest {
     delivery.setId(Objects.requireNonNull(actual).getId());
     var savedCnt = deliveryRepository.findAll();
     // Assert
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
     StepVerifier.create(savedCnt).expectNextCount(1).verifyComplete();
   }
 
@@ -97,10 +102,10 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_connection_refused(Delivery expected) {
     // Arrange
-    final String testUrl = "/shop/" + expected.getShopId();
+    final String testUrl = proxyShopUrl + "/" + expected.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.NOT_FOUND.value())
@@ -123,7 +128,7 @@ public class DeliveryControllerIntgrationTest {
     // Assert
     Assertions.assertTrue(
         Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
     StepVerifier.create(saved).expectNextCount(1).verifyComplete();
   }
 
@@ -132,10 +137,10 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_server_error(Delivery delivery) {
     // Arrange
-    final String testUrl = "/shop/" + delivery.getShopId();
+    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -157,7 +162,7 @@ public class DeliveryControllerIntgrationTest {
             .getResponseBody();
     // Assert
     Assertions.assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
   }
 
   @DisplayName("[사장님-주문접수 : 성공]")
@@ -171,10 +176,10 @@ public class DeliveryControllerIntgrationTest {
     expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
     expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
-    final String testUrl = "/agency/" + delivery.getAgencyId();
+    final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
     // Stub
     stubFor(
-        post(urlPathMatching(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.OK.value())
@@ -207,7 +212,7 @@ public class DeliveryControllerIntgrationTest {
             .getResponseBody();
     // Assert
     Assertions.assertEquals(expected, responseBody);
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
   }
 
   @DisplayName("[배달대행사-라이더배정: 성공]")

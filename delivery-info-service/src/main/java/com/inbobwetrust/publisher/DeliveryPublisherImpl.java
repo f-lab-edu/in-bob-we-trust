@@ -28,6 +28,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
     return webClient
         .post()
         .uri(proxyShopUrl + "/" + delivery.getShopId())
+        .body(Mono.just(delivery), Delivery.class)
         .retrieve()
         .onStatus(
             HttpStatus::is4xxClientError,
@@ -44,6 +45,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
     return webClient
         .post()
         .uri(proxyAgencyUrl + "/" + delivery.getAgencyId())
+        .body(Mono.just(delivery), Delivery.class)
         .retrieve()
         .onStatus(
             HttpStatus::is4xxClientError,
