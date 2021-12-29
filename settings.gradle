@@ -1,1 +1,1 @@
-include 'order-server'
+include 'delivery-info-service'

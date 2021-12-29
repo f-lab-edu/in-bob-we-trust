@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+restClient:
+  proxy:
+    shopUrl: http://localhost:8090/shop
+    agencyUrl: http://localhost:8090/agency
