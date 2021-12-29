@@ -1,17 +1,21 @@
 package com.inbobwetrust.relay.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@ToString
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
+@Data
 @Document
 public class Delivery {
-  @Id private String id;
+  @Id private String Id;
+
+  @NotNull(message = "배달 고유 번호는 필수 입력값입니다.")
+  private String deliveryId;
 
   @NotNull(message = "주문번호는 필수 입력값입니다.")
   private String orderId;
@@ -37,21 +41,12 @@ public class Delivery {
   private DeliveryStatus deliveryStatus;
 
   @NotNull(message = "주문일시는 필수 입력값입니다.")
-  @JsonFormat(
-      shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
-      timezone = "Asia/Seoul")
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
   private LocalDateTime orderTime;
 
-  @JsonFormat(
-      shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
-      timezone = "Asia/Seoul")
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
   private LocalDateTime pickupTime;
 
-  @JsonFormat(
-      shape = JsonFormat.Shape.STRING,
-      pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]",
-      timezone = "Asia/Seoul")
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]")
   private LocalDateTime finishTime;
 }
