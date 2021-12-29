@@ -16,10 +16,6 @@ configurations {
     integrationTestImplementation.extendsFrom implementation
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-
-    externalIntegrationTestImplementation.extendsFrom implementation
-    externalIntegrationTestImplementation.extendsFrom testImplementation
-    externalIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {

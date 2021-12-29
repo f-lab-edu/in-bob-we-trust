@@ -16,10 +16,6 @@ configurations {
     integrationTestImplementation.extendsFrom implementation
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-
-    externalIntegrationTestImplementation.extendsFrom implementation
-    externalIntegrationTestImplementation.extendsFrom testImplementation
-    externalIntegrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
@@ -45,13 +41,6 @@ sourceSets {
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
-
-    externalIntegrationTest {
-        java.srcDir "$projectDir/src/externalIntegrationTest/java"
-        resources.srcDir "$projectDir/src/externalIntegrationTest/resources"
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
-    }
 }
 
 task integrationTest(type: Test) {
@@ -60,15 +49,8 @@ task integrationTest(type: Test) {
     useJUnitPlatform()
 }
 
-task externalIntegrationTest(type: Test) {
-    testClassesDirs = sourceSets.externalIntegrationTest.output.classesDirs
-    classpath = sourceSets.externalIntegrationTest.runtimeClasspath
-    useJUnitPlatform()
-}
-
 check {
     dependsOn integrationTest
-    dependsOn externalIntegrationTest
 }
 
 test {
