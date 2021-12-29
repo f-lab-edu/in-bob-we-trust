@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "${restClient.proxy.baseUrl}")
@@ -17,22 +19,14 @@ public class RelayController {
   private final RelayRepository relayRepository;
 
   @PostMapping("/shop/{shopId}")
-  public Mono<Delivery> sendShopRequest(
-      @PathVariable String shopId, @RequestBody Delivery delivery) {
-    return relayRepository
-        .save(new RelayRequest(ReceiverType.SHOP, shopId, delivery))
-        .log()
-        .flatMap(relayRequest -> Mono.just(relayRequest.getDelivery()))
-        .log();
+  public Mono<RelayRequest> sendShopRequest(
+      @PathVariable String shopId, @RequestBody @Valid Delivery delivery) {
+    return relayRepository.save(new RelayRequest(ReceiverType.SHOP, shopId, delivery)).log();
   }
 
   @PostMapping("/agency/{agencyId}")
-  public Mono<Delivery> sendAgencyRequest(
-      @PathVariable String agencyId, @RequestBody Delivery delivery) {
-    return relayRepository
-        .save(new RelayRequest(ReceiverType.AGENCY, agencyId, delivery))
-        .log()
-        .flatMap(relayRequest -> Mono.just(relayRequest.getDelivery()))
-        .log();
+  public Mono<RelayRequest> sendAgencyRequest(
+      @PathVariable String agencyId, @RequestBody @Valid Delivery delivery) {
+    return relayRepository.save(new RelayRequest(ReceiverType.AGENCY, agencyId, delivery)).log();
   }
 }
