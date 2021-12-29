@@ -1,8 +1,5 @@
 package com.inbobwetrust.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.inbobwetrust.controller.TestParameterGenerator.generate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,11 +8,6 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -34,6 +25,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.test.StepVerifier;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Stream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.inbobwetrust.controller.TestParameterGenerator.generate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -46,11 +46,9 @@ public class DeliveryControllerIntgrationTest {
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-  @Value("${restClient.proxy.shopUrl}")
-  private String proxyShopUrl;
+  private String proxyShopUrl = "/relay/v1/shop";
 
-  @Value("${restClient.proxy.agencyUrl}")
-  private String proxyAgencyUrl;
+  private String proxyAgencyUrl = "/relay/v1/agency";
 
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
 
@@ -76,7 +74,7 @@ public class DeliveryControllerIntgrationTest {
     final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -96,7 +94,7 @@ public class DeliveryControllerIntgrationTest {
     delivery.setId(Objects.requireNonNull(actual).getId());
     var savedCnt = deliveryRepository.findAll();
     // Assert
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
     StepVerifier.create(savedCnt).expectNextCount(1).verifyComplete();
   }
 
@@ -108,7 +106,7 @@ public class DeliveryControllerIntgrationTest {
     final String testUrl = proxyShopUrl + "/" + expected.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.NOT_FOUND.value())
@@ -131,7 +129,7 @@ public class DeliveryControllerIntgrationTest {
     // Assert
     Assertions.assertTrue(
         Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
     StepVerifier.create(saved).expectNextCount(1).verifyComplete();
   }
 
@@ -143,7 +141,7 @@ public class DeliveryControllerIntgrationTest {
     final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
-        post(urlEqualTo(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -165,7 +163,7 @@ public class DeliveryControllerIntgrationTest {
             .getResponseBody();
     // Assert
     Assertions.assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
   }
 
   @DisplayName("[사장님-주문접수 : 성공]")
@@ -182,7 +180,7 @@ public class DeliveryControllerIntgrationTest {
     final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
     // Stub
     stubFor(
-        post(urlPathMatching(testUrl))
+        post(urlPathEqualTo(testUrl))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.OK.value())
@@ -215,7 +213,7 @@ public class DeliveryControllerIntgrationTest {
             .getResponseBody();
     // Assert
     Assertions.assertEquals(expected, responseBody);
-    WireMock.verify(1, postRequestedFor(urlEqualTo(testUrl)));
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
   }
 
   @DisplayName("[배달대행사-라이더배정: 성공]")
