@@ -1,4 +1,4 @@
-name: Gradle Full Integration Test
+name: delivery-info-service / Integration Test
 
 on: [ push, pull_request ]
 
@@ -22,4 +22,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test with Gradle
-        run: ./gradlew --info externalIntegrationTest
+        run: ./gradlew --info delivery-info-service:integrationTest
