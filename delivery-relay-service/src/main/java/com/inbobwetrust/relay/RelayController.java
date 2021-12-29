@@ -10,11 +10,11 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "${restClient.proxy.basePath}")
+@RequestMapping(value = "${restClient.proxy.baseUrl}")
 @Slf4j
 public class RelayController {
 
-  private final DeliveryRelayRepository relayRepository;
+  private final RelayRepository relayRepository;
 
   @PostMapping("/shop/{shopId}")
   public Mono<Delivery> sendShopRequest(
