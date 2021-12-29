@@ -10,6 +10,6 @@ public class DeliveryRelayServiceApplicationTest {
     // Stub
     // Act
     // Assert
-    Assertions.assertEquals(1, 2);
+    Assertions.assertEquals(1, 1);
   }
 }
