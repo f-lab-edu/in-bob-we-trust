@@ -1,4 +1,4 @@
-name: Gradle Unit Test
+name: delivery-relay-service / Unit Test
 
 on: [ push, pull_request ]
 

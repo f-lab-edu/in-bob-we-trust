@@ -1,4 +1,4 @@
-name: Gradle Integration Test
+name: delivery-relay-service / Integration Test
 
 on: [ push, pull_request ]
 
