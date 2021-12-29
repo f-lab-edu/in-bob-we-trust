@@ -1,11 +1,11 @@
 package com.inbobwetrust.relay.domain;
 
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
 @Document
-@ToString
 public class RelayRequest {
   @Id private String id;
 
