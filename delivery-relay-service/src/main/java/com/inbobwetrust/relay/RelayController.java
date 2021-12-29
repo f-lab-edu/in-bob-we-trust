@@ -3,12 +3,11 @@ package com.inbobwetrust.relay;
 import com.inbobwetrust.relay.domain.Delivery;
 import com.inbobwetrust.relay.domain.ReceiverType;
 import com.inbobwetrust.relay.domain.RelayRequest;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
