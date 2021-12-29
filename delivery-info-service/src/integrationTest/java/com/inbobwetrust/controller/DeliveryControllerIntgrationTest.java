@@ -1,8 +1,5 @@
 package com.inbobwetrust.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.inbobwetrust.controller.TestParameterGenerator.generate;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,11 +8,6 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -34,6 +27,15 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.test.StepVerifier;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Stream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.inbobwetrust.controller.TestParameterGenerator.generate;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -42,7 +44,14 @@ public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
   @Autowired DeliveryRepository deliveryRepository;
+
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+  @Value("${restClient.proxy.shopUrl}")
+  private String proxyShopUrl;
+
+  @Value("${restClient.proxy.agencyUrl}")
+  private String proxyAgencyUrl;
 
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
 
@@ -65,7 +74,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_success(Delivery delivery) throws JsonProcessingException {
     // Arrange
-    final String testUrl = "/shop/" + delivery.getShopId();
+    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
         post(urlEqualTo(testUrl))
@@ -97,7 +106,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_connection_refused(Delivery expected) {
     // Arrange
-    final String testUrl = "/shop/" + expected.getShopId();
+    final String testUrl = proxyShopUrl + "/" + expected.getShopId();
     // Stub
     stubFor(
         post(urlEqualTo(testUrl))
@@ -132,7 +141,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_server_error(Delivery delivery) {
     // Arrange
-    final String testUrl = "/shop/" + delivery.getShopId();
+    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
     // Stub
     stubFor(
         post(urlEqualTo(testUrl))
@@ -171,7 +180,7 @@ public class DeliveryControllerIntgrationTest {
     expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
     expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
-    final String testUrl = "/agency/" + delivery.getAgencyId();
+    final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
     // Stub
     stubFor(
         post(urlPathMatching(testUrl))
