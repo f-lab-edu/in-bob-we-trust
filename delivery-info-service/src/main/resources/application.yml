@@ -5,3 +5,7 @@ restClient:
   proxy:
     shopUrl: http://localhost:8090/relay/v1/shop
     agencyUrl: http://localhost:8090/relay/v1/agency
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
