@@ -55,7 +55,7 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendShopRequest2(Delivery delivery) {
     // Arrange
-    delivery.setDeliveryId(null);
+    delivery.setId(null);
     var savedRequest =
         Mono.just(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery));
     var uri = BASE_URL + "/shop/" + delivery.getShopId();
@@ -91,7 +91,7 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendAgencyRequest2(Delivery expected) {
     // Arrange
-    expected.setDeliveryId(null);
+    expected.setId(null);
     var savedRequest =
         Mono.just(new RelayRequest(ReceiverType.SHOP, expected.getShopId(), expected));
     var uri = BASE_URL + "/shop/" + expected.getShopId();
@@ -124,7 +124,7 @@ class RelayControllerTest {
 
   private static Delivery makeDelivery() {
     var delivery = new Delivery();
-    delivery.setDeliveryId("delivery-1234");
+    delivery.setId("delivery-1234");
     delivery.setShopId("shop-1234");
     delivery.setOrderId("order-1234");
     delivery.setRiderId("rider-1234");
