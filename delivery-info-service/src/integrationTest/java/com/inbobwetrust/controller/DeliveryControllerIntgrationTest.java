@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
-import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +41,8 @@ import reactor.test.StepVerifier;
 public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 

@@ -35,8 +35,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.inbobwetrust.service.DeliveryServiceImpl.FIXED_DELAY;
-import static com.inbobwetrust.service.DeliveryServiceImpl.MAX_ATTEMPTS;
+import static com.inbobwetrust.service.DeliveryService.FIXED_DELAY;
+import static com.inbobwetrust.service.DeliveryService.MAX_ATTEMPTS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -54,8 +54,7 @@ public class DatabaseConnectionFailoverTest {
 
   @Autowired WebTestClient testClient;
 
-  @SpyBean
-  DeliveryRepository deliveryRepository;
+  @SpyBean DeliveryRepository deliveryRepository;
 
   @SpyBean SecondaryDeliveryRepository secondaryDeliveryRepository;
 
@@ -161,7 +160,6 @@ public class DatabaseConnectionFailoverTest {
     var responseTime_minThreshold = FIXED_DELAY.multipliedBy(MAX_ATTEMPTS + 1).toMillis();
     var startTime = System.currentTimeMillis();
     // when
-
     var savedDelivery =
         testClient
             .post()
