@@ -7,5 +7,13 @@ restClient:
     agencyUrl: http://localhost:8090/relay/v1/agency
 
 spring:
+  data:
+    mongodb:
+      secondary:
+        database: inbob
+        uri: mongodb://localhost:12345
+      primary:
+        database: inbob
+        uri: mongodb://localhost:12342
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+    exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration

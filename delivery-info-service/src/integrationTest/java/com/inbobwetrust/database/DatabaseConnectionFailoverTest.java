@@ -3,15 +3,18 @@ package com.inbobwetrust.database;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.domain.Delivery;
-import com.inbobwetrust.repository.DeliveryRepository;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import org.junit.jupiter.api.Test;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -19,7 +22,11 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import reactor.test.StepVerifier;
+
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,67 +34,75 @@ import reactor.test.StepVerifier;
 public class DatabaseConnectionFailoverTest {
   static final Logger LOG = LoggerFactory.getLogger(DatabaseConnectionFailoverTest.class);
 
-  @Autowired WebTestClient testClient;
+  @Autowired
+  WebTestClient testClient;
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository primaryDeliveryRepository;
+
+  @Autowired
+  SecondaryDeliveryRepository secondaryDeliveryRepository;
+
+  @Autowired
+  ReactiveMongoDatabaseFactory mongoProperties;
 
   @Container
-  public static GenericContainer<?> mongodb =
-      new GenericContainer<>("mongo:latest")
-          .withEnv("MONGO_INITDB_DATABASE", "delivery")
-          .withExposedPorts(27017)
-          .waitingFor(
-              new HttpWaitStrategy().forPort(27017).withStartupTimeout(Duration.ofSeconds(10)));
+  public static GenericContainer<?> primaryMongo = makeMongoDb("primary");
+
+  @Container
+  public static GenericContainer<?> secondaryMongo = makeMongoDb("secondary");
+
+  static GenericContainer makeMongoDb(String name) {
+    return new GenericContainer<>("mongo:latest")
+        .withCreateContainerCmdModifier(cmd -> cmd.withName(name))
+        .withEnv("MONGO_INITDB_DATABASE", "inbob")
+        .withExposedPorts(27017)
+        .waitingFor(
+            new HttpWaitStrategy().forPort(27017).withStartupTimeout(Duration.ofSeconds(10)));
+  }
 
   @DynamicPropertySource
   static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
-    mongodb.start();
-    var hostPort = mongodb.getMappedPort(27017);
-    var hostIpAddress = mongodb.getContainerIpAddress();
-    registry.add("spring.data.mongodb.host", () -> hostIpAddress);
-    registry.add("spring.data.mongodb.port", () -> hostPort);
-    LOG.info("------------------------------------------------------");
-    LOG.info("spring.data.mongodb.host : {}", hostIpAddress);
-    LOG.info("spring.data.mongodb.port : {}", hostPort);
+
+    primaryMongo.start();
+    var hostPort = primaryMongo.getMappedPort(27017);
+    var primaryUriString = String.format("mongodb://localhost:%d/inbob", hostPort);
+    registry.add("spring.data.mongodb.primary.uri", () -> primaryUriString);
+
+    secondaryMongo.start();
+    var secondaryPort = secondaryMongo.getMappedPort(27017);
+    registry.add(
+        "spring.data.mongodb.secondary.uri",
+        () -> "mongodb://localhost:" + secondaryPort + "/inbob");
   }
 
   private String proxyShopUrl = "/relay/v1/shop";
   private ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-  @Test
-  void hi() throws InterruptedException {
-    var stream =
-        deliveryRepository.save(
-            Delivery.builder()
-                .orderId("order-1234")
-                .customerId("customer-1234")
-                .address("서울시 강남구 삼성동 봉은사로 12-41")
-                .phoneNumber("01031583212")
-                .orderTime(LocalDateTime.now())
-                .build());
-    StepVerifier.create(stream)
-        .expectNextMatches(delivery -> delivery.getOrderId().equals("order-1234"))
-        .verifyComplete();
-    deliveryRepository.findAll().log().blockLast();
+  @ParameterizedTest
+  @DisplayName("[DB연결 테스트] Docker Container 작동여부 확인하기")
+  @MethodSource("makeDeliveryArgument")
+  void databaseConnectionFailoverTest(Delivery delivery) throws InterruptedException, SQLException {
+    // given
+    var startCount = primaryDeliveryRepository.count().block(Duration.ofSeconds(1));
+    var finishCount = primaryDeliveryRepository.count().block(Duration.ofSeconds(1));
+    // when
 
-    for (int i = 0; i < 10000; i++) {
-      var f =
-          deliveryRepository.save(
-              Delivery.builder()
-                  .orderId("order-1234")
-                  .customerId("customer-1234")
-                  .address("서울시 강남구 삼성동 봉은사로 12-41")
-                  .phoneNumber("01031583212")
-                  .orderTime(LocalDateTime.now())
-                  .build());
-      StepVerifier.create(f)
-          .expectNextMatches(de -> de.getOrderId().equals("order-1234"))
-          .verifyComplete();
-    }
+    // then
+  }
 
-    while (true) {
-      Thread.sleep(1000);
-      LOG.info("..");
-    }
+  static Stream<Arguments> makeDeliveryArgument() {
+    return Stream.of(Arguments.of(makeDelivery()));
+  }
+
+  static Delivery makeDelivery() {
+    return Delivery.builder()
+        .orderId("order-")
+        .shopId("shop-")
+        .customerId("customer-")
+        .address("서울시 강남구 삼성동 봉은사로 12-41 / number")
+        .phoneNumber("01031583212-")
+        .orderTime(LocalDateTime.now())
+        .build();
   }
 }
