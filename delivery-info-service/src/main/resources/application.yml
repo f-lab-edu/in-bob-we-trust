@@ -9,11 +9,12 @@ restClient:
 spring:
   data:
     mongodb:
-      secondary:
-        database: inbob
-        uri: mongodb://localhost:12345
       primary:
         database: inbob
-        uri: mongodb://localhost:12342
+        uri: mongodb://localhost:12345
+      secondary:
+        database: inbob
+        uri: mongodb://localhost:12346
+
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
