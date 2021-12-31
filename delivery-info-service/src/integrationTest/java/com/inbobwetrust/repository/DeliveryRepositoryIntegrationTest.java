@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.inbobwetrust.repository.primary.DeliveryRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +20,8 @@ import reactor.test.StepVerifier;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryRepositoryIntegrationTest {
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   @AfterEach
   void tearDown() {
