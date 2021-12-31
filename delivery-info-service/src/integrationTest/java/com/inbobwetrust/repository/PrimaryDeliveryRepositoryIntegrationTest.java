@@ -3,14 +3,12 @@ package com.inbobwetrust.repository;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.inbobwetrust.domain.Delivery;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +19,7 @@ import reactor.test.StepVerifier;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PrimaryDeliveryRepositoryIntegrationTest {
 
-  @Autowired
-  PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Autowired PrimaryDeliveryRepository primaryDeliveryRepository;
 
   @AfterEach
   void tearDown() {
@@ -30,8 +27,7 @@ public class PrimaryDeliveryRepositoryIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() {
-  }
+  static void afterAll() {}
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()

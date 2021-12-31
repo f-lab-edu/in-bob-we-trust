@@ -10,7 +10,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

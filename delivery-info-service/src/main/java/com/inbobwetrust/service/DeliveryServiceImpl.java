@@ -27,7 +27,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return primaryDeliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
+    return primaryDeliveryRepository
+        .save(delivery)
+        .flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
   @Override

@@ -25,12 +25,9 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
-  @InjectMocks
-  DeliveryServiceImpl deliveryService;
-  @Mock
-  PrimaryDeliveryRepository primaryDeliveryRepository;
-  @Mock
-  DeliveryPublisher deliveryPublisher;
+  @InjectMocks DeliveryServiceImpl deliveryService;
+  @Mock PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Mock DeliveryPublisher deliveryPublisher;
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
