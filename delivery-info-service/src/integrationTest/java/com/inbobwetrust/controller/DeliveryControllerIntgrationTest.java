@@ -41,8 +41,7 @@ import reactor.test.StepVerifier;
 public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
-  @Autowired
-  PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Autowired DeliveryRepository deliveryRepository;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 

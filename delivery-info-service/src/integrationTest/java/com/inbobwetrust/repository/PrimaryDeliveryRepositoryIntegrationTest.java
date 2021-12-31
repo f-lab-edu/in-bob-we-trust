@@ -3,6 +3,7 @@ package com.inbobwetrust.repository;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.inbobwetrust.domain.Delivery;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,7 +30,8 @@ public class PrimaryDeliveryRepositoryIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() {}
+  static void afterAll() {
+  }
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
