@@ -1,15 +1,11 @@
 package com.inbobwetrust.service;
 
-import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
-import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.DeliveryRepository;
-import java.util.Objects;
-import java.util.function.BiFunction;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,17 +13,30 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class DeliveryServiceImpl implements DeliveryService {
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class DeliveryServiceImpl implements DeliveryService {
   private final DeliveryRepository deliveryRepository;
+  private final SecondaryDeliveryRepository secondaryDeliveryRepository;
   private final DeliveryPublisher deliveryPublisher;
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return deliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
+    return deliveryRepository
+        .save(delivery)
+        .timeout(FIXED_DELAY)
+        .retryWhen(defaultRetryBackoffSpec())
+        .onErrorResume(
+            ex -> ex instanceof TimeoutException, ex -> secondaryDeliveryRepository.save(delivery))
+        .log();
   }
 
   @Override
@@ -98,9 +107,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
-    return deliveryRepository
-        .findAllByOrderIdContaining("", pageRequest)
-        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
+    return deliveryRepository.findAll().switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }
 
   public static final String MSG_RIDER_ALREADY_SET = "배정된 라이더가 존재합니다. 라이더ID : ";
