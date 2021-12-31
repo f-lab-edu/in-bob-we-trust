@@ -7,7 +7,7 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class DeliveryServiceImpl implements DeliveryService {
 
-  private final DeliveryRepository deliveryRepository;
+  private final PrimaryDeliveryRepository primaryDeliveryRepository;
   private final DeliveryPublisher deliveryPublisher;
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return deliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
+    return primaryDeliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
   @Override
@@ -38,10 +38,10 @@ public class DeliveryServiceImpl implements DeliveryService {
       return Mono.error(IllegalStateException::new);
     }
 
-    return deliveryRepository
+    return primaryDeliveryRepository
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(deliveryRepository::save)
+        .flatMap(primaryDeliveryRepository::save)
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
@@ -63,11 +63,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> setDeliveryRider(Delivery delivery) {
-    return deliveryRepository
+    return primaryDeliveryRepository
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(deliveryRepository::save);
+        .flatMap(primaryDeliveryRepository::save);
   }
 
   @Override
@@ -82,23 +82,23 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   private Mono<Delivery> updateDeliveryWithBiFuncValidator(
       Delivery newDelivery, BiFunction<Delivery, Delivery, Mono<Delivery>> validateFunc) {
-    return deliveryRepository
+    return primaryDeliveryRepository
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(oldDelivery -> validateFunc.apply(oldDelivery, newDelivery))
-        .flatMap(deliveryRepository::save);
+        .flatMap(primaryDeliveryRepository::save);
   }
 
   @Override
   public Mono<Delivery> findById(String id) {
-    return deliveryRepository
+    return primaryDeliveryRepository
         .findById(id)
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }
 
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
-    return deliveryRepository
+    return primaryDeliveryRepository
         .findAllByOrderIdContaining("", pageRequest)
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }

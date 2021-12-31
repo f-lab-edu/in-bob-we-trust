@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,14 +18,14 @@ import reactor.test.StepVerifier;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DeliveryRepositoryIntegrationTest {
+public class PrimaryDeliveryRepositoryIntegrationTest {
 
   @Autowired
-  DeliveryRepository deliveryRepository;
+  PrimaryDeliveryRepository primaryDeliveryRepository;
 
   @AfterEach
   void tearDown() {
-    deliveryRepository.deleteAll().block();
+    primaryDeliveryRepository.deleteAll().block();
   }
 
   @AfterAll
@@ -50,7 +50,7 @@ public class DeliveryRepositoryIntegrationTest {
     // Arranged
     var expected = makeValidDelivery();
     // Act
-    var saved = deliveryRepository.save(expected);
+    var saved = primaryDeliveryRepository.save(expected);
     // Assert
     StepVerifier.create(saved)
         .assertNext(
@@ -71,7 +71,7 @@ public class DeliveryRepositoryIntegrationTest {
     // Act
     // Assert
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> deliveryRepository.save(expected));
+        IllegalArgumentException.class, () -> primaryDeliveryRepository.save(expected));
   }
 
   @Test
@@ -83,7 +83,7 @@ public class DeliveryRepositoryIntegrationTest {
       Delivery delivery = makeValidDelivery();
       delivery.setOrderId("order-" + i);
       deliveryList.add(delivery);
-      deliveryRepository.saveAll(deliveryList).blockLast();
+      primaryDeliveryRepository.saveAll(deliveryList).blockLast();
     }
     // Stub
     // Act
@@ -92,8 +92,8 @@ public class DeliveryRepositoryIntegrationTest {
       int page = i;
       int size = 10;
       var pageable = PageRequest.of(page, size);
-      var countingStream = deliveryRepository.findAllByOrderIdContaining("", pageable).log();
-      var orderIdStream = deliveryRepository.findAllByOrderIdContaining("", pageable).log();
+      var countingStream = primaryDeliveryRepository.findAllByOrderIdContaining("", pageable).log();
+      var orderIdStream = primaryDeliveryRepository.findAllByOrderIdContaining("", pageable).log();
       // Assert
       StepVerifier.create(countingStream).expectNextCount(10).verifyComplete();
       StepVerifier.create(orderIdStream)
