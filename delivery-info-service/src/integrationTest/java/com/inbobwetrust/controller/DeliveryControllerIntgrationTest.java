@@ -35,7 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.test.StepVerifier;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = "test",inheritProfiles = false)
+@ActiveProfiles(value = "test", inheritProfiles = false)
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
 public class DeliveryControllerIntgrationTest {
