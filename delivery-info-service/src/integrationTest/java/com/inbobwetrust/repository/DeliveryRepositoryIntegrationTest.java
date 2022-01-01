@@ -4,6 +4,7 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,8 +18,7 @@ import java.util.Set;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DataMongoTest
 @ActiveProfiles("test")
 public class DeliveryRepositoryIntegrationTest {
   @Autowired DeliveryRepository deliveryRepository;

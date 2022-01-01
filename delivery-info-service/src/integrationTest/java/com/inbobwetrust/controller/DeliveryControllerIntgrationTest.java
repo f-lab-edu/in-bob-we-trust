@@ -26,6 +26,8 @@ import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.inbobwetrust.controller.TestParameterGenerator.generate;
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -219,7 +221,7 @@ public class DeliveryControllerIntgrationTest {
       delivery.setRiderId(null);
       var expected = deliveryRepository.save(delivery).block();
       // Act
-      if (expected.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
+      if (expected.getDeliveryStatus().equals(ACCEPTED)) {
         var actual =
             testClient
                 .put()
@@ -260,7 +262,8 @@ public class DeliveryControllerIntgrationTest {
       var expected = before.deepCopy();
       expected.setDeliveryStatus(before.getDeliveryStatus().getNext());
       //
-      if (before.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
+      if (before.getDeliveryStatus().equals(ACCEPTED)
+          && expected.getDeliveryStatus().equals(PICKED_UP)) {
         // Act
         var actual =
             testClient
@@ -285,20 +288,22 @@ public class DeliveryControllerIntgrationTest {
             .exchange()
             .expectStatus()
             .isBadRequest()
-            .expectBody(String.class);
+            .expectBody(String.class)
+            .returnResult();
       }
     }
   }
 
   @Test
   @DisplayName("[배달완료 이벤트 : 성공]")
-  void setComplete(Delivery delivery) {
+  void setComplete() {
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
+      var delivery = deliveryList.get(idx);
       var expected = deliveryRepository.save(delivery).block();
 
-      if (expected.getDeliveryStatus().equals(DeliveryStatus.PICKED_UP)) {
-        // Act
+      // Act
+      if (expected.getDeliveryStatus().equals(PICKED_UP)) {
         var actual =
             testClient
                 .put()
@@ -313,8 +318,9 @@ public class DeliveryControllerIntgrationTest {
         // Assert
         expected.copyTimeFields(actual);
         Assertions.assertEquals(expected, actual);
-      } else {
+
         // Act
+      } else {
         testClient
             .put()
             .uri("/api/delivery/pickup")
