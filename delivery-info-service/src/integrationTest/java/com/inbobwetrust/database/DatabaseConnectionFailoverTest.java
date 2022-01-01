@@ -16,15 +16,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.SocketUtils;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
@@ -61,21 +58,17 @@ public class DatabaseConnectionFailoverTest {
 
   @SpyBean SecondaryDeliveryRepository secondaryDeliveryRepository;
 
-  @Container public static GenericContainer<?> primaryMongo = makeMongoDb("primary");
+  @Container public GenericContainer<?> primaryMongo;
 
-  @Container public static GenericContainer<?> secondaryMongo = makeMongoDb("secondary");
-
-  @Value("${spring.data.mongodb.primary.database}")
-  private static String primaryMongoDatabase;
-
-  @Value("${spring.data.mongodb.secondary.database}")
-  private static String secondaryMongoDatabase;
+  @Container public GenericContainer<?> secondaryMongo;
 
   @BeforeEach
   void setUp() {
+    primaryMongo = makeMongoDb("primary", 12345);
     if (!primaryMongo.isRunning()) {
       primaryMongo.start();
     }
+    secondaryMongo = makeMongoDb("secondary", 12346);
     if (!secondaryMongo.isRunning()) {
       secondaryMongo.start();
     }
@@ -84,32 +77,10 @@ public class DatabaseConnectionFailoverTest {
     secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
   }
 
-  @DynamicPropertySource
-  static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
-
-    primaryMongo.start();
-    var hostPort = primaryMongo.getMappedPort(MONGO_PORT);
-    var primaryUriString =
-        String.format(
-            "mongodb://%s:%d/%s",
-            primaryMongo.getHost(), primaryMongo.getMappedPort(MONGO_PORT), secondaryMongoDatabase);
-    registry.add("spring.data.mongodb.primary.uri", () -> primaryUriString);
-
-    registry.add("wiremock.server.port", () -> SocketUtils.findAvailableTcpPort());
-
-    secondaryMongo.start();
-    var secondaryPort = secondaryMongo.getMappedPort(MONGO_PORT);
-    var secondaryUriString =
-        String.format(
-            "mongodb://%s:%d/%s", secondaryMongo.getHost(), secondaryPort, secondaryMongoDatabase);
-    registry.add("spring.data.mongodb.secondary.uri", () -> secondaryUriString);
-  }
-
-  static GenericContainer makeMongoDb(String name) {
-    return new GenericContainer<>("mongo:latest")
+  GenericContainer makeMongoDb(String name, int hostPort) {
+    return new FixedHostPortGenericContainer("mongo:latest")
+        .withFixedExposedPort(hostPort, MONGO_PORT)
         .withEnv("MONGO_INITDB_DATABASE", "inbob")
-        .withExposedPorts(MONGO_PORT)
-        .withReuse(true)
         .waitingFor(
             new HttpWaitStrategy().forPort(MONGO_PORT).withStartupTimeout(Duration.ofSeconds(10)));
   }
@@ -159,11 +130,14 @@ public class DatabaseConnectionFailoverTest {
   @DisplayName("[DB Failover 테스트] Primary 데이터베이스를 다운시키면 Secondary에 저장된다.")
   @MethodSource("makeDeliveryArgument")
   void databaseConnectionRetryTest(Delivery delivery) {
+    LOG.info("primaryMongo is Running : {}", primaryMongo.isRunning());
+    LOG.info("secondaryMongo is Running : {}", secondaryMongo.isRunning());
     // given
     primaryMongo.stop();
     delivery.setId(null);
     var responseTime_minThreshold = FIXED_DELAY.multipliedBy(MAX_ATTEMPTS + 1).toMillis();
     var startTime = System.currentTimeMillis();
+
     // when
     var savedDelivery =
         testClient
@@ -176,8 +150,8 @@ public class DatabaseConnectionFailoverTest {
             .expectBody(Delivery.class)
             .returnResult()
             .getResponseBody();
-    // then
 
+    // then
     var endTime = System.currentTimeMillis();
     var executionTime = endTime - startTime;
     assertEquals(savedDelivery.getOrderId(), delivery.getOrderId());
