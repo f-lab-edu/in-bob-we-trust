@@ -57,7 +57,6 @@ public class DeliveryControllerIntgrationTest {
   }
 
   @Test
-  @Test
   @DisplayName("[서버-신규주문수신]")
   void sendAddDeliveryEvent_success() throws JsonProcessingException {
     assertTrue(deliveryList.size() > 0);
