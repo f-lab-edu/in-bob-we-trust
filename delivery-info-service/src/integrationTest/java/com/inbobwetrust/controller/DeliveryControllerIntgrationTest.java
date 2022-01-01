@@ -3,15 +3,11 @@ package com.inbobwetrust.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +26,7 @@ import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.inbobwetrust.controller.TestParameterGenerator.generate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,67 +48,69 @@ public class DeliveryControllerIntgrationTest {
 
   @BeforeEach
   void setUp() {
-    var setUpDatabase = deliveryRepository.deleteAll();
-    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
     deliveryList = generate();
   }
+
+  @AfterEach
+  void tearDown() {}
 
   @Test
   @DisplayName("[서버-신규주문수신]")
   void sendAddDeliveryEvent_success() throws JsonProcessingException {
-    assertTrue(deliveryList.size() > 0);
+    var stubbedDeliery = deliveryList.get(0);
+    // Stub for ALl
+    var expectedPath = proxyShopUrl + "/.*";
+    stubFor(
+        post(urlPathMatching(expectedPath))
+            .willReturn(
+                aResponse()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(mapper.writeValueAsString(stubbedDeliery))));
     // Multiple Tests
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
       var delivery = deliveryList.get(idx);
-      delivery.setShopId(delivery.getShopId() + idx);
-      final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
-
-      // Stub
-      stubFor(
-          post(urlPathEqualTo(testUrl))
-              .willReturn(
-                  aResponse()
-                      .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                      .withBody(mapper.writeValueAsString(delivery))));
+      delivery.setShopId(delivery.getShopId());
+      var testUrl = proxyShopUrl + "/" + delivery.getShopId();
+      var verifyCount = idx + 1;
       // Act
-      var actual =
-          testClient
-              .post()
-              .uri("/api/delivery")
-              .bodyValue(delivery)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
-
+      testClient
+          .post()
+          .uri("/api/delivery")
+          .bodyValue(delivery)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectBody(Delivery.class)
+          .consumeWith(
+              r -> {
+                var deliveryRes = r.getResponseBody();
+                assertTrue(Objects.nonNull(deliveryRes));
+                assertEquals(delivery.getShopId(), deliveryRes.getShopId());
+              });
       // Assert
-      WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
-      delivery.setId(Objects.requireNonNull(actual).getId());
-      Assertions.assertEquals(delivery, actual);
     }
   }
 
   @Test
   @DisplayName("[서버-신규주문수신]")
-  void sendAddDeliveryEvent_connection_refused(Delivery expected) {
-    assertTrue(deliveryList.size() > 0);
+  void sendAddDeliveryEvent_connection_refused() {
+    // Stub for All
+    var expectedPath = proxyShopUrl + "/.*";
+    stubFor(
+        post(urlPathEqualTo(expectedPath))
+            .willReturn(
+                aResponse()
+                    .withStatus(HttpStatus.NOT_FOUND.value())
+                    .withBody(
+                        new RelayClientException("Push Event failed for delivery :")
+                            .getMessage())));
     // Multiple Tests
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
+      var expected = deliveryList.get(idx);
       final String testUrl = proxyShopUrl + "/" + expected.getShopId();
       // Stub
-      stubFor(
-          post(urlPathEqualTo(testUrl))
-              .willReturn(
-                  aResponse()
-                      .withStatus(HttpStatus.NOT_FOUND.value())
-                      .withBody(
-                          new RelayClientException(
-                                  "Push Event failed for delivery :     " + expected)
-                              .getMessage())));
       // Act
       var actual =
           testClient
@@ -124,23 +123,20 @@ public class DeliveryControllerIntgrationTest {
               .expectBody(String.class)
               .returnResult()
               .getResponseBody();
-      var saved = deliveryRepository.findAll();
       // Assert
       assertTrue(Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
-      WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
-      StepVerifier.create(saved).expectNextCount(1).verifyComplete();
     }
   }
 
   @Test
   @DisplayName("[서버-신규주문수신 : 서버에러]")
   void sendAddDeliveryEvent_server_error() {
-    assertTrue(deliveryList.size() > 0);
     // Multiple Tests
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
       var delivery = deliveryList.get(idx);
       final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
+      var expectedCount = idx + 1;
       // Stub
       stubFor(
           post(urlPathEqualTo(testUrl))
@@ -152,80 +148,84 @@ public class DeliveryControllerIntgrationTest {
                                   "Shop operation failed for delivery :     " + delivery)
                               .getMessage())));
       // Act
-      var errorMsg =
-          testClient
-              .post()
-              .uri("/api/delivery")
-              .bodyValue(delivery)
-              .exchange()
-              .expectStatus()
-              .is4xxClientError()
-              .expectBody(String.class)
-              .returnResult()
-              .getResponseBody();
+      testClient
+          .post()
+          .uri("/api/delivery")
+          .bodyValue(delivery)
+          .exchange()
+          .expectStatus()
+          .is4xxClientError()
+          .expectBody(String.class)
+          .consumeWith(
+              resBody -> {
+                var errorMsg = Objects.requireNonNull(resBody.getResponseBody());
+                assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
+              });
       // Assert
-      assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
-      WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
+
     }
   }
 
   @Test
   @DisplayName("[사장님-주문접수 : 성공]")
   void acceptDelivery() throws JsonProcessingException {
-    assertTrue(deliveryList.size() > 0);
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       var delivery = deliveryList.get(idx);
       // Arrange
       delivery.setDeliveryStatus(DeliveryStatus.NEW);
-      var saved = deliveryRepository.save(delivery).block();
-      var expected = saved.deepCopy();
-      expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
-      expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
-      expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
-      final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
-      // Stub
-      stubFor(
-          post(urlPathEqualTo(testUrl))
-              .willReturn(
-                  aResponse()
-                      .withStatus(HttpStatus.OK.value())
-                      .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                      .withBody(mapper.writeValueAsString(expected))));
-      // Act
-      if (expected.getOrderTime().isAfter(expected.getPickupTime())) {
-        var responseBody =
-            testClient
-                .put()
-                .uri("/api/delivery/accept")
-                .bodyValue(expected)
-                .exchange()
-                .expectStatus()
-                .isEqualTo(HttpStatus.BAD_REQUEST)
-                .expectBody(String.class)
-                .returnResult();
-        return;
-      }
-      var responseBody =
-          testClient
-              .put()
-              .uri("/api/delivery/accept")
-              .bodyValue(expected)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
-      // Assert
-      Assertions.assertEquals(expected, responseBody);
-      WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
+      var body = mapper.writeValueAsString(delivery)));
+      var saved = deliveryRepository.save(delivery);
+      StepVerifier.create(saved)
+          .expectNextMatches(
+              del -> {
+                var expected = del.deepCopy();
+                expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+                expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
+                expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
+                final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
+                // Stub
+                  stubFor(
+                      post(urlPathEqualTo(testUrl))
+                          .willReturn(
+                              aResponse()
+                                  .withStatus(HttpStatus.OK.value())
+                                  .withHeader(
+                                      HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                  .withBody(body);
+
+                // Act
+                if (expected.getOrderTime().isAfter(expected.getPickupTime())) {
+                  testClient
+                      .put()
+                      .uri("/api/delivery/accept")
+                      .bodyValue(expected)
+                      .exchange()
+                      .expectStatus()
+                      .isEqualTo(HttpStatus.BAD_REQUEST)
+                      .expectBody(String.class);
+                  return;
+                } else {
+                  var responseBody =
+                      testClient
+                          .put()
+                          .uri("/api/delivery/accept")
+                          .bodyValue(expected)
+                          .exchange()
+                          .expectStatus()
+                          .isOk()
+                          .expectBody(Delivery.class)
+                          .returnResult()
+                          .getResponseBody();
+                  // Assert
+                  Assertions.assertEquals(expected, responseBody);
+                }
+              });
     }
-  }
+  };
 
   @Test
   @DisplayName("[배달대행사-라이더배정: 성공]")
   void setDeliveryRider() {
-    assertTrue(deliveryList.size() > 0);
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       var delivery = deliveryList.get(idx);
       delivery.setRiderId(null);
@@ -265,7 +265,6 @@ public class DeliveryControllerIntgrationTest {
   @Test
   @DisplayName("[주문픽업 이벤트 : 성공]")
   void setPickedUp(Delivery delivery) {
-    assertTrue(deliveryList.size() > 0);
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
       var before = deliveryRepository.save(delivery).block();
@@ -305,7 +304,6 @@ public class DeliveryControllerIntgrationTest {
   @Test
   @DisplayName("[배달완료 이벤트 : 성공]")
   void setComplete(Delivery delivery) {
-    assertTrue(deliveryList.size() > 0);
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
       var expected = deliveryRepository.save(delivery).block();
@@ -344,7 +342,6 @@ public class DeliveryControllerIntgrationTest {
   @DisplayName("[주문조회 전체 w/ 페이징]")
   void getDeliveries() {
 
-    assertTrue(deliveryList.size() > 0);
     // Arrange
     var savedStream = deliveryRepository.saveAll(deliveryList);
     StepVerifier.create(savedStream).expectNextCount(deliveryList.size()).verifyComplete();
@@ -376,7 +373,6 @@ public class DeliveryControllerIntgrationTest {
   @Test
   @DisplayName("[주문조회 : by 아이디]")
   void getDelivery() {
-    assertTrue(deliveryList.size() > 0);
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       var delivery = deliveryList.get(idx);
       // Arrange
