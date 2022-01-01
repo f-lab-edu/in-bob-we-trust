@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.SocketUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
@@ -85,6 +86,7 @@ public class DatabaseConnectionFailoverTest {
 
   @DynamicPropertySource
   static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
+
     primaryMongo.start();
     var hostPort = primaryMongo.getMappedPort(MONGO_PORT);
     var primaryUriString =
@@ -92,6 +94,8 @@ public class DatabaseConnectionFailoverTest {
             "mongodb://%s:%d/%s",
             primaryMongo.getHost(), primaryMongo.getMappedPort(MONGO_PORT), secondaryMongoDatabase);
     registry.add("spring.data.mongodb.primary.uri", () -> primaryUriString);
+
+    registry.add("wiremock.server.port", () -> SocketUtils.findAvailableTcpPort());
 
     secondaryMongo.start();
     var secondaryPort = secondaryMongo.getMappedPort(MONGO_PORT);
