@@ -18,7 +18,6 @@ import reactor.test.StepVerifier;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryRepositoryIntegrationTest {
-
   @Autowired DeliveryRepository deliveryRepository;
 
   @AfterEach
