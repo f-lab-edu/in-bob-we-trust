@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 
 @Configuration
 @EnableReactiveMongoRepositories(
-  basePackages = "com.inbobwetrust.repository.secondary",
-  reactiveMongoTemplateRef = "mongoTemplateSecondary")
-public class SecondaryMongoConfig {
-}
+    basePackages = "com.inbobwetrust.repository.secondary",
+    reactiveMongoTemplateRef = "mongoTemplateSecondary")
+public class SecondaryMongoConfig {}
