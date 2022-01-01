@@ -2,10 +2,12 @@ package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
@@ -16,11 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
 @DataMongoTest
 @ActiveProfiles("test")
-public class DeliveryRepositoryIntegrationTest {
+public class DeliveryRepositoryTest {
   @Autowired DeliveryRepository deliveryRepository;
 
   @AfterEach
