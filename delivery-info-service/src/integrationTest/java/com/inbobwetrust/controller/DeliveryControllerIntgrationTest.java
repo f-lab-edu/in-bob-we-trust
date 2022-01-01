@@ -173,7 +173,7 @@ public class DeliveryControllerIntgrationTest {
       var delivery = deliveryList.get(idx);
       // Arrange
       delivery.setDeliveryStatus(DeliveryStatus.NEW);
-      var body = mapper.writeValueAsString(delivery)));
+      var body = mapper.writeValueAsString(delivery);
       var saved = deliveryRepository.save(delivery);
       StepVerifier.create(saved)
           .expectNextMatches(
@@ -184,14 +184,14 @@ public class DeliveryControllerIntgrationTest {
                 expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
                 final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
                 // Stub
-                  stubFor(
-                      post(urlPathEqualTo(testUrl))
-                          .willReturn(
-                              aResponse()
-                                  .withStatus(HttpStatus.OK.value())
-                                  .withHeader(
-                                      HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                  .withBody(body);
+                stubFor(
+                    post(urlPathEqualTo(testUrl))
+                        .willReturn(
+                            aResponse()
+                                .withStatus(HttpStatus.OK.value())
+                                .withHeader(
+                                    HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .withBody(body)));
 
                 // Act
                 if (expected.getOrderTime().isAfter(expected.getPickupTime())) {
@@ -203,7 +203,7 @@ public class DeliveryControllerIntgrationTest {
                       .expectStatus()
                       .isEqualTo(HttpStatus.BAD_REQUEST)
                       .expectBody(String.class);
-                  return;
+                  return true;
                 } else {
                   var responseBody =
                       testClient
@@ -218,10 +218,12 @@ public class DeliveryControllerIntgrationTest {
                           .getResponseBody();
                   // Assert
                   Assertions.assertEquals(expected, responseBody);
+                  return true;
                 }
-              });
+              })
+          .verifyComplete();
     }
-  };
+  }
 
   @Test
   @DisplayName("[배달대행사-라이더배정: 성공]")
@@ -264,9 +266,10 @@ public class DeliveryControllerIntgrationTest {
 
   @Test
   @DisplayName("[주문픽업 이벤트 : 성공]")
-  void setPickedUp(Delivery delivery) {
+  void setPickedUp() {
     for (int idx = 0; idx < deliveryList.size(); idx++) {
       // Arrange
+      var delivery = deliveryList.get(idx);
       var before = deliveryRepository.save(delivery).block();
       var expected = before.deepCopy();
       expected.setDeliveryStatus(before.getDeliveryStatus().getNext());
