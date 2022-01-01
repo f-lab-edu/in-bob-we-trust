@@ -170,30 +170,14 @@ public class DeliveryControllerIntgrationTest {
   @DisplayName("[사장님-주문접수 : 성공]")
   void acceptDelivery() throws JsonProcessingException {
     for (int idx = 0; idx < deliveryList.size(); idx++) {
-      var delivery = deliveryList.get(idx);
+      var expected = deliveryList.get(idx);
       // Arrange
-      delivery.setDeliveryStatus(DeliveryStatus.NEW);
-      var body = mapper.writeValueAsString(delivery);
-      var saved = deliveryRepository.save(delivery);
-      StepVerifier.create(saved)
+      expected.setDeliveryStatus(DeliveryStatus.NEW);
+      var body = mapper.writeValueAsString(expected);
+      var savedMono = deliveryRepository.save(expected);
+      StepVerifier.create(savedMono)
           .expectNextMatches(
-              del -> {
-                var expected = del.deepCopy();
-                expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
-                expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
-                expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
-                final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
-                // Stub
-                stubFor(
-                    post(urlPathEqualTo(testUrl))
-                        .willReturn(
-                            aResponse()
-                                .withStatus(HttpStatus.OK.value())
-                                .withHeader(
-                                    HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .withBody(body)));
-
-                // Act
+              saved -> {
                 if (expected.getOrderTime().isAfter(expected.getPickupTime())) {
                   testClient
                       .put()
@@ -205,6 +189,7 @@ public class DeliveryControllerIntgrationTest {
                       .expectBody(String.class);
                   return true;
                 } else {
+                  //
                   var responseBody =
                       testClient
                           .put()
@@ -214,14 +199,15 @@ public class DeliveryControllerIntgrationTest {
                           .expectStatus()
                           .isOk()
                           .expectBody(Delivery.class)
-                          .returnResult()
-                          .getResponseBody();
+                          .consumeWith(
+                              result -> {
+                                var actual = result.getResponseBody();
+                                assertEquals(expected, actual);
+                              });
                   // Assert
-                  Assertions.assertEquals(expected, responseBody);
-                  return true;
                 }
-              })
-          .verifyComplete();
+                return true;
+              });
     }
   }
 
