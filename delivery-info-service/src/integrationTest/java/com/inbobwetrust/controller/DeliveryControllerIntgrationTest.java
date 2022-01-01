@@ -41,7 +41,7 @@ import reactor.test.StepVerifier;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
-@Execution(SAME_THREAD)
+@Execution(CONCURRENT)
 public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
