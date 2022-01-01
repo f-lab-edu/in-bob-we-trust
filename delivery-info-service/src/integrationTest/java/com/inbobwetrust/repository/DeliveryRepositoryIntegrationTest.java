@@ -13,9 +13,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("integrationtest")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryRepositoryIntegrationTest {
 
