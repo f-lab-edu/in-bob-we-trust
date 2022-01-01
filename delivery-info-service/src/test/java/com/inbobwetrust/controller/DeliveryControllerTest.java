@@ -1,14 +1,8 @@
 package com.inbobwetrust.controller;
 
-import static org.mockito.Mockito.*;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import groovy.util.logging.Slf4j;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -22,6 +16,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 @WebFluxTest(DeliveryController.class)
 @AutoConfigureWebTestClient
@@ -209,7 +210,6 @@ public class DeliveryControllerTest {
             .returnResult()
             .getResponseBody();
     // Assert
-    LOG.debug("Response is :      {}", response);
     Assertions.assertEquals(request, response);
     verify(deliveryService, times(1)).setComplete(any(Delivery.class));
   }
