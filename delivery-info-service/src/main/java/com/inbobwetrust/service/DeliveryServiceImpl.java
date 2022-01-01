@@ -36,6 +36,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .retryWhen(defaultRetryBackoffSpec())
         .onErrorResume(
             ex -> ex instanceof TimeoutException, ex -> secondaryDeliveryRepository.save(delivery))
+        .flatMap(deliveryPublisher::sendAddDeliveryEvent)
         .log();
   }
 
