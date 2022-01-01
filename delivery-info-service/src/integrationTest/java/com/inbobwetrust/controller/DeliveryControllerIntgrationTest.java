@@ -10,13 +10,12 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
+import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
-
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,8 +41,7 @@ import reactor.test.StepVerifier;
 public class DeliveryControllerIntgrationTest {
   @Autowired WebTestClient testClient;
 
-  @Autowired
-  PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Autowired PrimaryDeliveryRepository primaryDeliveryRepository;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
