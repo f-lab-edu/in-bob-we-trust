@@ -301,7 +301,7 @@ public class DeliveryControllerIntgrationTest {
       // Arrange
       var delivery = deliveryList.get(idx);
       var expected = deliveryRepository.save(delivery).block();
-
+      expected.setDeliveryStatus(expected.getDeliveryStatus().getNext());
       // Act
       if (expected.getDeliveryStatus().equals(PICKED_UP)) {
         var actual =

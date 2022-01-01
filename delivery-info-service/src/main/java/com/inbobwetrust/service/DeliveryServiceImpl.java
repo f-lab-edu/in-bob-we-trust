@@ -1,21 +1,22 @@
 package com.inbobwetrust.service;
 
-import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
-import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
-import java.util.Objects;
-import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
+import java.util.function.BiFunction;
+
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 
 @Service
 @RequiredArgsConstructor
@@ -129,7 +130,12 @@ public class DeliveryServiceImpl implements DeliveryService {
       var errorMessage = new StringBuilder("");
 
       if (!canUpdateStatus(ACCEPTED, before, after)) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
+        var errReason =
+            MSG_INVALID_STATUS_FOR_UPDATE
+                + before.getDeliveryStatus()
+                + " >> "
+                + after.getDeliveryStatus();
+        errorMessage.append(errReason);
       }
       return monoJustOrError(after, errorMessage);
     }
@@ -139,7 +145,12 @@ public class DeliveryServiceImpl implements DeliveryService {
       StringBuilder errorMessage = new StringBuilder("");
 
       if (!canUpdateStatus(PICKED_UP, before, after)) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
+        var errReason =
+            MSG_INVALID_STATUS_FOR_UPDATE
+                + before.getDeliveryStatus()
+                + " >> "
+                + after.getDeliveryStatus();
+        errorMessage.append(errReason);
       }
       return monoJustOrError(after, errorMessage);
     }
