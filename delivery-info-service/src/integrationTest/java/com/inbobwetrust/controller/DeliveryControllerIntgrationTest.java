@@ -8,6 +8,7 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,19 +17,24 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.junit.jupiter.Container;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +43,7 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.inbobwetrust.controller.TestParameterGenerator.generate;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -48,13 +55,71 @@ public class DeliveryControllerIntgrationTest {
 
   @Autowired DeliveryRepository deliveryRepository;
 
+  @Autowired SecondaryDeliveryRepository secondaryDeliveryRepository;
+
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
   private String proxyShopUrl = "/relay/v1/shop";
 
   private String proxyAgencyUrl = "/relay/v1/agency";
 
+  private static final int MONGO_PORT = 27017;
+
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
+
+  @Container public static GenericContainer<?> primaryMongo = makeMongoDb("primary");
+
+  @Container public static GenericContainer<?> secondaryMongo = makeMongoDb("secondary");
+
+  @Value("${spring.data.mongodb.primary.database}")
+  private static String primaryMongoDatabase;
+
+  @Value("${spring.data.mongodb.secondary.database}")
+  private static String secondaryMongoDatabase;
+
+  @BeforeEach
+  void setUp() {
+    var setUpDatabase = deliveryRepository.deleteAll();
+    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
+
+    if (!primaryMongo.isRunning()) {
+      primaryMongo.start();
+    }
+    if (!secondaryMongo.isRunning()) {
+      secondaryMongo.start();
+    }
+    assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
+    deliveryRepository.deleteAll().block(Duration.ofSeconds(1));
+    secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
+  }
+
+  @DynamicPropertySource
+  static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
+    primaryMongo.start();
+    var hostPort = primaryMongo.getMappedPort(MONGO_PORT);
+    var primaryUriString =
+        String.format(
+            "mongodb://%s:%d/%s",
+            primaryMongo.getHost(), primaryMongo.getMappedPort(MONGO_PORT), secondaryMongoDatabase);
+    registry.add("spring.data.mongodb.primary.uri", () -> primaryUriString);
+
+    secondaryMongo.start();
+    var secondaryPort = secondaryMongo.getMappedPort(MONGO_PORT);
+    var secondaryUriString =
+        String.format(
+            "mongodb://%s:%d/%s", secondaryMongo.getHost(), secondaryPort, secondaryMongoDatabase);
+    registry.add("spring.data.mongodb.secondary.uri", () -> secondaryUriString);
+  }
+
+  static GenericContainer makeMongoDb(String name) {
+    return new GenericContainer<>("mongo:latest")
+        .withCreateContainerCmdModifier(cmd -> cmd.withName(name))
+        .withEnv("MONGO_INITDB_DATABASE", "inbob")
+        .withExposedPorts(MONGO_PORT)
+        .withReuse(true)
+        .waitingFor(
+            new HttpWaitStrategy().forPort(MONGO_PORT).withStartupTimeout(Duration.ofSeconds(10)));
+  }
 
   static Stream<Arguments> possibleDeliveryStream() {
     return possibleDeliveries.stream().map(Arguments::of).unordered();
@@ -62,12 +127,6 @@ public class DeliveryControllerIntgrationTest {
 
   static Stream<Arguments> possibleAllDelivery() {
     return Stream.of(Arguments.arguments(possibleDeliveries));
-  }
-
-  @BeforeEach
-  void setUp() {
-    var setUpDatabase = deliveryRepository.deleteAll();
-    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
   }
 
   @DisplayName("[서버-신규주문수신]")

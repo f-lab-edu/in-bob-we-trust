@@ -3,10 +3,6 @@ wiremock:
     httpsPort: -1
   reset-mappings-after-each-test: true
 
-restClient:
-  proxy:
-    shopUrl: http://localhost:${wiremock.server.port}/relay/v1/shop
-    agencyUrl: http://localhost:${wiremock.server.port}/relay/v1/agency
 
 spring:
   data:

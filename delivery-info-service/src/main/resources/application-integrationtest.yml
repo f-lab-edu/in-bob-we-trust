@@ -1,8 +1,22 @@
-spring.data.mongodb:
-  #  port: 27017
-  #  host: 127.0.0.1
-  port: 12345
-  host: 127.0.0.1
+wiremock:
+  server:
+    httpsPort: -1
+  reset-mappings-after-each-test: true
+
+restClient:
+  proxy:
+    shopUrl: http://localhost:${wiremock.server.port}/relay/v1/shop
+    agencyUrl: http://localhost:${wiremock.server.port}/relay/v1/agency
+
+spring:
+  data:
+    mongodb:
+      primary:
+        database: inbob
+        uri: mongodb://localhost:12345
+      secondary:
+        database: inbob
+        uri: mongodb://localhost:12346
 
 autoconfigure:
   exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration

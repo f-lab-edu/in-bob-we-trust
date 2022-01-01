@@ -1,14 +1,9 @@
 package com.inbobwetrust.relay;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
-
 import com.inbobwetrust.relay.domain.Delivery;
 import com.inbobwetrust.relay.domain.DeliveryStatus;
 import com.inbobwetrust.relay.domain.ReceiverType;
 import com.inbobwetrust.relay.domain.RelayRequest;
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +16,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @WebFluxTest(RelayController.class)
 @AutoConfigureWebTestClient
@@ -44,10 +45,9 @@ class RelayControllerTest {
     when(relayRepository.save(any())).thenReturn(savedRequest);
     // Act
     var actual =
-        (RelayRequest)
-            this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, RelayRequest.class);
+        (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
-    Assertions.assertEquals(expected, actual);
+    Assertions.assertEquals(expected.getDelivery(), actual);
   }
 
   @DisplayName("[요청전송 to 사장님] Delivery 데이터 필수항목 누락")
@@ -73,17 +73,16 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendAgencyRequest(Delivery delivery) {
     // Arrange
-    var expected = new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery);
-    var savedRequest = Mono.just(expected);
+    var relayRequest = new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery);
+    var savedRequest = Mono.just(relayRequest);
     var uri = BASE_URL + "/agency/" + delivery.getAgencyId();
     // Stub
     when(relayRepository.save(any())).thenReturn(savedRequest);
     // Act
     var actual =
-        (RelayRequest)
-            this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, RelayRequest.class);
+        (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
-    Assertions.assertEquals(expected, actual);
+    Assertions.assertEquals(relayRequest.getDelivery(), actual);
   }
 
   @DisplayName("[요청전송 to 배달대행사] Delivery 데이터 필수항목 누락")
