@@ -9,10 +9,7 @@ import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -77,11 +74,8 @@ public class DeliveryControllerIntgrationTest {
   @Value("${spring.data.mongodb.secondary.database}")
   private static String secondaryMongoDatabase;
 
-  @BeforeEach
-  void setUp() {
-    var setUpDatabase = deliveryRepository.deleteAll();
-    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
-
+  @BeforeAll
+  static void beforeAll() {
     if (!primaryMongo.isRunning()) {
       primaryMongo.start();
     }
@@ -89,13 +83,20 @@ public class DeliveryControllerIntgrationTest {
       secondaryMongo.start();
     }
     assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
+  }
+
+  @BeforeEach
+  void setUp() {
+    var setUpDatabase = deliveryRepository.deleteAll();
+    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
+
     deliveryRepository.deleteAll().block(Duration.ofSeconds(1));
     secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
   }
 
   @DynamicPropertySource
   static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
-    var hostPort = primaryMongo.getMappedPort(MONGO_PORT);
+    primaryMongo.start();
     var primaryUriString =
         String.format(
             "mongodb://%s:%d/%s",

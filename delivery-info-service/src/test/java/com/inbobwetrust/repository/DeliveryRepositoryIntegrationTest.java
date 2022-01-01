@@ -1,24 +1,23 @@
 package com.inbobwetrust.repository;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.domain.PageRequest;
+import reactor.test.StepVerifier;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import reactor.test.StepVerifier;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles("integrationtest")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DataMongoTest
 public class DeliveryRepositoryIntegrationTest {
 
   @Autowired DeliveryRepository deliveryRepository;

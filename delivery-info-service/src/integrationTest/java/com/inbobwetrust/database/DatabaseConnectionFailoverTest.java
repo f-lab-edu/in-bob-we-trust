@@ -107,7 +107,6 @@ public class DatabaseConnectionFailoverTest {
 
   static GenericContainer makeMongoDb(String name) {
     return new GenericContainer<>("mongo:latest")
-        .withCreateContainerCmdModifier(cmd -> cmd.withName(name))
         .withEnv("MONGO_INITDB_DATABASE", "inbob")
         .withExposedPorts(MONGO_PORT)
         .withReuse(true)
