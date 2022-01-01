@@ -95,7 +95,6 @@ public class DeliveryControllerIntgrationTest {
 
   @DynamicPropertySource
   static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
-    primaryMongo.start();
     var hostPort = primaryMongo.getMappedPort(MONGO_PORT);
     var primaryUriString =
         String.format(
@@ -113,7 +112,6 @@ public class DeliveryControllerIntgrationTest {
 
   static GenericContainer makeMongoDb(String name) {
     return new GenericContainer<>("mongo:latest")
-        .withCreateContainerCmdModifier(cmd -> cmd.withName(name))
         .withEnv("MONGO_INITDB_DATABASE", "inbob")
         .withExposedPorts(MONGO_PORT)
         .withReuse(true)
