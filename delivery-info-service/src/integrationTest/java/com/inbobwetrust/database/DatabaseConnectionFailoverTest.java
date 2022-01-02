@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,8 @@ public class DatabaseConnectionFailoverTest {
 
   @Autowired WebTestClient testClient;
 
-  @SpyBean DeliveryRepository deliveryRepository;
+  @SpyBean
+  PrimaryDeliveryRepository primaryDeliveryRepository;
 
   @SpyBean SecondaryDeliveryRepository secondaryDeliveryRepository;
 
@@ -74,7 +75,7 @@ public class DatabaseConnectionFailoverTest {
     primaryMongo.start();
     secondaryMongo.start();
     assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
-    deliveryRepository.deleteAll().block(Duration.ofSeconds(1));
+    primaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
     secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
   }
 
@@ -149,7 +150,7 @@ public class DatabaseConnectionFailoverTest {
 
     assertEquals(savedDelivery.getOrderId(), delivery.getOrderId());
 
-    verify(deliveryRepository, times(1)).save(any());
+    verify(primaryDeliveryRepository, times(1)).save(any());
     verify(secondaryDeliveryRepository, times(1)).save(any());
   }
 
