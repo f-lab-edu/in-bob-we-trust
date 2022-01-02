@@ -16,7 +16,11 @@ spring:
         uri: mongodb://localhost:12345
       secondary:
         database: inbob
-        uri: mongodb://localhost:12346
+
+db-ports:
+  primary: ${spring.data.mongodb.primary.uri.port}
+  secondary: ${spring.data.mongodb.secondary.uri.port}
+
 
 autoconfigure:
   exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
