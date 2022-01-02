@@ -231,9 +231,9 @@ public class DeliveryControllerIntgrationTest {
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
     expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
 
-    final String testUrl = proxyShopUrl + "/" + expected.getShopId();
+    final String testUrl = proxyAgencyUrl + "/" + expected.getAgencyId();
     stubFor(
-        post(urlPathEqualTo(testUrl))
+        post(urlPathMatching(proxyAgencyUrl + "/.*"))
             .willReturn(
                 aResponse()
                     .withStatus(HttpStatus.OK.value())
