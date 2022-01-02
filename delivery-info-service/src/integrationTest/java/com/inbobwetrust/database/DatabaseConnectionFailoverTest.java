@@ -1,14 +1,5 @@
 package com.inbobwetrust.database;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.inbobwetrust.service.DeliveryService.FIXED_DELAY;
-import static com.inbobwetrust.service.DeliveryService.MAX_ATTEMPTS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -16,9 +7,6 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +31,19 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.inbobwetrust.service.DeliveryService.FIXED_DELAY;
+import static com.inbobwetrust.service.DeliveryService.MAX_ATTEMPTS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
