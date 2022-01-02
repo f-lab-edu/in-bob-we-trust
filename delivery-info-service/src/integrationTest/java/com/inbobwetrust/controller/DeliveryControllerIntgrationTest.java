@@ -9,7 +9,10 @@ import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -97,12 +100,6 @@ public class DeliveryControllerIntgrationTest {
 
     var setUpDatabase = deliveryRepository.deleteAll();
     StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
-  }
-
-  @AfterEach
-  void tearDonw() {
-    primaryMongo.stop();
-    secondaryMongo.stop();
   }
 
   @DynamicPropertySource
@@ -355,11 +352,12 @@ public class DeliveryControllerIntgrationTest {
     var expected = deliveryRepository.save(delivery).block();
 
     if (expected.getDeliveryStatus().equals(DeliveryStatus.PICKED_UP)) {
+      expected.setDeliveryStatus(DeliveryStatus.COMPLETE);
       // Act
       var actual =
           testClient
               .put()
-              .uri("/api/delivery/pickup")
+              .uri("/api/delivery/complete")
               .bodyValue(expected)
               .exchange()
               .expectStatus()
@@ -374,7 +372,7 @@ public class DeliveryControllerIntgrationTest {
       // Act
       testClient
           .put()
-          .uri("/api/delivery/pickup")
+          .uri("/api/delivery/complete")
           .bodyValue(expected)
           .exchange()
           .expectStatus()
