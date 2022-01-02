@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integration")
 public class DatabaseConnectionFailoverTest {
   static final Logger LOG = LoggerFactory.getLogger(DatabaseConnectionFailoverTest.class);
   private String proxyShopUrl = "/relay/v1/shop";
