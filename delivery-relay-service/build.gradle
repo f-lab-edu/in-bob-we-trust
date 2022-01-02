@@ -62,3 +62,10 @@ test {
     useJUnitPlatform()
 }
 
+apply plugin: 'idea'
+idea {
+    module {
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    }
+}
