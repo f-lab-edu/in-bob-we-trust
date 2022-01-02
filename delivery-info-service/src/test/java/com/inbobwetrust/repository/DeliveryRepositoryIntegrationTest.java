@@ -20,7 +20,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryRepositoryIntegrationTest {
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   @AfterEach
   void tearDown() {
@@ -28,7 +29,8 @@ public class DeliveryRepositoryIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() {}
+  static void afterAll() {
+  }
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
