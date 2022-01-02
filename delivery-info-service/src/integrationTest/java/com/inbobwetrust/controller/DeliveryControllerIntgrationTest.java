@@ -9,12 +9,15 @@ import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.repository.primary.DeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -46,8 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureWebTestClient
 @ActiveProfiles("integrationtest")
 @AutoConfigureWireMock(port = 0)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryControllerIntgrationTest {
+  private static final String DEFAULT_MONGO_DATABASE = "inbob";
   @Autowired WebTestClient testClient;
 
   @Autowired DeliveryRepository deliveryRepository;
@@ -60,64 +63,7 @@ public class DeliveryControllerIntgrationTest {
 
   private String proxyAgencyUrl = "/relay/v1/agency";
 
-  private static final int MONGO_PORT = 27017;
-
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
-
-  @Container public static GenericContainer<?> primaryMongo = makeMongoDb("primary");
-
-  @Container public static GenericContainer<?> secondaryMongo = makeMongoDb("secondary");
-
-  @Value("${spring.data.mongodb.primary.database}")
-  private static String primaryMongoDatabase;
-
-  @Value("${spring.data.mongodb.secondary.database}")
-  private static String secondaryMongoDatabase;
-
-  @BeforeAll
-  static void beforeAll() {
-    if (!primaryMongo.isRunning()) {
-      primaryMongo.start();
-    }
-    if (!secondaryMongo.isRunning()) {
-      secondaryMongo.start();
-    }
-    assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
-  }
-
-  @BeforeEach
-  void setUp() {
-    var setUpDatabase = deliveryRepository.deleteAll();
-    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
-
-    deliveryRepository.deleteAll().block(Duration.ofSeconds(1));
-    secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
-  }
-
-  @DynamicPropertySource
-  static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
-    primaryMongo.start();
-    var primaryUriString =
-        String.format(
-            "mongodb://%s:%d/%s",
-            primaryMongo.getHost(), primaryMongo.getMappedPort(MONGO_PORT), secondaryMongoDatabase);
-    registry.add("spring.data.mongodb.primary.uri", () -> primaryUriString);
-
-    secondaryMongo.start();
-    var secondaryPort = secondaryMongo.getMappedPort(MONGO_PORT);
-    var secondaryUriString =
-        String.format(
-            "mongodb://%s:%d/%s", secondaryMongo.getHost(), secondaryPort, secondaryMongoDatabase);
-    registry.add("spring.data.mongodb.secondary.uri", () -> secondaryUriString);
-  }
-
-  static GenericContainer makeMongoDb(String name) {
-    return new GenericContainer<>("mongo:latest")
-        .withEnv("MONGO_INITDB_DATABASE", "inbob")
-        .withExposedPorts(MONGO_PORT)
-        .waitingFor(
-            new HttpWaitStrategy().forPort(MONGO_PORT).withStartupTimeout(Duration.ofSeconds(10)));
-  }
 
   static Stream<Arguments> possibleDeliveryStream() {
     return possibleDeliveries.stream().map(Arguments::of).unordered();
@@ -125,6 +71,59 @@ public class DeliveryControllerIntgrationTest {
 
   static Stream<Arguments> possibleAllDelivery() {
     return Stream.of(Arguments.arguments(possibleDeliveries));
+  }
+
+  @Container public static GenericContainer<?> primaryMongo = makeMongoDb();
+
+  @Container public static GenericContainer<?> secondaryMongo = makeMongoDb();
+
+  static GenericContainer makeMongoDb() {
+    return new GenericContainer<>("mongo:latest")
+        .withEnv("MONGO_INITDB_DATABASE", "inbob")
+        .withExposedPorts(MongoProperties.DEFAULT_PORT)
+        .waitingFor(
+            new HttpWaitStrategy()
+                .forPort(MongoProperties.DEFAULT_PORT)
+                .withStartupTimeout(Duration.ofSeconds(10)));
+  }
+
+  @Value("${spring.data.mongodb.primary.database}")
+  private static String primaryMongoDatabase;
+
+  @Value("${spring.data.mongodb.secondary.database}")
+  private static String secondaryMongoDatabase;
+
+  static void beforeAll() {}
+
+  @BeforeEach
+  void setUp() {
+    if (!primaryMongo.isRunning()) {
+      primaryMongo.start();
+    }
+    if (!secondaryMongo.isRunning()) {
+      secondaryMongo.start();
+    }
+    assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
+
+    var setUpDatabase = deliveryRepository.deleteAll();
+    StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
+  }
+
+  @DynamicPropertySource
+  static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
+    assertTrue(primaryMongo.isRunning());
+    registry.add("spring.data.mongodb.primary.uri", () -> extractSimpleMongoUri(primaryMongo));
+
+    assertTrue(secondaryMongo.isRunning());
+    registry.add("spring.data.mongodb.secondary.uri", () -> extractSimpleMongoUri(secondaryMongo));
+  }
+
+  private static Object extractSimpleMongoUri(GenericContainer<?> container) {
+    return String.format(
+        "mongodb://%s:%d/%s",
+        container.getHost(),
+        container.getMappedPort(MongoProperties.DEFAULT_PORT),
+        DEFAULT_MONGO_DATABASE);
   }
 
   @DisplayName("[서버-신규주문수신]")

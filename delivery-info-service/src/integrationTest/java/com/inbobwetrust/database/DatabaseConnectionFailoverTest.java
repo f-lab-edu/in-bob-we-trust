@@ -65,9 +65,9 @@ public class DatabaseConnectionFailoverTest {
 
   @SpyBean SecondaryDeliveryRepository secondaryDeliveryRepository;
 
-  @Container static GenericContainer<?> primaryMongo = makeMongoDb("primary");
+  @Container static GenericContainer<?> primaryMongo = makeMongoDb();
 
-  @Container static GenericContainer<?> secondaryMongo = makeMongoDb("secondary");
+  @Container static GenericContainer<?> secondaryMongo = makeMongoDb();
 
   @BeforeEach
   void setUp() {
@@ -78,7 +78,7 @@ public class DatabaseConnectionFailoverTest {
     secondaryDeliveryRepository.deleteAll().block(Duration.ofSeconds(1));
   }
 
-  static GenericContainer makeMongoDb(String name) {
+  static GenericContainer makeMongoDb() {
     return new GenericContainer(MONGO_IMAGE)
         .withExposedPorts(MongoProperties.DEFAULT_PORT)
         .withEnv("MONGO_INITDB_DATABASE", DEFAULT_MONGO_DATABASE)
