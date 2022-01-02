@@ -115,7 +115,6 @@ public class DeliveryControllerIntgrationTest {
     return new GenericContainer<>("mongo:latest")
         .withEnv("MONGO_INITDB_DATABASE", "inbob")
         .withExposedPorts(MONGO_PORT)
-        .withReuse(true)
         .waitingFor(
             new HttpWaitStrategy().forPort(MONGO_PORT).withStartupTimeout(Duration.ofSeconds(10)));
   }
