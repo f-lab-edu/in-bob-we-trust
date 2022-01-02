@@ -47,7 +47,7 @@ class RelayControllerTest {
     var actual =
         (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
-    Assertions.assertEquals(expected, actual);
+    Assertions.assertEquals(expected.getDelivery(), actual);
   }
 
   @DisplayName("[요청전송 to 사장님] Delivery 데이터 필수항목 누락")
@@ -73,8 +73,8 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendAgencyRequest(Delivery delivery) {
     // Arrange
-    var expected = new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery);
-    var savedRequest = Mono.just(expected);
+    var relayRequest = new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery);
+    var savedRequest = Mono.just(relayRequest);
     var uri = BASE_URL + "/agency/" + delivery.getAgencyId();
     // Stub
     when(relayRepository.save(any())).thenReturn(savedRequest);
@@ -82,7 +82,7 @@ class RelayControllerTest {
     var actual =
         (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
-    Assertions.assertEquals(expected, actual);
+    Assertions.assertEquals(relayRequest.getDelivery(), actual);
   }
 
   @DisplayName("[요청전송 to 배달대행사] Delivery 데이터 필수항목 누락")
@@ -98,7 +98,7 @@ class RelayControllerTest {
     // Act
     var actual =
         (String)
-            this.makePostRequest_and_expect(HttpStatus.BAD_REQUEST, expected, uri, Delivery.class);
+            this.makePostRequest_and_expect(HttpStatus.BAD_REQUEST, expected, uri, String.class);
     // Assert
     Assertions.assertTrue(actual.contains("필수"));
   }
