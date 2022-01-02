@@ -15,6 +15,7 @@ spring:
         database: inbob
         uri: mongodb://localhost:12345
       secondary:
+        uri: mongodb://localhost:12346
         database: inbob
 
 db-ports:
