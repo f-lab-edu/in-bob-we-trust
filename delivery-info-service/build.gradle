@@ -7,6 +7,7 @@ plugins {
 group = 'com.woojoolion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
+buildDir = new File(rootProject.projectDir, "build/" + project.name)
 
 repositories {
     mavenCentral()
@@ -46,9 +47,12 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
+    description = 'Delivery-Info-Serivce : Integraion Test'
+    group = 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
+    shouldRunAfter(tasks.named('test'))
 }
 
 check {
