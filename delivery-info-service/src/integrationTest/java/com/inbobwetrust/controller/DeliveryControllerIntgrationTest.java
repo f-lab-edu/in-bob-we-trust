@@ -46,8 +46,8 @@ import static com.inbobwetrust.controller.TestParameterGenerator.generate;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
 @ActiveProfiles("integrationtest")
+@AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
 public class DeliveryControllerIntgrationTest {
   private static final String DEFAULT_MONGO_DATABASE = "inbob";
