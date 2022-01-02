@@ -1,14 +1,9 @@
 package com.inbobwetrust.relay;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
-
 import com.inbobwetrust.relay.domain.Delivery;
 import com.inbobwetrust.relay.domain.DeliveryStatus;
 import com.inbobwetrust.relay.domain.ReceiverType;
 import com.inbobwetrust.relay.domain.RelayRequest;
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,6 +16,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @WebFluxTest(RelayController.class)
 @AutoConfigureWebTestClient
@@ -44,8 +45,7 @@ class RelayControllerTest {
     when(relayRepository.save(any())).thenReturn(savedRequest);
     // Act
     var actual =
-        (RelayRequest)
-            this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, RelayRequest.class);
+        (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
     Assertions.assertEquals(expected, actual);
   }
@@ -55,7 +55,7 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendShopRequest2(Delivery delivery) {
     // Arrange
-    delivery.setDeliveryId(null);
+    delivery.setId(null);
     var savedRequest =
         Mono.just(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery));
     var uri = BASE_URL + "/shop/" + delivery.getShopId();
@@ -80,8 +80,7 @@ class RelayControllerTest {
     when(relayRepository.save(any())).thenReturn(savedRequest);
     // Act
     var actual =
-        (RelayRequest)
-            this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, RelayRequest.class);
+        (Delivery) this.makePostRequest_and_expect(HttpStatus.OK, delivery, uri, Delivery.class);
     // Assert
     Assertions.assertEquals(expected, actual);
   }
@@ -91,7 +90,7 @@ class RelayControllerTest {
   @MethodSource("makeDeliveryReq")
   void sendAgencyRequest2(Delivery expected) {
     // Arrange
-    expected.setDeliveryId(null);
+    expected.setId(null);
     var savedRequest =
         Mono.just(new RelayRequest(ReceiverType.SHOP, expected.getShopId(), expected));
     var uri = BASE_URL + "/shop/" + expected.getShopId();
@@ -99,7 +98,7 @@ class RelayControllerTest {
     // Act
     var actual =
         (String)
-            this.makePostRequest_and_expect(HttpStatus.BAD_REQUEST, expected, uri, String.class);
+            this.makePostRequest_and_expect(HttpStatus.BAD_REQUEST, expected, uri, Delivery.class);
     // Assert
     Assertions.assertTrue(actual.contains("필수"));
   }
@@ -124,7 +123,7 @@ class RelayControllerTest {
 
   private static Delivery makeDelivery() {
     var delivery = new Delivery();
-    delivery.setDeliveryId("delivery-1234");
+    delivery.setId("delivery-1234");
     delivery.setShopId("shop-1234");
     delivery.setOrderId("order-1234");
     delivery.setRiderId("rider-1234");
