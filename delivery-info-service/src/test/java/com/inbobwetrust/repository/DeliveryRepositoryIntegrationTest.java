@@ -1,6 +1,7 @@
 package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryRepositoryIntegrationTest {
 
-  @Autowired
-  DeliveryRepository deliveryRepository;
+  @Autowired DeliveryRepository deliveryRepository;
 
   @AfterEach
   void tearDown() {
@@ -28,8 +28,7 @@ public class DeliveryRepositoryIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() {
-  }
+  static void afterAll() {}
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()

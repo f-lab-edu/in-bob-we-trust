@@ -4,7 +4,8 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
 import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
