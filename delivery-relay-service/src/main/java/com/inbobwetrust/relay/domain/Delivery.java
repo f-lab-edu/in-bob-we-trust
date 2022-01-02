@@ -11,9 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document
 public class Delivery {
+
   @NotNull(message = "배달 고유 번호는 필수 입력값입니다.")
   @Id
-  private String Id;
+  private String id;
 
   @NotNull(message = "주문번호는 필수 입력값입니다.")
   private String orderId;
