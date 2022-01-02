@@ -12,11 +12,11 @@ import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("integrationtest")
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryControllerIntgrationTest {
   private static final String DEFAULT_MONGO_DATABASE = "inbob";
   @Autowired WebTestClient testClient;
@@ -87,14 +88,6 @@ public class DeliveryControllerIntgrationTest {
                 .withStartupTimeout(Duration.ofSeconds(10)));
   }
 
-  @Value("${spring.data.mongodb.primary.database}")
-  private static String primaryMongoDatabase;
-
-  @Value("${spring.data.mongodb.secondary.database}")
-  private static String secondaryMongoDatabase;
-
-  static void beforeAll() {}
-
   @BeforeEach
   void setUp() {
     if (!primaryMongo.isRunning()) {
@@ -110,15 +103,17 @@ public class DeliveryControllerIntgrationTest {
   }
 
   @DynamicPropertySource
-  static void datasourceProperties(DynamicPropertyRegistry registry) throws InterruptedException {
+  static void datasourceProperties(DynamicPropertyRegistry registry) {
+    primaryMongo.start();
     assertTrue(primaryMongo.isRunning());
     registry.add("spring.data.mongodb.primary.uri", () -> extractSimpleMongoUri(primaryMongo));
 
+    secondaryMongo.start();
     assertTrue(secondaryMongo.isRunning());
     registry.add("spring.data.mongodb.secondary.uri", () -> extractSimpleMongoUri(secondaryMongo));
   }
 
-  private static Object extractSimpleMongoUri(GenericContainer<?> container) {
+  static String extractSimpleMongoUri(GenericContainer<?> container) {
     return String.format(
         "mongodb://%s:%d/%s",
         container.getHost(),
