@@ -1,24 +1,23 @@
 package com.inbobwetrust.service;
 
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
+
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BiFunction;
-
-import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
-import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 
 @Service
 @Slf4j

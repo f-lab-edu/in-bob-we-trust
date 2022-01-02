@@ -2,6 +2,11 @@ package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,17 +16,10 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @DataMongoTest
 public class DeliveryRepositoryIntegrationTest {
 
-  @Autowired
-  PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Autowired PrimaryDeliveryRepository primaryDeliveryRepository;
 
   @AfterEach
   void tearDown() {
@@ -29,8 +27,7 @@ public class DeliveryRepositoryIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() {
-  }
+  static void afterAll() {}
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
