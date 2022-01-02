@@ -26,9 +26,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
-  @InjectMocks DeliveryServiceImpl deliveryService;
-  @Mock DeliveryRepository deliveryRepository;
-  @Mock DeliveryPublisher deliveryPublisher;
+  @InjectMocks
+  DeliveryServiceImpl deliveryService;
+  @Mock
+  DeliveryRepository deliveryRepository;
+  @Mock
+  DeliveryPublisher deliveryPublisher;
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
