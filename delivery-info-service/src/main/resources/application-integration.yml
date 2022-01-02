@@ -1,0 +1,27 @@
+wiremock:
+  server:
+    httpsPort: -1
+  reset-mappings-after-each-test: true
+
+restClient:
+  proxy:
+    shopUrl: http://localhost:${wiremock.server.port}/relay/v1/shop
+    agencyUrl: http://localhost:${wiremock.server.port}/relay/v1/agency
+
+spring:
+  data:
+    mongodb:
+      primary:
+        database: inbob
+        uri: mongodb://localhost:12345
+      secondary:
+        uri: mongodb://localhost:12346
+        database: inbob
+
+db-ports:
+  primary: ${spring.data.mongodb.primary.uri.port}
+  secondary: ${spring.data.mongodb.secondary.uri.port}
+
+
+autoconfigure:
+  exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration

@@ -1,12 +1,13 @@
 package com.inbobwetrust.controller;
 
-import static java.time.LocalDateTime.now;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
 
 public class TestParameterGenerator {
   static List<String> riderIds = List.of("rider-12830hf121");
@@ -23,12 +24,7 @@ public class TestParameterGenerator {
   static List<LocalDateTime> finishTimes = generateTimes();
 
   private static List<LocalDateTime> generateTimes() {
-    return List.of(
-        now(),
-        now().minusMinutes(1),
-        now().minusHours(1),
-        now().plusMinutes(1),
-        now().plusHours(1));
+    return List.of(now(), now().minusMinutes(1), now().plusMinutes(1));
   }
 
   public static List<Delivery> generate() {
