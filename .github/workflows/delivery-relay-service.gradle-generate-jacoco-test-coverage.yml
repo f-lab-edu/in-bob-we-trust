@@ -1,4 +1,4 @@
-name: delivery-relay-service / Unit Test
+name: delivery-relay-service / Jacoco Test Coverage
 
 on: [ push, pull_request ]
 

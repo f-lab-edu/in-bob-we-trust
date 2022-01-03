@@ -1,4 +1,4 @@
-name: delivery-info-service / Integration Test
+name: delivery-info-service / Jacoco Test Coverage
 
 on: [ push, pull_request ]
 
