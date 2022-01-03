@@ -9,7 +9,7 @@ group = 'com.woojoolion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 buildDir = new File(rootProject.projectDir, "build/" + project.name)
-def jacocoMinimumLineCoverageRatio = 0.5
+def jacocoMinimumLineCoverageRatio = 0.4
 
 repositories {
     mavenCentral()
