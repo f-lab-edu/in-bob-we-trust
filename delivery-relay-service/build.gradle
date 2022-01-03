@@ -2,12 +2,14 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.5.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'jacoco'
 }
 
 group = 'com.woojoolion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 buildDir = new File(rootProject.projectDir, "build/" + project.name)
+def jacocoMinimumLineCoverageRatio = 0.5
 
 repositories {
     mavenCentral()
@@ -18,23 +20,6 @@ configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.3'
-    if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
-        implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
-    }
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-}
-
 
 sourceSets {
     integrationTest {
@@ -52,6 +37,9 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
     shouldRunAfter(tasks.named('test'))
+    jacoco {
+        include '**'
+    }
 }
 
 check {
@@ -62,10 +50,79 @@ test {
     useJUnitPlatform()
 }
 
+
+jacocoTestReport {
+    dependsOn test
+    sourceSets sourceSets.main
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+    jacocoTestReport {
+        reports {
+            xml.required = false
+            csv.required = false
+            html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        }
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                minimum = jacocoMinimumLineCoverageRatio
+            }
+        }
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+            }
+        }
+    }
+}
+
+task generateJacocoTestCoverage(type: JacocoReport) {
+    group 'verification'
+    description 'Runs tests with coverage'
+
+    dependsOn = [integrationTest, test, jacocoTestReport, jacocoTestCoverageVerification]
+
+    tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
+    tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
+}
+
+
 apply plugin: 'idea'
 idea {
     module {
         testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
         testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
     }
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.3'
+    if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
+        implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+    }
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }

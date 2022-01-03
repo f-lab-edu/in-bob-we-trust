@@ -53,7 +53,7 @@ test {
 
 jacocoTestReport {
     dependsOn test
-    sourceSets sourceSets.main    // important!
+    sourceSets sourceSets.main
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 }
 
@@ -91,14 +91,9 @@ jacocoTestCoverageVerification {
     }
 }
 
-task generateTestCoverage(type: JacocoReport) {
+task generateJacocoTestCoverage(type: JacocoReport) {
     group 'verification'
     description 'Runs tests with coverage'
-
-//    dependsOn(':test',
-//            ':integrationTest',
-//            ':jacocoTestReport',
-//            ':jacocoTestCoverageVerification')
 
     dependsOn = [integrationTest, test, jacocoTestReport, jacocoTestCoverageVerification]
 
