@@ -22,5 +22,5 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test with Gradle
-        run: ./gradlew :delivery-info-service:generateJacocoTestCoverage
+        run: ./gradlew :delivery-info-service:generateJacocoTestCoverage --parallel
 
