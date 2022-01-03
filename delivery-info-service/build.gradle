@@ -9,6 +9,7 @@ group = 'com.woojoolion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 buildDir = new File(rootProject.projectDir, "build/" + project.name)
+def jacocoMinimumLineCoverageRatio = 0.5
 
 repositories {
     mavenCentral()
@@ -40,6 +41,7 @@ task integrationTest(type: Test) {
         include '**'
     }
 }
+
 
 check {
     dependsOn integrationTest
@@ -74,18 +76,8 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'LINE'
-                value = 'TOTALCOUNT'
-                minimum = 0.5
-            }
-        }
-        rule {
-            enabled = true
-            element = 'CLASS'
-            includes = ['org.gradle.*']
-
-            limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumLineCoverageRatio
             }
         }
     }
