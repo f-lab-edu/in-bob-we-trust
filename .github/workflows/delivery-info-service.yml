@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        IMAGE_BUILD_DIR_PAIR: [ [ 'beanskobe/delivery-info-service', './delivery-info-service' ] ]
+        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -64,19 +64,19 @@ jobs:
 
       - name: 도커 이미지빌드 w/ version
         if: success()
-        run: docker image build -t ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
+        run: docker image build -t ${{ secrets.DOCKER_HUB_PASSWORD }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
       - name: 도커 이미지 push w/ version
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
+          args: push ${{ secrets.DOCKER_HUB_PASSWORD }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
 
       - name: 도커 이미지빌드 latest
         if: success()
-        run: docker image build -t ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
+        run: docker image build -t ${{ secrets.DOCKER_HUB_PASSWORD }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
       - name: 도커 이미지 push latest
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
+          args: push ${{ secrets.DOCKER_HUB_PASSWORD }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
 
