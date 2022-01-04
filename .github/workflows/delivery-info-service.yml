@@ -27,6 +27,7 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
+        
   #----------------------------------------------------------------------------------------------------------
   build:
     if: ${{ success() }}
