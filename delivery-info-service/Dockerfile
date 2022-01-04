@@ -2,7 +2,7 @@ FROM openjdk:11.0.10-jre-slim-buster
 
 # 빌드목적
 ARG JAR_FILENAME='delivery-info-service.jar'
-ARG PACKAGE_JAR_LOCATION=build/libs/${JAR_FILENAME}
+ARG PACKAGE_JAR_LOCATION=./delivery-info-service/build/libs/${JAR_FILENAME}
 
 # 실행목적
 # docker run --e 로 오버라이딩
