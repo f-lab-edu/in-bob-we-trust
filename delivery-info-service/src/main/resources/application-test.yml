@@ -12,5 +12,5 @@ spring:
         uri: mongodb://localhost:27017
       secondary:
         database: inbob
-        uri: mongodb://localhost:28017
+        uri: mongodb://localhost:27018
 
