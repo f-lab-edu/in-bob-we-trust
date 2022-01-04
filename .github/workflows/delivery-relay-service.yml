@@ -37,8 +37,12 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -48,17 +52,18 @@ jobs:
 
       - name: Start Logging
         run: echo Gradle Build Test Start
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
       - name: Build with Gradle
-        run: ./gradlew delivery-relay-service:build
+        run: ./gradlew delivery-info-service:build
 
       - name: 로그인 to Docker
-        if: success()
-        uses: actions-hub/docker/login@master
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{  env.DOCKERHUB_TOKEN }}
 
       - name: 도커 이미지빌드 w/ version
         if: success()
