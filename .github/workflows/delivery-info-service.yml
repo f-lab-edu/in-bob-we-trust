@@ -27,7 +27,7 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
-        
+
   #----------------------------------------------------------------------------------------------------------
   build:
     if: ${{ success() }}
@@ -58,7 +58,7 @@ jobs:
 
       - name: 로그인 to Docker
         if: success()
-        uses: actions-hub/docker/login@master
+        uses: docker/login-action@v1
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
