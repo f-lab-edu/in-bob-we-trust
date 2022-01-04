@@ -1,7 +1,11 @@
 name: Build Image delivery-relay-service
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - main
+      - master
+      
 jobs:
   #----------------------------------------------------------------------------------------------------------
   test:
