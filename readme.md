@@ -50,7 +50,7 @@
 |  spring.data.mongodb.secondary.database| 백업 몽고DB 데이터베이스 이름       | COMMAND_LINE_ARGS_BEFORE    | 
 | spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
 
-#### docker run 예시
+#### docker run 샘플 
 
 ```shell
 docker run \
@@ -75,7 +75,7 @@ java ${COMMAND_LINE_ARGS_BEFORE} -jar ./app.jar ${COMMAND_LINE_ARGS_AFTER}
 | spring.data.mongodb.primary.database|  몽고DB 데이터베이스 이름       |   COMMAND_LINE_ARGS_BEFORE    |   
 | spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
 
-#### docker run 예시
+#### docker run 샘플 
 
 ```shell
 docker run \
