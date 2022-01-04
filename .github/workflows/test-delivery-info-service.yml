@@ -1,4 +1,4 @@
-name: CI delivery-info-service
+name: Test delivery-info-service
 
 on: [ push , pull_request ]
 jobs:

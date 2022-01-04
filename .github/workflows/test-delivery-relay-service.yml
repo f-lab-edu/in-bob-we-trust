@@ -1,4 +1,4 @@
-name: CI delivery-relay-service
+name: Test delivery-relay-service
 
 on: [ push , pull_request ]
 
