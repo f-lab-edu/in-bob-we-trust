@@ -51,7 +51,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew build :delivery-relay-service
+        run: ./gradlew delivery-relay-service:build
 
       - name: 로그인 to Docker
         if: success()

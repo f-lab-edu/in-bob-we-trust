@@ -1,6 +1,6 @@
 name: CI delivery-info-service
 
-on: [ push , pull_request]
+on: [ push , pull_request ]
 jobs:
   #----------------------------------------------------------------------------------------------------------
   test:
@@ -53,7 +53,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build :delivery-info-service
+        run: ./gradlew delivery-info-service:build
 
       - name: 로그인 to Docker
         if: success()
