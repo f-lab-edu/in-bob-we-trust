@@ -1,0 +1,78 @@
+name: CI delivery-relay-service
+
+on: [ push ]
+jobs:
+  #----------------------------------------------------------------------------------------------------------
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Start Logging
+        run: echo Gradle Build Test Start
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Test with Gradle
+        run: ./gradlew ${{ matrix.TEST_COMMAND }}
+  #----------------------------------------------------------------------------------------------------------
+  build:
+    if: ${{ success() }}
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        IMAGE_BUILD_DIR_PAIR: [ [ 'beanskobe/delivery-relay-service', './delivery-relay-service' ] ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Start Logging
+        run: echo Gradle Build Test Start
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: 로그인 to Docker
+        if: success()
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: 도커 이미지빌드 w/ version
+        if: success()
+        run: docker image build -t ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
+      - name: 도커 이미지 push w/ version
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
+
+      - name: 도커 이미지빌드 latest
+        if: success()
+        run: docker image build -t ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
+      - name: 도커 이미지 push latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
