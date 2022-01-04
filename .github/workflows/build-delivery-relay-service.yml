@@ -40,9 +40,7 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
     steps:
       - uses: actions/checkout@v2
 
