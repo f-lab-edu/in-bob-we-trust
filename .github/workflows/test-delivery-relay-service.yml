@@ -1,0 +1,29 @@
+name: CI delivery-relay-service
+
+on: [ push , pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage' ]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Start Logging
+        run: echo Gradle Build Test Start
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Test with Gradle
+        run: ./gradlew ${{ matrix.TEST_COMMAND }}
