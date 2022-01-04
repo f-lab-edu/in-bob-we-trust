@@ -1,8 +1,10 @@
 # Example workflow
 name: Format
 
-on: [ push ]
-
+on:
+  push:
+    branches-ignore:
+      - 'main'
 jobs:
 
   formatting:
