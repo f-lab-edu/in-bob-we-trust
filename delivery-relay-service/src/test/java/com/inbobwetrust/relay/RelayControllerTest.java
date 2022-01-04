@@ -1,14 +1,9 @@
 package com.inbobwetrust.relay;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
-
 import com.inbobwetrust.relay.domain.Delivery;
 import com.inbobwetrust.relay.domain.DeliveryStatus;
 import com.inbobwetrust.relay.domain.ReceiverType;
 import com.inbobwetrust.relay.domain.RelayRequest;
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,11 +14,19 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+
 @WebFluxTest(RelayController.class)
 @AutoConfigureWebTestClient
+@ActiveProfiles("test")
 class RelayControllerTest {
 
   @Autowired WebTestClient testClient;

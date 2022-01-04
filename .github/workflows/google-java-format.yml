@@ -1,5 +1,5 @@
 # Example workflow
-name: Format
+name: google-java-format
 
 on:
   push:

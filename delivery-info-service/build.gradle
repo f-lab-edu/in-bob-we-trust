@@ -6,9 +6,14 @@ plugins {
 }
 
 group = 'com.woojoolion'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 def jacocoMinimumCoverageRatio = 0.4
+def jarFileName = 'delivery-info-service'
+
+bootJar {
+    baseName jarFileName
+    launchScript()
+}
 
 repositories {
     mavenCentral()

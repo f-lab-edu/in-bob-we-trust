@@ -4,3 +4,4 @@ server:
 restClient:
   proxy:
     baseUrl: /relay/v1
+
