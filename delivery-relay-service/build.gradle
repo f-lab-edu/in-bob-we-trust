@@ -6,9 +6,14 @@ plugins {
 }
 
 group = 'com.woojoolion'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 def jacocoMinimumCoverageRatio = 0.50
+def jarFileName = 'delivery-relay-service'
+
+bootJar {
+    baseName jarFileName
+    launchScript()
+}
 
 repositories {
     mavenCentral()
@@ -89,7 +94,6 @@ task generateJacocoTestCoverage(type: JacocoReport) {
     tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
     tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
 }
-
 
 apply plugin: 'idea'
 idea {
