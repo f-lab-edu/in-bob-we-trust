@@ -1,6 +1,7 @@
 name: CI delivery-relay-service
 
-on: [ push ]
+on: [ push , pull_request ]
+
 jobs:
   #----------------------------------------------------------------------------------------------------------
   test:
@@ -8,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage']
+        TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage' ]
     steps:
       - uses: actions/checkout@v2
 
