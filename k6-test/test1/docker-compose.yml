@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  mongo-primary:
+    image: mongo
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  mongo-secondary:
+    image: mongo
+    ports:
+      - "28018:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  delivery-info-service:
+    image: beanskobe/delivery-info-service:latest
+    depends_on:
+      - mongo-primary
+      - mongo-secondary
+    environment:
+      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=localhost:27107 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=localhost:28017
+      - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadTest
+    links:
+      - mongo-secondary
+      - mongo-primary
+    ports:
+      - "8080:8080"
