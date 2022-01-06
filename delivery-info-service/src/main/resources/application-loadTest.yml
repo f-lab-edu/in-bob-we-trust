@@ -1,16 +1,5 @@
-wiremock:
-  server:
-    httpsPort: -1
-  reset-mappings-after-each-test: true
-
 server:
   port: 8080
-
-restClient:
-  proxy:
-    shopUrl: http://localhost:8090/relay/v1/shop
-    agencyUrl: http://localhost:8090/relay/v1/agency
-
 
 spring:
   autoconfigure:
@@ -23,3 +12,20 @@ spring:
       secondary:
         uri: mongodb://localhost:27018
         database: inbobwetrust
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+wiremock:
+  server:
+    httpsPort: -1
+  reset-mappings-after-each-test: true
+
+restClient:
+  proxy:
+    shopUrl: http://localhost:8090/relay/v1/shop
+    agencyUrl: http://localhost:8090/relay/v1/agency
+
