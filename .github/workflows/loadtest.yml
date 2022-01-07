@@ -28,10 +28,6 @@ jobs:
         if: success()
         run: ./gradlew :delivery-info-service:bootJar --exclude-task test
 
-      - name: Docker clean all containers
-        if: success()
-        run: docker rm -f $(docker ps -a -q)
-
       - name: Docker create bridge
         if: success()
         run: docker network create -d bridge inbobwetrust || true
@@ -56,7 +52,6 @@ jobs:
         if: success()
         run: |
           docker run -d --network=inbobwetrust -p 8090:8080 -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
-
 
       - name: Sleep for 10 seconds
         run: sleep 10
