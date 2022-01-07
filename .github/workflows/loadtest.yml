@@ -1,4 +1,4 @@
-name: Test delivery-info-service
+name: LoadTest delivery-info-service
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - \#142-docker-compose-를-활용한-서버-성능테스트
 jobs:
   #----------------------------------------------------------------------------------------------------------
-  test:
+  load_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
 
       - name: Docker-Compose up
         if: success()
-        run: docker-compose -f ./k6-test/docker-compose.yml up -d
+        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
       - name: Run local k6 test
         uses: k6io/action@v0.1
