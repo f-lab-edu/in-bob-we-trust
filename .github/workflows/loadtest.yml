@@ -27,14 +27,14 @@ jobs:
       - name: Gradle BootJar
         if: success()
         run: ./gradlew :delivery-info-service:bootJar --exclude-task test
-#
+      #
       - name: Build Docker Image
         if: success()
         run: docker image build -t inbobwetrust/delivery-info-service:actions-test ./delivery-info-service
 
       - name: Docker-Compose up
         if: success()
-        run: GITHUB_SHA_IMAGE_TAG=:${GITHUB_SHA::7} docker-compose -f ./k6-test/docker-compose-actions.yml up -d
+        run: GITHUB_SHA_IMAGE_TAG=${GITHUB_SHA::7} docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
       - name: Run local k6 test
         uses: k6io/action@v0.1
