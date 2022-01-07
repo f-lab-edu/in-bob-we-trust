@@ -8,7 +8,7 @@ export const options = {
       executor: 'constant-vus',
       gracefulStop: '10s', // do not wait for iterations to finish in the end
       vus: 1,
-      duration: '10s',
+      duration: '1m',
       exec: 'process_cpu_usage_is_less_than_70_percent', // the function this scenario will execute
     },
     findAllDeliveries_is_200: {
@@ -18,13 +18,12 @@ export const options = {
       startRate: 50,
       timeUnit: '1s', // we start at 50 iterations per second
       stages: [
-        // { duration: '30s', target: 100 }, // below normal load
-        // { duration: '1m', target: 100 },
-        // { duration: '1m', target: 1000 },
-        // { duration: '1m', target: 2000 },
-        // { duration: '1m', target: 1000 },
-        // { duration: '30s', target: 100 }, // below normal load
-        { duration: '10s', target: 1000 }, // below normal load
+         { duration: '10s', target: 100 }, // below normal load
+         { duration: '10s', target: 100 },
+         { duration: '10s', target: 500 },
+         { duration: '10s', target: 1000 },
+         { duration: '10s', target: 500 },
+        { duration: '10s', target: 100 }, // below normal load
       ],
       preAllocatedVUs: 50, // how large the initial pool of VUs would be
       maxVUs: 100, // if the preAllocatedVUs are not enough, we can initialize more
@@ -39,8 +38,8 @@ export const options = {
     'checks{scenario:process_cpu_usage_is_less_than_70_percent}': ['rate<0.01'],
 
     // findAllDeliveries_is_200 
-    'http_req_failed{scenario:findAllDeliveries_is_200}': ['rate<=0.01'], // http errors should be less than 1%
-    'http_req_duration{scenario:findAllDeliveries_is_200}': ['p(90)<=500', 'p(95)<=750', 'p(100)<=1000'], // 95% of requests should be less than 500ms
+    'http_req_failed{scenario:findAllDeliveries_is_200}': ['rate<=0.05'], // http errors should be less than 5%
+    'http_req_duration{scenario:findAllDeliveries_is_200}': ['p(90)<=1000', 'p(95)<=1250', 'p(100)<=1500'], // 95% of requests should be less than 500ms
     'checks{scenario:findAllDeliveries_is_200}': ['rate>=0.99'] // 99% of checkes should pass
   },
 };
