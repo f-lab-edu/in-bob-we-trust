@@ -14,12 +14,11 @@ export const options = {
     findAllDeliveries_is_200: {
       executor: 'ramping-arrival-rate',
       gracefulStop: '10s', // do not wait for iterations to finish in the end
-      // startTime: '30s', // the ramping API test starts a little later
+      startTime: '10s', // the ramping API test starts a little later
       startRate: 10,
       timeUnit: '1s', // we start at 50 iterations per second
       stages: [
-        { duration: '10s', target: 50 }, // below normal load
-        { duration: '10s', target: 100 },
+        { duration: '10s', target: 50 },
         { duration: '10s', target: 300 },
         { duration: '10s', target: 800 },
         { duration: '10s', target: 500 },
