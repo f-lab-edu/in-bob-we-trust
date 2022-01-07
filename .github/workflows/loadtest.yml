@@ -28,10 +28,6 @@ jobs:
         if: success()
         run: ./gradlew :delivery-info-service:bootJar --exclude-task test
 
-      - name: Docker clean all containers
-        if: success()
-        run: docker rm -f $(docker ps -a -q)
-
       - name: Docker create bridge
         if: success()
         run: docker network create -d bridge inbobwetrust || true
