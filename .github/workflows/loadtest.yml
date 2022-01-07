@@ -66,5 +66,4 @@ jobs:
       - name: K6 > Loadtest > Install k6
         run: curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
       - name: K6 > Loadtest > run test
-        uses: k6io/action@v0.1
         run: ./k6 run ./k6-test/k6-scripts/test1.js
