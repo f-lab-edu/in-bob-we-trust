@@ -20,13 +20,14 @@ export default () => {
   const res = http.get(uri);
 
   check(res, {
-    'Status is 200     ': () => res.status === 200,
+    'Status is 200     ': () => {
+      console.info('200----------' + res);
+    },
   });
 
   check(res, {
     'Metric value is     ': () => {
-
-      console.log(new String(res.body).toString());
+      console.info('metri-------' + res);
 
       const metric = JSON.parse(res.body);
       if (metric === null) {

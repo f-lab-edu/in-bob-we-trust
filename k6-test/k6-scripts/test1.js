@@ -47,7 +47,7 @@ export const options = {
 
 export function process_cpu_usage_is_less_than_70_percent() {
   // given
-  const uri = "http://localhost:8080/actuator/metrics/process.cpu.usage";
+  const uri = "http://host.docker.internal:8080/actuator/metrics/process.cpu.usage";
   const expectedMax = 0.7;
 
   // when
@@ -63,7 +63,7 @@ export function process_cpu_usage_is_less_than_70_percent() {
 
   check(res, {
     'Metric value is     ': () => {
-      console.info(new String(res.body).toString());
+      console.info('CPU_metric ------------' + JSON.stringify(res));
 
       const metric = JSON.parse(res.body);
       const value = metricNotNull(metric, res.status);
@@ -77,7 +77,7 @@ export function process_cpu_usage_is_less_than_70_percent() {
 
 export function findAllDeliveries_is_200() {
   // given 
-  const uri = "http://localhost:8080/api/delivery";
+  const uri = "http://host.docker.internal:8080/api/delivery";
 
   // when 
   const res = http.get(uri);
@@ -111,7 +111,7 @@ function metricNotNull(metric, status) {
 
 
 export function handleSummary(data) {
-  console.log('Preparing the end-of-test summary...');
+  console.info('Preparing the end-of-test summary...');
 
   // Send the results to some remote server or trigger a hook
 
