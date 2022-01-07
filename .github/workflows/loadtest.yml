@@ -35,10 +35,9 @@ jobs:
       - name: Docker build delivery-info-service Image
         if: success()
         run: docker image build -t inbobwetrust/delivery-info-service:${GITHUB_SHA::7} ./delivery-info-service
-
-      - name: Docker run Api Delivery
+      - name: Docker run delivery-info-service
         if: success()
-        run: curl http://localhost:8080/api/delivery
+        run: docker run --network=inbobwetrust -p 8080:8080 inbobwetrust/delivery-info-service:${GITHUB_SHA::7}
 
       - name: Docker run primary mongo
         if: success()
@@ -53,10 +52,6 @@ jobs:
         if: success()
         run: |
           docker run -d --network=inbobwetrust -p 8090:8080 -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
-
-      - name: Docker run delivery-info-service
-        if: success()
-        run: docker run --network=inbobwetrust -p 8080:8080 inbobwetrust/delivery-info-service:${GITHUB_SHA::7}
 
       - name: Sleep for 10 seconds
         uses: jakejarvis/wait-action@master
