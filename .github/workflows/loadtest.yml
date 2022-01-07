@@ -30,7 +30,7 @@ jobs:
       #
       - name: Build Docker Image
         if: success()
-        run: docker image build -t inbobwetrust/delivery-info-service:actions-test ./delivery-info-service
+        run: docker image build -t inbobwetrust/delivery-info-service:${GITHUB_SHA::7} ./delivery-info-service
 
       - name: Docker-Compose up
         if: success()
