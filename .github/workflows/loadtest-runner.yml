@@ -1,4 +1,4 @@
-name: LoadTest delivery-info-service
+name: (custom runner) LoadTest delivery-info-service
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 jobs:
   #----------------------------------------------------------------------------------------------------------
   load_test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
 
