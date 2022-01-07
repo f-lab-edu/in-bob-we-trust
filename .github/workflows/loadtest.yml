@@ -28,6 +28,10 @@ jobs:
         if: success()
         run: ./gradlew :delivery-info-service:bootJar --exclude-task test
 
+      - name: Docker clean all containers
+        if: success()
+        run: docker rm -f $(docker ps -a -q)
+
       - name: Docker create bridge
         if: success()
         run: docker network create -d bridge inbobwetrust || true
@@ -53,6 +57,7 @@ jobs:
         run: |
           docker run -d --network=inbobwetrust -p 8090:8080 -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
 
+
       - name: Sleep for 10 seconds
         run: sleep 10
 
@@ -60,7 +65,11 @@ jobs:
         if: success()
         run: curl http://localhost:8090/__admin/mappings
 
+      - name: Docker run wiremock
+        if: success()
+        run: curl http://localhost:8080/api/delivery
+
       - name: Run local k6 test
         uses: k6io/action@v0.1
         with:
-          filename: --quiet ./k6-test/k6-scripts/simple-delivery-get.js
+          filename: ./k6-test/k6-scripts/simple-delivery-get.js
