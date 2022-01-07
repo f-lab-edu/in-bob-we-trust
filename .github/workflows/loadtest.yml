@@ -36,6 +36,18 @@ jobs:
         if: success()
         run: GITHUB_SHA_IMAGE_TAG=${GITHUB_SHA::7} docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
+      - name: Test localhost connection
+        run: curl http://localhost:8080/actuator/metrics
+
+      - name: Test local connection
+        run: curl http://localhost:8080/api/delivery
+
+      - name: Test host.docker.internal connection
+        run: curl http://host.docker.internal:8080/actuator/metrics
+
+      - name: Test host.docker.internal connection
+        run: curl http://host.docker.internal:8080/api/delivery
+
       - name: Run local k6 test
         uses: k6io/action@v0.1
         with:
