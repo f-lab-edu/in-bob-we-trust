@@ -37,10 +37,10 @@ jobs:
         run: GITHUB_SHA_IMAGE_TAG=${GITHUB_SHA::7} docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
       - name: Wait for 8080 server
-        run: ./wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo " is up"
+        run: ./scripts/wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo "8080 is up"
 
       - name: Wait for 8090 server
-        run: ./wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo " is up"
+        run: ./scripts/wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo "8090  is up"
 
 
       - name: Test local connection
