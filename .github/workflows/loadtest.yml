@@ -54,18 +54,18 @@ jobs:
           docker run -d --network=inbobwetrust -p 8090:8080 -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
 
 
-      - name: Sleep for 10 seconds
+      - name: Verify > Sleep for 10 seconds
         run: sleep 10
-
-      - name: Docker run wiremock
+      - name: Verify > Docker run wiremock
         if: success()
         run: curl http://localhost:8090/__admin/mappings
-
-      - name: Docker run wiremock
+      - name: Verify > Docker run wiremock
         if: success()
         run: curl http://localhost:8080/api/delivery
 
-      - name: Run local k6 test
+      - name: K6 > Loadtest > Install k6
+        run: curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
+      - name: K6 > Loadtest > run test
         uses: k6io/action@v0.1
         with:
-          filename: ./k6-test/k6-scripts/simple-delivery-get.js
+          filename: ./k6 run ./k6-test/k6-scripts/simple-delivery-get.js
