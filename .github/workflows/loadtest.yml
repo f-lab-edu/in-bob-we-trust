@@ -36,8 +36,12 @@ jobs:
         if: success()
         run: GITHUB_SHA_IMAGE_TAG=${GITHUB_SHA::7} docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
-      - name: Test localhost connection
-        run: curl http://localhost:8080/actuator/metrics
+      - name: Wait for 8080 server
+        run: ./wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo " is up"
+
+      - name: Wait for 8090 server
+        run: ./wait-for-it.sh 127.0.0.1:8080 --timeout=30 --strict -- echo " is up"
+
 
       - name: Test local connection
         run: curl http://localhost:8080/api/delivery
