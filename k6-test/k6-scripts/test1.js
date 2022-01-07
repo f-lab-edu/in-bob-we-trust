@@ -10,19 +10,19 @@ export const options = {
       vus: 1,
       duration: '1m',
       exec: 'process_cpu_usage_is_less_than_70_percent', // the function this scenario will execute
-    }
+    },
     findAllDeliveries_is_200: {
       executor: 'ramping-arrival-rate',
       gracefulStop: '10s', // do not wait for iterations to finish in the end
       // startTime: '30s', // the ramping API test starts a little later
-      startRate: 50,
+      startRate: 10,
       timeUnit: '1s', // we start at 50 iterations per second
       stages: [
-         { duration: '10s', target: 100 }, // below normal load
-         { duration: '10s', target: 100 },
-         { duration: '10s', target: 500 },
-         { duration: '10s', target: 1000 },
-         { duration: '10s', target: 500 },
+        { duration: '10s', target: 50 }, // below normal load
+        { duration: '10s', target: 100 },
+        { duration: '10s', target: 300 },
+        { duration: '10s', target: 800 },
+        { duration: '10s', target: 500 },
         { duration: '10s', target: 100 }, // below normal load
       ],
       preAllocatedVUs: 50, // how large the initial pool of VUs would be

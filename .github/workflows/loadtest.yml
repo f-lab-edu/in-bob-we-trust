@@ -64,4 +64,4 @@ jobs:
       - name: Run local k6 test
         uses: k6io/action@v0.1
         with:
-          filename: ./k6-test/k6-scripts/simple-delivery-get.js
+          filename: --quiet ./k6-test/k6-scripts/simple-delivery-get.js
