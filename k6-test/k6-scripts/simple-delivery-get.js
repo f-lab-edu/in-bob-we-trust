@@ -5,8 +5,18 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 const uri = "http://localhost:8080/api/delivery";
 
 export let options = {
-  vus: 1000,
-  duration: '1m',
+  vus: 100,
+  gracefulStop: '10s', // do not wait for iterations to finish in the end
+  startTime: '10s', // the ramping API test starts a little later
+  startRate: 10,
+  timeUnit: '1s', // we start at 50 iterations per second
+  stages: [
+    { duration: '10s', target: 50 },
+    { duration: '10s', target: 300 },
+    { duration: '10s', target: 800 },
+    { duration: '10s', target: 500 },
+    { duration: '10s', target: 100 }, // below normal load
+  ],
   thresholds: {
     // http errors should be less than 1%
     http_req_failed: ['rate<=0.01'],
