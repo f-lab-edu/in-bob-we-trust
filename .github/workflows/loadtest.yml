@@ -48,10 +48,6 @@ jobs:
 
       - name: Docker run wiremock
         if: success()
-        run: docker run --network=inbobwetrust -d -p 27018:27017 mongo
-
-      - name: Docker run wiremock
-        if: success()
         run: |
           docker run -d  \
           --network=inbobwetrust \
