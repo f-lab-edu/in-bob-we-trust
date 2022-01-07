@@ -30,7 +30,7 @@ jobs:
 
       - name: Docker create bridge
         if: success()
-        run: docker network create -d bridge inbobwetrust
+        run: docker network create -d bridge inbobwetrust || true
 
       - name: Docker build delivery-info-service Image
         if: success()
