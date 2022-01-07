@@ -72,7 +72,3 @@ jobs:
         uses: k6io/action@v0.1
         with:
           filename: ./k6-test/k6-scripts/simple-delivery-get.js
-      - #  bootjar
-        #  build image
-        #  docker-compose -f ./k6-test/docker-compose.yml up -d
-      #  run with image
