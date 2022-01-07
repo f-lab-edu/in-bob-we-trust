@@ -6,6 +6,7 @@ const uri = "http://localhost:8080/api/delivery";
 
 export let options = {
   vus: 1000,
+  duration: '1m',
   thresholds: {
     // http errors should be less than 1%
     http_req_failed: ['rate<=0.01'],
@@ -20,7 +21,11 @@ export default () => {
   const res = http.get(uri);
 
   check(res, {
-    'Status is 200     ': () => res.status === 200,
+    'Status is 200     ': () => {
+      console.info(JSON.parse(res.body));
+      return res.status === 200;
+    },
+
   });
 
   sleep(0.1);
@@ -37,7 +42,7 @@ export function handleSummary(data) {
 
   return {
     'stdout': textSummary(data, { indent: ' ', enableColors: true }), // Show the text summary to stdout...
-    './results/simple-delivery-get-summary.json': JSON.stringify(data), // and a JSON with all the details...
+    'simple-delivery-get-summary.json': JSON.stringify(data), // and a JSON with all the details...
   };
 }
 

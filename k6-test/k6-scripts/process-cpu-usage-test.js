@@ -3,11 +3,12 @@ import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 const uri = "http://localhost:8080/actuator/metrics/process.cpu.usage";
-const expectedMax = 0.2;
+const expectedMax = 0.7;
 const testName = 'process-cpu-usage-test';
 
 export let options = {
   vus: 1,
+  duration: '1m',
   thresholds: {
     http_req_failed: ['rate<0.01'], // http errors should be less than 1%
     http_req_duration: ['p(100)<=1000'], // 100% of requests should be maximum of 1000ms
@@ -55,7 +56,7 @@ export function handleSummary(data) {
 
   return {
     'stdout': textSummary(data, { indent: ' ', enableColors: true }), // Show the text summary to stdout...
-    './results/process-cpu-usage-test-summary.json': JSON.stringify(data), // and a JSON with all the details...
+    'process-cpu-usage-test-summary.json': JSON.stringify(data), // and a JSON with all the details...
   };
 }
 

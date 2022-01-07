@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPathPattern": "/shop/.*",
+    "method": "POST"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"id\":\"string\",\"orderId\":\"string\",\"riderId\":\"string\",\"agencyId\":\"string\",\"shopId\":\"string\",\"customerId\":\"string\",\"address\":\"string\",\"phoneNumber\":\"string\",\"comment\":\"string\",\"deliveryStatus\":\"DECLINED\",\"orderTime\":\"2022-01-06T15:47:45.115Z\",\"pickupTime\":\"2022-01-06T15:47:45.116Z\",\"finishTime\":\"2022-01-06T15:47:45.116Z\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
