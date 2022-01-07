@@ -1,7 +1,5 @@
 package com.inbobwetrust.actuator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.test.autoconfigure.actuate.metrics.AutoConfigureMetrics;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@AutoConfigureMetrics
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("loadTest")
 @AutoConfigureWebTestClient
@@ -32,13 +32,11 @@ import java.util.Objects;
 public class UsedActuatorEndpointTest {
   @Autowired WebTestClient testClient;
 
-  @Autowired ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
   @Container public static GenericContainer<?> primaryMongo = makeMongoDb();
 
   @Container public static GenericContainer<?> secondaryMongo = makeMongoDb();
 
-  static GenericContainer makeMongoDb() {
+  static GenericContainer<?> makeMongoDb() {
     return new GenericContainer<>("mongo:latest")
         .withEnv("MONGO_INITDB_DATABASE", "inbob")
         .withExposedPorts(MongoProperties.DEFAULT_PORT)
@@ -111,5 +109,25 @@ public class UsedActuatorEndpointTest {
     var aMeasurement = measurements.get(0);
     Assertions.assertEquals("VALUE", aMeasurement.get("statistic"));
     Assertions.assertTrue(((double) aMeasurement.get("value")) >= 0);
+  }
+
+  @Test
+  @DisplayName("[지정된 스프링 Profile에서 Actuator 엔드포인트 정상작동 테스트] actuator/prometheus")
+  void actuatorPrometheusTest() throws InterruptedException, JSONException {
+    // when
+    var response =
+        testClient
+            .get()
+            .uri("/actuator/prometheus")
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(String.class)
+            .returnResult()
+            .getResponseBody();
+    // then
+    Objects.nonNull(response);
+    Assertions.assertTrue(response.contains("process_cpu_usage"));
+    Assertions.assertTrue(response.contains("jvm_classes_loaded_classes"));
   }
 }
