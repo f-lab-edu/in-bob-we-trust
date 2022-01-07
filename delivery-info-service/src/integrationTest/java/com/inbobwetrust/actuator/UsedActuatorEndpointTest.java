@@ -1,5 +1,9 @@
 package com.inbobwetrust.actuator;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -17,11 +21,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @AutoConfigureMetrics
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
