@@ -10,7 +10,7 @@ export const options = {
       vus: 1,
       duration: '1m',
       exec: 'process_cpu_usage_is_less_than_70_percent', // the function this scenario will execute
-    },
+    }
     findAllDeliveries_is_200: {
       executor: 'ramping-arrival-rate',
       gracefulStop: '10s', // do not wait for iterations to finish in the end
@@ -33,14 +33,14 @@ export const options = {
   discardResponseBodies: true,
   thresholds: {
     // process_cpu_usage_is_less_than_70_percent scenario
-    'http_req_failed{scenario:process_cpu_usage_is_less_than_70_percent}': ['rate<0.01'],
+    'http_req_failed{scenario:process_cpu_usage_is_less_than_70_percent}': ['rate<0.05'],
     'http_req_duration{scenario:process_cpu_usage_is_less_than_70_percent}': ['rate==1.0'],
     'checks{scenario:process_cpu_usage_is_less_than_70_percent}': ['rate<0.01'],
 
     // findAllDeliveries_is_200 
     'http_req_failed{scenario:findAllDeliveries_is_200}': ['rate<=0.05'], // http errors should be less than 5%
     'http_req_duration{scenario:findAllDeliveries_is_200}': ['p(90)<=1000', 'p(95)<=1250', 'p(100)<=1500'], // 95% of requests should be less than 500ms
-    'checks{scenario:findAllDeliveries_is_200}': ['rate>=0.99'] // 99% of checkes should pass
+    'checks{scenario:findAllDeliveries_is_200}': ['rate>=0.98'] // 99% of checkes should pass
   },
 };
 
@@ -48,10 +48,8 @@ export function process_cpu_usage_is_less_than_70_percent() {
   // given
   const uri = "http://host.docker.internal:8080/actuator/metrics/process.cpu.usage";
   const expectedMax = 0.7;
-
   // when
   const res = http.get(uri);
-
   // then
   check(res, {
     'Status is 200     ': () => {
@@ -59,16 +57,13 @@ export function process_cpu_usage_is_less_than_70_percent() {
       return res.status === 200;
     },
   });
-
   check(res, {
     'Metric value is     ': () => {
       console.info('CPU_metric ------------' + JSON.stringify(res));
-
       const metric = JSON.parse(res.body);
       const value = metricNotNull(metric, res.status);
       return value <= expectedMax;
     }
-
   });
 
   sleep(0.5);
@@ -77,10 +72,8 @@ export function process_cpu_usage_is_less_than_70_percent() {
 export function findAllDeliveries_is_200() {
   // given 
   const uri = "http://host.docker.internal:8080/api/delivery";
-
-  // when 
+  // when
   const res = http.get(uri);
-
   // then
   check(res, {
     'Status is 200     ': () => {
@@ -88,7 +81,6 @@ export function findAllDeliveries_is_200() {
       return res.status === 200;
     },
   });
-
   sleep(0.1);
 };
 
