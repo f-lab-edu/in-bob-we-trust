@@ -70,10 +70,10 @@ jobs:
         if: success()
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
-      - name: K6 > Loadtest > permission
-        run: chmod +x ./k6-test/run.sh
-      - name: K6 > Loadtest > run test
-        run: k6 run ./k6-test/simple-delivery-get.js
+      - name: Run local k6 test
+        uses: k6io/action@v0.1
+        with:
+          filename: ./k6-test/simple-delivery-get.js
 
   build-image:
     needs:
