@@ -54,7 +54,7 @@
 
 ```shell
 docker run \
--p 8080:8080 \
+-p 8888:8888 \
 -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.primary.database=<메인몽고Database> -Dspring.data.mongodb.primary.uri=<메인몽고URI> -Dspring.data.mongodb.secondary.database=<백업몽고database> -Dspring.data.mongodb.secondary.uri=<백업몽고URI>'  \
 -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=<스프링프로필>'  \
 --network host beanskobe/delivery-info-service
