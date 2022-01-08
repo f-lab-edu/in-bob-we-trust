@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
   #----------------------------------------------------------------------------------------------------------
   build:
-    if: ${{ success() }} && github.repository == 'f-lab-edu/in-bob-we-trust'
+    if: ${{ success() && github.repository == 'f-lab-edu/in-bob-we-trust' }}
     needs: test
     strategy:
       fail-fast: false
