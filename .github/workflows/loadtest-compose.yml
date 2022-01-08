@@ -3,7 +3,7 @@ name: selfhosted runner delivery-info-service
 on:
   push:
     branches:
-      - \#142-docker-compose-를-활용한-서버-성능테스트
+      - do-not-run-this
 jobs:
   #----------------------------------------------------------------------------------------------------------
   loadtest-standalone:
