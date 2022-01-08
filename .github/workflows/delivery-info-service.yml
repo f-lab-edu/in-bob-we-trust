@@ -73,6 +73,8 @@ jobs:
       - name: K6 > Install
         run: |
           curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
+      - name: K6 > Grant execute permission
+        run: chmod +x gradlew
       - name: K6 > Test Local
         run: |
           ./k6 run ./k6-test/simple-delivery-get.js
