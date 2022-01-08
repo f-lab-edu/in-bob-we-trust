@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
   #----------------------------------------------------------------------------------------------------------
   build:
-    if: ${{ success() }}
+    if: ${{ success() }} 
     needs: test
     strategy:
       fail-fast: false
