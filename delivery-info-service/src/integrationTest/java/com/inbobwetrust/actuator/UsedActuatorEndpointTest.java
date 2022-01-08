@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @AutoConfigureMetrics
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("loadTest")
+@ActiveProfiles("loadtest")
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

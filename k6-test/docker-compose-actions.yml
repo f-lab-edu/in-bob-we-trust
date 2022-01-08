@@ -4,7 +4,7 @@ services:
     image: inbobwetrust/delivery-info-service:${GITHUB_SHA_IMAGE_TAG}
     environment:
       - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://host.docker.internal:27017 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=mongodb://host.docker.internal:27018
-      - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadTest
+      - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
     ports:
       - "8080:8080"
     networks:
