@@ -46,6 +46,8 @@ jobs:
         if: success()
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
+      - name: K6 > Loadtest > permission
+        run: chmod +x ./k6-test/run.sh
       - name: K6 > Loadtest > run test
         run: ./k6-test/run.sh
 
