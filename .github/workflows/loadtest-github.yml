@@ -1,4 +1,4 @@
-name: LoadTest delivery-info-service
+name: default runner delivery-info-service
 
 on:
   push:
