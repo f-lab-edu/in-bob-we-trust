@@ -4,9 +4,7 @@ on: [ push , pull_request ]
 jobs:
   #----------------------------------------------------------------------------------------------------------
   tests:
-    runs-on:
-      - self-hosted
-      - ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -85,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       MODULE_NAME: delivery-info-service
 
