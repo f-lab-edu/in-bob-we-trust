@@ -1,7 +1,9 @@
 package com.inbobwetrust.actuator;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.json.JSONException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @AutoConfigureMetrics
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
