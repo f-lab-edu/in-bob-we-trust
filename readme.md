@@ -50,10 +50,11 @@
 |  spring.data.mongodb.secondary.database| 백업 몽고DB 데이터베이스 이름       | COMMAND_LINE_ARGS_BEFORE    | 
 | spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
 
-#### docker run 샘플 
+#### docker run 샘플
 
 ```shell
 docker run \
+-p 8888:8888 \
 -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.primary.database=<메인몽고Database> -Dspring.data.mongodb.primary.uri=<메인몽고URI> -Dspring.data.mongodb.secondary.database=<백업몽고database> -Dspring.data.mongodb.secondary.uri=<백업몽고URI>'  \
 -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=<스프링프로필>'  \
 --network host beanskobe/delivery-info-service
@@ -75,10 +76,11 @@ java ${COMMAND_LINE_ARGS_BEFORE} -jar ./app.jar ${COMMAND_LINE_ARGS_AFTER}
 | spring.data.mongodb.primary.database|  몽고DB 데이터베이스 이름       |   COMMAND_LINE_ARGS_BEFORE    |   
 | spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
 
-#### docker run 샘플 
+#### docker run 샘플
 
 ```shell
 docker run \
+-p 8090:8090 \
 -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.database=<몽고Database> -Dspring.data.mongodb.uri=<몽고URI>'  \
 -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=<스프링프로필>'  \
 --network host beanskobe/delivery-relay-service
