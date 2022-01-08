@@ -5,10 +5,11 @@ on:
     branches:
       - main
       - master
-      
+
 jobs:
   #----------------------------------------------------------------------------------------------------------
   test:
+    if: ${{ success() }} && github.repository == 'f-lab-edu/in-bob-we-trust'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
