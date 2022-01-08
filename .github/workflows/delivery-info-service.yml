@@ -63,10 +63,10 @@ jobs:
 
       - name: Verify > Sleep for 20 seconds
         run: sleep 20
-      - name: Verify > Docker run wiremock
+      - name: Verify > test wiremock connection
         if: success()
         run: curl --max-time 10 http://localhost:8090/__admin/mappings
-      - name: Verify > Docker run wiremock
+      - name: Verify > test info-service connection
         if: success()
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
@@ -75,9 +75,15 @@ jobs:
           curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
       - name: K6 > Grant execute permission
         run: chmod +x ./k6
+      #      - name: K6 > Test Local
+      #
+      #        run: |
+      #          ./k6 run ./k6-test/simple-delivery-get.js
       - name: K6 > Test Local
-        run: |
-          ./k6 run ./k6-test/simple-delivery-get.js
+        uses: k6io/action@v0.1 # using k6 action from github marketplace
+        with:
+          filename: ./k6-test/simple-delivery-get.js
+
 
   build-image:
     needs:
