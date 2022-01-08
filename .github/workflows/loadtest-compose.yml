@@ -47,5 +47,6 @@ jobs:
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
       - name: K6 > Loadtest > run test
-        run: k6 run ./k6-test/k6-scripts/test1.js
+        run: docker run --add-host=host.docker.internal:host-gateway -i loadimpact/k6 run - <./k6-test/k6-scripts/test1.js
+
 

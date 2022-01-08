@@ -41,7 +41,7 @@ export const options = {
 
 export function process_cpu_usage_is_less_than_70_percent() {
   // given
-  const uri = "http://localhost:8888/actuator/metrics/process.cpu.usage";
+  const uri = "http://host.docker.internal:8888/actuator/metrics/process.cpu.usage";
   const expectedMax = 0.7;
   // when
   const res = http.get(uri);
@@ -75,7 +75,7 @@ export function process_cpu_usage_is_less_than_70_percent() {
 
 export function findAllDeliveries_is_200() {
   // given 
-  const uri = "http://localhost:8888/api/delivery";
+  const uri = "http://host.docker.internal:8888/api/delivery";
   // when
   const res = http.get(uri);
   // then
