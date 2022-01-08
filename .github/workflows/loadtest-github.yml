@@ -21,7 +21,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-
       - name: Gradle BootJar
         if: success()
         run: ./gradlew :delivery-info-service:build --x test --x integrationTest
