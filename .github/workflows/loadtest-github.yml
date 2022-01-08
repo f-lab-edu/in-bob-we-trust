@@ -31,27 +31,27 @@ jobs:
 
       - name: Docker create bridge
         if: success()
-        run: docker network create -d bridge inbobwetrust || true
+        run: docker network create -d bridge network-${GITHUB_SHA::7}
 
       - name: Docker build delivery-info-service Image
         if: success()
         run: docker image build -t inbobwetrust/delivery-info-service:${GITHUB_SHA::7} ./delivery-info-service
       - name: Docker run delivery-info-service
         if: success()
-        run: docker run -d -p 8888:8888 --network=inbobwetrust --log-driver local  -v /var/run/docker.sock:/var/run/docker.sock -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://localhost:27017 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=mongodb://localhost:27018'   -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=loadtest'   inbobwetrust/delivery-info-service:${GITHUB_SHA::7}
+        run: docker run -d -p 8888:8888 --network=network-${GITHUB_SHA::7} --log-driver local  -v /var/run/docker.sock:/var/run/docker.sock -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://localhost:27017 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=mongodb://localhost:27018'   -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=loadtest'   inbobwetrust/delivery-info-service:${GITHUB_SHA::7}
 
       - name: Docker run primary mongo
         if: success()
-        run: docker run -d --network=inbobwetrust -d -p 27017:27017 mongo
+        run: docker run -d --network=network-${GITHUB_SHA::7} -d -p 27017:27017 mongo
 
       - name: Docker run secondary mongo
         if: success()
-        run: docker run -d --network=inbobwetrust -d -p 27018:27017 mongo
+        run: docker run -d --network=network-${GITHUB_SHA::7} -d -p 27018:27017 mongo
 
       - name: Docker run wiremock
         if: success()
         run: |
-          docker run -d --network=inbobwetrust -p 8090:8080  -v /var/run/docker.sock:/var/run/docker.sock -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
+          docker run -d --network=network-${GITHUB_SHA::7} -p 8090:8080  -v /var/run/docker.sock:/var/run/docker.sock -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
 
 
       - name: Verify > Sleep for 20 seconds
