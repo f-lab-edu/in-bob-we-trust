@@ -6,7 +6,7 @@ jobs:
   tests:
     runs-on: self-hosted
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage' ]
     steps:
@@ -35,7 +35,7 @@ jobs:
     ## origin/main 에서만 이미지 빌드됨.
     if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
     runs-on: self-hosted
