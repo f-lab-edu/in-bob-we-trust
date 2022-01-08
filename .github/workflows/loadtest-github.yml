@@ -28,7 +28,7 @@ jobs:
 
       - name: Docker clean
         if: success()
-        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
+        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
 
       - name: Docker create bridge
         if: success()
