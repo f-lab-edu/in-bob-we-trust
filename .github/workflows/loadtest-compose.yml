@@ -49,6 +49,6 @@ jobs:
       - name: K6 > Loadtest > permission
         run: chmod +x ./k6-test/run.sh
       - name: K6 > Loadtest > run test
-        run: k6 run --out csv=./k6-test/results/scripts/summary.csv --console-output=./k6-test/results/scripts/console.log  ./k6-test/simple-delivery-get.js
+        run: k6 run ./k6-test/simple-delivery-get.js
 
 
