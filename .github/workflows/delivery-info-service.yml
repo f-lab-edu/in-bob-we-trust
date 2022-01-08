@@ -70,7 +70,10 @@ jobs:
         if: success()
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
-      - name: Run local k6 test
+      - name: K6 > Install
+          run: |
+            curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
+      - name: K6 > Test Local
         uses: k6io/action@v0.1
         with:
           filename: ./k6-test/simple-delivery-get.js
