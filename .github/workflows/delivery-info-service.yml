@@ -61,8 +61,8 @@ jobs:
         if: success()
         run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
-      - name: Verify > Sleep for 20 seconds
-        run: sleep 20
+      - name: Verify > Sleep for 10 seconds
+        run: sleep 10
       - name: Verify > test wiremock connection
         if: success()
         run: curl --max-time 10 http://localhost:8090/__admin/mappings
