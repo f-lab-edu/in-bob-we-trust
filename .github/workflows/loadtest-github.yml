@@ -44,7 +44,6 @@ jobs:
         if: success()
         run: docker run -d --network=inbobwetrust -d -p 27017:27017 mongo
 
-
       - name: Docker run secondary mongo
         if: success()
         run: docker run -d --network=inbobwetrust -d -p 27018:27017 mongo
