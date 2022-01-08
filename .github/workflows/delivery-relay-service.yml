@@ -1,15 +1,12 @@
-name: Build Image delivery-relay-service
+name: Test delivery-relay-service
 
-on:
-  push:
-    branches:
-      - main
-      - master
-      
+on: [ push , pull_request ]
+
 jobs:
-  #----------------------------------------------------------------------------------------------------------
-  test:
-    runs-on: ubuntu-latest
+  tests:
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -32,10 +29,13 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
+
   #----------------------------------------------------------------------------------------------------------
   build:
-    if: ${{ success() }} && github.repository == 'f-lab-edu/in-bob-we-trust'
-    needs: test
+    needs:
+      - tests
+    ## origin/main 에서만 이미지 빌드됨.
+    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
       fail-fast: false
       matrix:

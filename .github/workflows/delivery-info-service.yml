@@ -1,20 +1,16 @@
-name: Build Image delivery-info-service
+name: Delivery-info-service
 
-on:
-  push:
-    branches:
-      - main
-      - master
-
+on: [ push , pull_request ]
 jobs:
   #----------------------------------------------------------------------------------------------------------
-  test:
-
-    runs-on: ubuntu-latest
+  tests:
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        TEST_COMMAND: [ '--info delivery-info-service:integrationTest', '--info delivery-info-service:test', '--info :delivery-info-service:generateJacocoTestCoverage' ]
+        TEST_COMMAND: [ '--info delivery-info-service:integrationTest', '--info delivery-info-service:test' , '--info :delivery-info-service:generateJacocoTestCoverage' ]
     steps:
       - uses: actions/checkout@v2
 
@@ -33,10 +29,58 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
-  #----------------------------------------------------------------------------------------------------------
-  build:
-    if: ${{ success() }} && github.repository == 'f-lab-edu/in-bob-we-trust'
-    needs: test
+
+  load_test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: joschi/setup-jdk@v2
+        with:
+          java-version: '11'
+
+      - name: Start Logging
+        run: echo Gradle Build Test Start
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Gradle BootJar
+        if: success()
+        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
+
+      - name: Docker clean
+        if: success()
+        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
+
+      - name: Docker build delivery-info-service Image
+        if: success()
+        run: docker image build -t inbobwetrust/delivery-info-service:loadtest ./delivery-info-service
+
+      - name: Docker compose up
+        if: success()
+        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
+
+      - name: Verify > Sleep for 20 seconds
+        run: sleep 20
+      - name: Verify > Docker run wiremock
+        if: success()
+        run: curl --max-time 10 http://localhost:8090/__admin/mappings
+      - name: Verify > Docker run wiremock
+        if: success()
+        run: curl  --max-time 10  http://localhost:8888/api/delivery
+
+      - name: K6 > Loadtest > permission
+        run: chmod +x ./k6-test/run.sh
+      - name: K6 > Loadtest > run test
+        run: k6 run ./k6-test/simple-delivery-get.js
+
+  build-image:
+    needs:
+      - load_test
+      - tests
+    ## origin/main 에서만 이미지 빌드됨.
+    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
       fail-fast: false
       matrix:
