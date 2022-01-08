@@ -2,7 +2,7 @@ import { sleep, check } from 'k6';
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
-const uri = "http://localhost:8080/api/delivery";
+const uri = "http://localhost:8888/api/delivery";
 
 export let options = {
   vus: 100,

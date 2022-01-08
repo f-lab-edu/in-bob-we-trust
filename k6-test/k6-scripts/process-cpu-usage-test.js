@@ -2,7 +2,7 @@ import { sleep, check } from 'k6';
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
-const uri = "http://localhost:8080/actuator/metrics/process.cpu.usage";
+const uri = "http://localhost:8888/actuator/metrics/process.cpu.usage";
 const expectedMax = 0.7;
 const testName = 'process-cpu-usage-test';
 

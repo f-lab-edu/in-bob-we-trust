@@ -10,7 +10,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-        
+
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -64,7 +64,7 @@ jobs:
         run: curl http://localhost:8090/__admin/mappings
       - name: Verify > Docker run wiremock
         if: success()
-        run: curl http://localhost:8080/api/delivery
+        run: curl http://localhost:8888/api/delivery
 
       - name: K6 > Loadtest > Install k6
         run: curl https://github.com/loadimpact/k6/releases/download/v0.35.0/k6-v0.35.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
