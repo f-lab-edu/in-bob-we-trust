@@ -7,7 +7,7 @@ on:
 jobs:
   #----------------------------------------------------------------------------------------------------------
   load_test_runner:
-    runs-on: self-hosted
+    runs-on: load_test_runner
     steps:
       - uses: actions/checkout@v2
 
@@ -74,7 +74,7 @@ jobs:
 
   k6_cloud_test:
     name: k6 cloud test run
-    needs: load_test_selfhosted
+    needs: load_test_runner
     if: success()
     runs-on: ubuntu-latest
     container: docker://loadimpact/k6:latest
