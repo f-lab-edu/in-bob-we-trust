@@ -70,14 +70,9 @@ jobs:
         if: success()
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
-      - name: K6 > Install
-        run: |
-          curl https://github.com/grafana/k6/releases/download/v0.35.0/k6-v0.35.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
-      - name: K6 > Grant execute permission
-        run: chmod +x ./k6
       - name: K6 > Test Local
         run: |
-          ./k6 run ./k6-test/simple-delivery-get.js
+          k6 run ./k6-test/simple-delivery-get.js
 
   build-image:
     needs:
