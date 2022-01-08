@@ -18,9 +18,9 @@ export const options = {
       timeUnit: '1s', // we start at 50 iterations per second
       stages: [
         { duration: '10s', target: 10 },
-        { duration: '10s', target: 30 },
-        { duration: '10s', target: 100 },
-        { duration: '10s', target: 50 },
+        { duration: '10s', target: 10 },
+        { duration: '10s', target: 10 },
+        { duration: '10s', target: 10 },
         { duration: '10s', target: 10 }, // below normal load
       ],
       preAllocatedVUs: 10, // how large the initial pool of VUs would be
