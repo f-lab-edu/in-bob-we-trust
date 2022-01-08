@@ -24,6 +24,6 @@ docker run -d --network=inbobwetrust -p 8090:8080  -v /var/run/docker.sock:/var/
 
 sleep 20
 
-curl  --max-time 10 http://localhost:8090/__admin/mappings
+curl http://localhost:8090/__admin/mappings
 
 curl http://localhost:8888/api/delivery

@@ -5,6 +5,7 @@ import com.inbobwetrust.exception.RelayClientException;
 import com.inbobwetrust.exception.RelayServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -17,9 +18,11 @@ import reactor.core.publisher.Mono;
 public class DeliveryPublisherImpl implements DeliveryPublisher {
   private final WebClient webClient;
 
-  private String proxyShopUrl = "http://localhost:8090/relay/v1/shop";
+  @Value("${restClient.proxy.shopUrl}")
+  private String proxyShopUrl;
 
-  private String proxyAgencyUrl = "http://localhost:8090/relay/v1/agency";
+  @Value("${restClient.proxy.agencyUrl}")
+  private String proxyAgencyUrl;
 
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
     return webClient
