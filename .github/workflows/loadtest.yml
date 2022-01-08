@@ -10,7 +10,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-
+        
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -73,7 +73,7 @@ jobs:
         with:
           filename: ./k6-test/k6-scripts/test1.js
 
-#      - name: K6 > Loadtest > Install k6
+  #      - name: K6 > Loadtest > Install k6
   #        run: curl https://github.com/loadimpact/k6/releases/download/v0.35.0/k6-v0.35.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
   #      - name: K6 > Loadtest > run test
   #        run: ./k6 run ./k6-test/k6-scripts/test1.js
