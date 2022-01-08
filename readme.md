@@ -34,7 +34,7 @@
   <br>  
 </p>
 
-### :bicyclist: 프로젝트를 로컬에서 테스트하고 싶다면?
+### :bicyclist: Build Project Locally?
 
 #### Method 1. "Docker-way"
 
@@ -52,7 +52,7 @@
 
 1. Intellij 를 실행해주세요!
 
-### :bicyclist: Tips
+### :bicyclist: Tips?
 
 #### 1. 개발도중 프로젝트의 docker image를 빠르게 빌드해보고 싶다면?
 
