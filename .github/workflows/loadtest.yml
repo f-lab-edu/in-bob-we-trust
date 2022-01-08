@@ -6,7 +6,7 @@ on:
       - \#142-docker-compose-를-활용한-서버-성능테스트
 jobs:
   #----------------------------------------------------------------------------------------------------------
-  load_test:
+  load_test_runner:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
