@@ -36,6 +36,8 @@
 
 ### :bicyclist: 프로젝트를 로컬에서 테스트하고 싶다면?
 
+#### Method 1. "Docker-way"
+
 1. 로컬에 `docker`를 설치합니다. :point_right: https://docs.docker.com/get-docker/
 2. 필요한 포트들이 사용중인지 확인합니다. ()
     - `8888` delivery-info-service 서버
@@ -46,7 +48,11 @@
 3. 프로젝트 루트 디렉토리에서 다음 명령을 실행해줍니다. `docker-compose -f ./samples/docker-compose-actions.yml up -d`
 4. :loudspeaker::loudspeaker: compose 파일의 다이나믹한 포트바인딩을 원하신다면 수정 후 PR을 올려주세요 큰 도움이 됩니다. :+1::+1:
 
-### Tips
+#### Method 2. "Just way"
+
+1. Intellij 를 실행해주세요!
+
+### :bicyclist: Tips
 
 #### 1. 개발도중 프로젝트의 docker image를 빠르게 빌드해보고 싶다면?
 
@@ -58,69 +64,14 @@
     - `gradle build`를 실행하고 (모든 테스트를 건너뒤고)
     - 이미지들을 빌드합니다.
 
-### Q/A
+### :bicyclist: Q/A
 
 #### 1. 프로젝트의 <i class="fa fa-docker"></i> docker 이미지들은 어떻게 생성되고 어디에서 pull을 해오는 건가요?
 
 - @JooHyukKim 의 DockerHub 저장소에서 pull 해옵니다.
 - 이미지들은 프로젝트 `origin/main`의 push 이벤트에 의해 트리거되고 사전에 작성한 `build docker image 워크플로우`에서 빌드됩니다.
-- 저장소 링크
-    - :point_right: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
-    - :point_right: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
-
-## Docker Run Configurations
-
-### 1. delivery-info-service
-
-#### docker run 필수입력 변수
-
-|이름     | 설명        |  위치 | 
-|---	|---	|---			|
-| spring.data.mongodb.primary.uri| 메인 몽고DB URI        |   COMMAND_LINE_ARGS_BEFORE    |   
-| spring.data.mongodb.primary.database| 메인 몽고DB 데이터베이스 이름       |   COMMAND_LINE_ARGS_BEFORE    |   
-|  spring.data.mongodb.secondary.uri| 백업 몽고DB URI       | COMMAND_LINE_ARGS_BEFORE    |   
-|  spring.data.mongodb.secondary.database| 백업 몽고DB 데이터베이스 이름       | COMMAND_LINE_ARGS_BEFORE    | 
-| spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
-
-#### docker run 샘플
-
-```shell
-docker run \
--p 8888:8888 \
--e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.primary.database=<메인몽고Database> -Dspring.data.mongodb.primary.uri=<메인몽고URI> -Dspring.data.mongodb.secondary.database=<백업몽고database> -Dspring.data.mongodb.secondary.uri=<백업몽고URI>'  \
--e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=<스프링프로필>'  \
---network host beanskobe/delivery-info-service
-```
-
-#### docker run 실제 실행 스크립트
-
-```shell
-java ${COMMAND_LINE_ARGS_BEFORE} -jar ./app.jar ${COMMAND_LINE_ARGS_AFTER}
-```
-
-### 2. delivery-relay-service
-
-#### docker run 필수 입력사항
-
-|이름     | 설명        |  위치 | 
-|---	|---	|---			|
-| spring.data.mongodb.primary.uri|  몽고DB URI        |   COMMAND_LINE_ARGS_BEFORE    |   
-| spring.data.mongodb.primary.database|  몽고DB 데이터베이스 이름       |   COMMAND_LINE_ARGS_BEFORE    |   
-| spring.profiles.active    |  스프링 프로필    |  COMMAND_LINE_ARGS_AFTER    |   	
-
-#### docker run 샘플
-
-```shell
-docker run \
--p 8090:8090 \
--e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.database=<몽고Database> -Dspring.data.mongodb.uri=<몽고URI>'  \
--e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=<스프링프로필>'  \
---network host beanskobe/delivery-relay-service
-```
-
-#### docker run 실제 실행 스크립트
-
-```shell
-java ${COMMAND_LINE_ARGS_BEFORE} -jar ./app.jar ${COMMAND_LINE_ARGS_AFTER}
-```
-
+- 이미지 사용법 링크
+    - :
+      point_right: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
+    - :
+      point_right: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
