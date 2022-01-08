@@ -1,4 +1,3 @@
-
 restClient:
   proxy:
     shopUrl: http://localhost:8090/relay/v1/shop
