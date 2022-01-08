@@ -6,7 +6,7 @@ on:
       - \#142-docker-compose-를-활용한-서버-성능테스트
 jobs:
   #----------------------------------------------------------------------------------------------------------
-  load_test_runner:
+  set_up:
     runs-on: load_test_runner
     steps:
       - uses: actions/checkout@v2
@@ -27,7 +27,8 @@ jobs:
 
       - name: Gradle BootJar
         if: success()
-        run: ./gradlew :delivery-info-service:build --exclude-task test
+        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
+
       - name: Docker clean
         if: success()
         run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
@@ -67,19 +68,13 @@ jobs:
         if: success()
         run: curl http://localhost:8888/api/delivery
 
+      - name: Run k6 test
+        uses: k6io/action@v0.1
+        with:
+          filename: ./k6-test/k6-scripts/test1.js
+
 #      - name: K6 > Loadtest > Install k6
   #        run: curl https://github.com/loadimpact/k6/releases/download/v0.35.0/k6-v0.35.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
   #      - name: K6 > Loadtest > run test
   #        run: ./k6 run ./k6-test/k6-scripts/test1.js
 
-  k6_cloud_test:
-    name: k6 cloud test run
-    needs: load_test_runner
-    if: success()
-    runs-on: ubuntu-latest
-    container: docker://loadimpact/k6:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Run k6 test
-        run: k6 run ./k6-test/k6-scripts/test1.js
