@@ -1,4 +1,4 @@
-name: Delivery-info-service
+name: Info-service
 
 on: [ push , pull_request ]
 jobs:

@@ -1,4 +1,4 @@
-name: Test delivery-relay-service
+name: Relay-service
 
 on: [ push , pull_request ]
 
