@@ -35,7 +35,7 @@ jobs:
 
       - name: Docker compose up
         if: success()
-        run: docker-compose -f ./k6-test/docker-compose.yml up -d
+        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
       - name: Verify > Sleep for 20 seconds
         run: sleep 20
