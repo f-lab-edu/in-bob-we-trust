@@ -1,19 +1,14 @@
-name: Build Image delivery-info-service
+name: Relay-service
 
-on:
-  push:
-    branches:
-      - main
-      - master
+on: [ push , pull_request ]
 
 jobs:
-  #----------------------------------------------------------------------------------------------------------
-  test:
+  tests:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        TEST_COMMAND: [ '--info delivery-info-service:integrationTest', '--info delivery-info-service:test', '--info :delivery-info-service:generateJacocoTestCoverage' ]
+        TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage' ]
     steps:
       - uses: actions/checkout@v2
 
@@ -32,17 +27,20 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
+
   #----------------------------------------------------------------------------------------------------------
   build:
-    if: ${{ success() }}
-    needs: test
+    needs:
+      - tests
+    ## origin/main 에서만 이미지 빌드됨.
+    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
+        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
     runs-on: ubuntu-latest
     env:
-      MODULE_NAME: delivery-info-service
+      MODULE_NAME: delivery-relay-service
 
     steps:
       - uses: actions/checkout@v2
