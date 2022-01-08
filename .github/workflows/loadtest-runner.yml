@@ -57,8 +57,8 @@ jobs:
           docker run -d --network=inbobwetrust -p 8090:8080 -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/__files:/home/wiremock/__files  -v ~/dev/github.com/in-bob-we-trust/k6-test/wiremock/mappings:/home/wiremock/mappings wiremock/wiremock
 
 
-      - name: Verify > Sleep for 10 seconds
-        run: sleep 10
+      - name: Verify > Sleep for 20 seconds
+        run: sleep 20
       - name: Verify > Docker run wiremock
         if: success()
         run: curl http://localhost:8090/__admin/mappings
