@@ -34,7 +34,9 @@
   <br>  
 </p>
 
-### :bicyclist: Build Project Locally?
+<br>
+
+### :bicyclist: 로컬에서 프로젝트를 실행하려면?
 
 #### Method 1. "Docker-way"
 
@@ -52,6 +54,8 @@
 
 1. Intellij 를 실행해주세요!
 
+<br>
+
 ### :bicyclist: Tips?
 
 #### 1. 개발도중 프로젝트의 docker image를 빠르게 빌드해보고 싶다면?
@@ -64,6 +68,8 @@
     - `gradle build`를 실행하고 (모든 테스트를 건너뒤고)
     - 이미지들을 빌드합니다.
 
+<br>
+
 ### :bicyclist: Q/A
 
 #### 1. 프로젝트의 <i class="fa fa-docker"></i> docker 이미지들은 어떻게 생성되고 어디에서 pull을 해오는 건가요?
@@ -71,7 +77,5 @@
 - @JooHyukKim 의 DockerHub 저장소에서 pull 해옵니다.
 - 이미지들은 프로젝트 `origin/main`의 push 이벤트에 의해 트리거되고 사전에 작성한 `build docker image 워크플로우`에서 빌드됩니다.
 - 이미지 사용법 링크
-    - :
-      point_right: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
-    - :
-      point_right: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
+    - :link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
+    - :link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
