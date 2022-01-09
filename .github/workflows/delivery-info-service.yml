@@ -4,7 +4,7 @@ on: [ push , pull_request ]
 jobs:
   #----------------------------------------------------------------------------------------------------------
   tests:
-    runs-on: [ self-hosted, Ncloud ]
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: true
@@ -84,7 +84,7 @@ jobs:
       fail-fast: true
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
-    runs-on: [ self-hosted, Ncloud ]
+    runs-on: ubuntu-latest
 
     env:
       MODULE_NAME: delivery-info-service
