@@ -10,12 +10,10 @@ export let options = {
   startRate: 10,
   timeUnit: '1s', // we start at 50 iterations per second
   stages: [
-    { duration: '10s', target: 50 },
-    { duration: '10s', target: 100 },
-    { duration: '10s', target: 300 },
-    { duration: '10s', target: 500 },
-    { duration: '10s', target: 300 },
-    { duration: '10s', target: 100 }, // below normal load
+    { duration: '30s', target: 100 },
+    { duration: '30s', target: 300 },
+    { duration: '30s', target: 500 },
+    { duration: '30s', target: 100 }, // below normal load
   ],
   thresholds: {
     // http errors should be less than 1%
