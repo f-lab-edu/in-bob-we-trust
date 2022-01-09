@@ -12,6 +12,7 @@ export let options = {
   stages: [
     { duration: '10s', target: 50 },
     { duration: '10s', target: 100 },
+    { duration: '10s', target: 300 },
     { duration: '10s', target: 500 },
     { duration: '10s', target: 300 },
     { duration: '10s', target: 100 }, // below normal load

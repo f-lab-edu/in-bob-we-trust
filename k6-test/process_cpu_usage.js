@@ -16,7 +16,7 @@ export let options = {
 };
 
 const customTrend = new Trend('process_cpu_usage');
-const time = '1m10s';
+const time = '2m';
 
 
 export default () => {
@@ -26,7 +26,7 @@ export default () => {
   const body = JSON.parse(res.body);
   const values = body.data.result[0].values;
 
-  if (values.length <= 10) { // cpu.usage 데이터가 10개보다면적으면 비정상적인것으로 판단하기
+  if (values.length < 50) { // cpu.usage 데이터가 50개보다 적으면 비정상적인것으로 판단하기 (1분동안 테스트를 실행하기 때문에)
     const errorMessage = `defined expected timeInSeconds is ${timeInSeconds} ..... but actual is ${values.length}`;
     console.error(errorMessage);
     fail(errorMessage);
