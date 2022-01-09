@@ -2,6 +2,7 @@ version: "3.4"
 services:
   delivery-info-service:
     image: inbobwetrust/delivery-info-service:loadtest
+    container_name: delivery-info-service
     environment:
       - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://host.docker.internal:27017 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=mongodb://host.docker.internal:27018
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
@@ -12,6 +13,7 @@ services:
 
   mongo-primary:
     image: mongo
+    container_name: mongo-primary
     ports:
       - "27017:27017"
     networks:
@@ -25,6 +27,7 @@ services:
 
   mongo-secondary:
     image: mongo
+    container_name: mongo-secondary
     ports:
       - "27018:27017"
     networks:
@@ -39,6 +42,7 @@ services:
 
   wiremock-relay-service:
     image: wiremock/wiremock
+    container_name: wiremock-relay-service
     volumes:
       - ./wiremock/ __files:/home/wiremock/__files
       - ./wiremock/mappings:/home/wiremock/mappings
@@ -46,6 +50,17 @@ services:
       - "8090:8080"
     networks:
       - inbobwetrust
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - inbobwetrust
+
 
 networks:
   inbobwetrust:
