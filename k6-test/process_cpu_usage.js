@@ -32,12 +32,12 @@ export default () => {
     fail(errorMessage);
   }
 
-  values.forEach(val => 기
+  values.forEach(val => {
     console.info(`process.cpu.usage     : ${val[1]}`);
-  customTrend.add(Number(val[1]));
-});
+    customTrend.add(Number(val[1]));
+  });
 
-sleep(0.1);
+  sleep(0.1);
 };
 
 export function handleSummary(data) {
