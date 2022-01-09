@@ -33,7 +33,7 @@ export default () => {
   }
 
   values.forEach(val => {
-    console.info(val[1]);
+    console.info(`process.cpu.usage     : ${val[1]}`);
     customTrend.add(Number(val[1]));
   });
 
