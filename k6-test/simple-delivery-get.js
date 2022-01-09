@@ -37,23 +37,3 @@ export default () => {
   });
   sleep(0.1);
 };
-
-export function handleSummary(data) {
-  return {
-    'stdout': textSummary(data, { indent: ' ', enableColors: true }), // Show the text summary to stdout...
-    './results/simple-delivery-get-summary.json': JSON.stringify(data), // and a JSON with all the details...
-  };
-}
-
-// interface aMetric {
-//   name: string;
-//   description: string;
-//   baseUnit: string,
-//   measurements: aMeasurement[],
-//   availableTags: any[]
-// };
-
-// interface aMeasurement {
-//   statistic: string,
-//   value: number
-// }
