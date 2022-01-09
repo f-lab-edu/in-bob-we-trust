@@ -5,6 +5,7 @@ jobs:
   #----------------------------------------------------------------------------------------------------------
   tests:
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: true
       matrix:
@@ -72,7 +73,7 @@ jobs:
 
       - name: K6 > Test Local
         run: |
-          k6 run ./k6-test/simple-delivery-get.js
+          k6 run ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
 
   build-image:
     needs:
@@ -84,6 +85,7 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
     runs-on: ubuntu-latest
+
     env:
       MODULE_NAME: delivery-info-service
 

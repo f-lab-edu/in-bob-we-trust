@@ -12,6 +12,7 @@ export let options = {
   stages: [
     { duration: '10s', target: 50 },
     { duration: '10s', target: 100 },
+    { duration: '10s', target: 300 },
     { duration: '10s', target: 500 },
     { duration: '10s', target: 300 },
     { duration: '10s', target: 100 }, // below normal load
@@ -37,31 +38,3 @@ export default () => {
   });
   sleep(0.1);
 };
-
-export function handleSummary(data) {
-  console.log('Preparing the end-of-test summary...');
-
-  // Send the results to some remote server or trigger a hook
-  const resp = http.post('https://httpbin.test.k6.io/anything', JSON.stringify(data));
-  if (resp.status != 200) {
-    console.error('Could not send summary, got status ' + resp.status);
-  }
-
-  return {
-    'stdout': textSummary(data, { indent: ' ', enableColors: true }), // Show the text summary to stdout...
-    './results/simple-delivery-get-summary.json': JSON.stringify(data), // and a JSON with all the details...
-  };
-}
-
-// interface aMetric {
-//   name: string;
-//   description: string;
-//   baseUnit: string,
-//   measurements: aMeasurement[],
-//   availableTags: any[]
-// };
-
-// interface aMeasurement {
-//   statistic: string,
-//   value: number
-// }

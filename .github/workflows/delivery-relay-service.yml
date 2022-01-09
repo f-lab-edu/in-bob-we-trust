@@ -39,6 +39,7 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
     runs-on: ubuntu-latest
+
     env:
       MODULE_NAME: delivery-relay-service
 
