@@ -17,7 +17,7 @@ export let options = {
 
 const customTrend = new Trend('process_cpu_usage');
 const time = '1m10s';
-const minimum_viable_time_seconds = 10;
+
 
 export default () => {
 
@@ -26,18 +26,18 @@ export default () => {
   const body = JSON.parse(res.body);
   const values = body.data.result[0].values;
 
-  if (values.length <= minViableTime) {
+  if (values.length <= 10) { // cpu.usage 데이터가 10개보다면적으면 비정상적인것으로 판단하기
     const errorMessage = `defined expected timeInSeconds is ${timeInSeconds} ..... but actual is ${values.length}`;
     console.error(errorMessage);
     fail(errorMessage);
   }
 
-  values.forEach(val => {
+  values.forEach(val => 기
     console.info(`process.cpu.usage     : ${val[1]}`);
-    customTrend.add(Number(val[1]));
-  });
+  customTrend.add(Number(val[1]));
+});
 
-  sleep(0.1);
+sleep(0.1);
 };
 
 export function handleSummary(data) {
