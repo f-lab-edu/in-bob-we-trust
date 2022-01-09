@@ -10,8 +10,8 @@ export let options = {
   thresholds: {
     // 100% of checkes should pass
     checks: ['rate==1'],
-    // !!!IMPORTANT 100% of process_cpu_usage should be less than 0.2 (20%)
-    process_cpu_usage: ['p(100)<=0.2']
+    // !!!IMPORTANT 100% of process_cpu_usage should be less than 0.8 (80%)
+    process_cpu_usage: ['p(100)<=0.95']
   }
 };
 
