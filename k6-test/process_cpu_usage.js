@@ -1,4 +1,4 @@
-import { sleep, check } from 'k6';
+import { sleep, check, fail } from 'k6';
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import { Trend } from 'k6/metrics';
@@ -16,22 +16,23 @@ export let options = {
 };
 
 const customTrend = new Trend('process_cpu_usage');
+const time = '1m10s';
+const minimum_viable_time_seconds = 10;
 
 export default () => {
-  const maxCpuUsage = 0.20;
-  const time = '1m10s';
-  const timeInSeconds = 70;
+
   const res = http.get(`http://localhost:9090/api/v1/query?query=process_cpu_usage{job="delivery-info-service"}[${time}]&step=1`);
 
   const body = JSON.parse(res.body);
   const values = body.data.result[0].values;
 
-  if (values.length != timeInSeconds) {
-    console.error(`defined expected timeInSeconds is ${timeInSeconds} ..... but actual is ${values.length}`);
-    return false;
+  if (values.length <= minViableTime) {
+    const errorMessage = `defined expected timeInSeconds is ${timeInSeconds} ..... but actual is ${values.length}`;
+    console.error(errorMessage);
+    fail(errorMessage);
   }
 
-  const failingValues = values.forEach(val => {
+  values.forEach(val => {
     console.info(val[1]);
     customTrend.add(Number(val[1]));
   });
