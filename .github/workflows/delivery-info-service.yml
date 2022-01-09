@@ -4,9 +4,8 @@ on: [ push , pull_request ]
 jobs:
   #----------------------------------------------------------------------------------------------------------
   tests:
-    runs-on:
-      - Ncloud
-      - ubuntu-latest
+    runs-on: [ self-hosted, Ncloud ]
+
     strategy:
       fail-fast: true
       matrix:
@@ -31,9 +30,7 @@ jobs:
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
   load_test:
-    runs-on:
-      - loadtest
-      - self-hosted
+    runs-on: [loadtest, self-hosted]
     strategy:
       fail-fast: true
     steps:
@@ -87,9 +84,8 @@ jobs:
       fail-fast: true
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
-    runs-on:
-      - Ncloud
-      - ubuntu-latest
+    runs-on: [ self-hosted, Ncloud ]
+
     env:
       MODULE_NAME: delivery-info-service
 

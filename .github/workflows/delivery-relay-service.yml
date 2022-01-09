@@ -4,9 +4,7 @@ on: [ push , pull_request ]
 
 jobs:
   tests:
-    runs-on:
-      - Ncloud
-      - ubuntu-latest
+    runs-on: [ self-hosted, Ncloud ]
     strategy:
       fail-fast: true
       matrix:
@@ -40,9 +38,8 @@ jobs:
       fail-fast: true
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
-    runs-on:
-      - Ncloud
-      - ubuntu-latest
+    runs-on: [ self-hosted, Ncloud ]
+
     env:
       MODULE_NAME: delivery-relay-service
 
