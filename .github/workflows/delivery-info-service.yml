@@ -30,9 +30,7 @@ jobs:
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
   load_test:
-    runs-on: [loadtest, self-hosted]
-    strategy:
-      fail-fast: true
+    runs-on: [ loadtest, self-hosted ]
     steps:
       - uses: actions/checkout@v2
 
@@ -72,8 +70,7 @@ jobs:
         run: curl  --max-time 10  http://localhost:8888/api/delivery
 
       - name: K6 > Test Local
-        run: |
-          k6 run ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
+        run: K6_PROMETHEUS_REMOTE_URL=http://localhost:9090/api/v1/write ./k6-test/k6 run  ./k6-test/simple-delivery-get.js -o output-prometheus-remote &&  k6 run ./k6-test/process_cpu_usage.js
 
   build-image:
     needs:
