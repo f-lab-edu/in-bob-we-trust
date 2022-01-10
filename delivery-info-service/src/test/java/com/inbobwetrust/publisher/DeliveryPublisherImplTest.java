@@ -56,6 +56,73 @@ class DeliveryPublisherImplTest {
   }
 
   @Test
+  void sendAddDeliveryEvent_4xx_isClientError() {
+    // given
+    var delivery = makeValidDelivery();
+    stubFor(
+        post(urlPathEqualTo("/relay/v1/shop/" + delivery.getShopId()))
+            .willReturn(aResponse().withStatus(404)));
+    // when
+    var response = deliveryPublisher.sendAddDeliveryEvent(delivery);
+    // then
+    StepVerifier.create(response)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof RelayClientException);
+              assertTrue(err.getMessage().contains("Push Event failed for delivery"));
+              return true;
+            })
+        .verify();
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo("/relay/v1/shop/" + delivery.getShopId())));
+  }
+
+  @Test
+  void sendAddDeliveryEvent_5xx_isServerError() throws JsonProcessingException {
+    // given
+    var delivery = makeValidDelivery();
+    stubFor(
+        post(urlPathEqualTo("/relay/v1/shop/" + delivery.getShopId()))
+            .willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+    // when
+    var response = deliveryPublisher.sendAddDeliveryEvent(delivery);
+    // then
+    StepVerifier.create(response)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof RelayServerException);
+              assertTrue(err.getMessage().contains("Shop operation failed for delivery :     "));
+              return true;
+            })
+        .verify();
+    WireMock.verify(1, postRequestedFor(urlPathEqualTo("/relay/v1/shop/" + delivery.getShopId())));
+  }
+
+  @Test
+  void sendSetRiderEvent_success() throws JsonProcessingException {
+    // given
+    var delivery = makeValidDelivery();
+    stubFor(
+        post(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId()))
+            .willReturn(
+                aResponse()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(mapper.writeValueAsString(delivery))));
+    // when
+    var response = deliveryPublisher.sendSetRiderEvent(delivery);
+    // then
+    StepVerifier.create(response)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof RelayClientException);
+              assertTrue(err.getMessage().contains("Push Event failed for delivery"));
+              return true;
+            })
+        .verify();
+    WireMock.verify(
+        1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
+  }
+
+  @Test
   void sendSetRiderEvent_4xx_clientError() throws JsonProcessingException {
     // given
     var delivery = makeValidDelivery();
@@ -73,7 +140,8 @@ class DeliveryPublisherImplTest {
               return true;
             })
         .verify();
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
+    WireMock.verify(
+        1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
   }
 
   @Test
@@ -94,7 +162,8 @@ class DeliveryPublisherImplTest {
               return true;
             })
         .verify();
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
+    WireMock.verify(
+        1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
   }
 
   private Delivery makeValidDelivery() {
