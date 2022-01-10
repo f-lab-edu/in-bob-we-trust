@@ -53,6 +53,12 @@ public class ExceptionHandlerAdvice {
     return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(ex.getMessage());
   }
 
+  @ExceptionHandler(value = {Throwable.class})
+  public ResponseEntity<String> handleInternalServerError(Throwable ex) {
+    logException(ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+  }
+
   private void logException(Throwable ex) {
     log.error("{} caught by advice : {} ", ex.getClass().getName(), ex.getMessage(), ex);
   }
