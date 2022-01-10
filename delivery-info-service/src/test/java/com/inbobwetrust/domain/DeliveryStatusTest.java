@@ -1,12 +1,11 @@
 package com.inbobwetrust.domain;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import groovy.util.logging.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class DeliveryStatusTest {
@@ -15,10 +14,6 @@ class DeliveryStatusTest {
 
   @Test
   void canProceedTo() {
-    // Arrange
-    // Stub
-    // Act
-    // Assert
     for (DeliveryStatus fromStatus : DeliveryStatus.values()) {
       for (DeliveryStatus toStatus : DeliveryStatus.values()) {
         LOG.info(
@@ -35,6 +30,18 @@ class DeliveryStatusTest {
           LOG.info("asserting false");
           assertFalse(fromStatus.canProceedTo(toStatus));
         }
+      }
+    }
+  }
+
+  @Test
+  void getNext_isLast() {
+    var statusList = DeliveryStatus.values();
+    for (var status : statusList) {
+      if (status.ordinal() != statusList.length - 1) {
+        assertEquals(status.getNext(), statusList[status.ordinal() + 1]);
+      } else {
+        assertEquals(status, status.getNext());
       }
     }
   }
