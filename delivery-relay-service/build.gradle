@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.woojoolion'
 sourceCompatibility = 11
-def jacocoMinimumCoverageRatio = 0.50
+def jacocoMinimumCoverageRatio = 1.0
 def jarFileName = 'delivery-relay-service'
 
 bootJar {
@@ -59,6 +59,7 @@ jacocoTestReport {
     dependsOn test
     sourceSets sourceSets.main
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    mustRunAfter('integrationTest')
 }
 
 jacoco {
@@ -102,7 +103,6 @@ idea {
         testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
     }
 }
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
