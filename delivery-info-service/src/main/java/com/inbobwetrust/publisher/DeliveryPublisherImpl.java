@@ -19,10 +19,10 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
   private final WebClient webClient;
 
   @Value("${restClient.proxy.shopUrl}")
-  private final String proxyShopUrl;
+  private  String proxyShopUrl;
 
   @Value("${restClient.proxy.agencyUrl}")
-  private final String proxyAgencyUrl;
+  private  String proxyAgencyUrl;
 
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
     return webClient
