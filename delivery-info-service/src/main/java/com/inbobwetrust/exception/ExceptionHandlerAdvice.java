@@ -1,6 +1,5 @@
 package com.inbobwetrust.exception;
 
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -8,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.support.WebExchangeBindException;
+
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -27,7 +28,12 @@ public class ExceptionHandlerAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 
-  @ExceptionHandler(value = {IllegalArgumentException.class, DeliveryNotFoundException.class})
+  @ExceptionHandler(
+      value = {
+        IllegalArgumentException.class,
+        IllegalStateException.class,
+        DeliveryNotFoundException.class
+      })
   public ResponseEntity<String> handleBadRequests(Exception ex) {
     logException(ex);
     var error = ex.getMessage();

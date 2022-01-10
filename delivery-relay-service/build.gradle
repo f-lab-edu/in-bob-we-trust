@@ -41,9 +41,6 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
     shouldRunAfter(tasks.named('test'))
-    jacoco {
-        include '**'
-    }
 }
 
 check {
@@ -81,6 +78,15 @@ jacocoTestCoverageVerification {
                 counter = 'INSTRUCTION'
                 value = 'COVEREDRATIO'
                 minimum = jacocoMinimumCoverageRatio
+            }
+        }
+        rule {
+            limit {
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = jacocoMinimumCoverageRatio
+                }
             }
         }
     }

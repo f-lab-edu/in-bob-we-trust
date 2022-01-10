@@ -1,16 +1,14 @@
 package com.inbobwetrust.controller;
 
-import static org.mockito.Mockito.*;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
 import groovy.util.logging.Slf4j;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static com.inbobwetrust.controller.DeliveryController.MIN_PAGE;
+import static com.inbobwetrust.controller.DeliveryController.MIN_SIZE;
+import static org.mockito.Mockito.*;
 
 @WebFluxTest(DeliveryController.class)
 @AutoConfigureWebTestClient
@@ -272,6 +280,40 @@ public class DeliveryControllerTest {
     verify(deliveryService, times(1)).findAll(any());
   }
 
+  static Stream<Arguments> pageables() {
+    // 모든 page 와 size가 null 일 경우를 따지는 모든 경우의수를... 봐야한다.
+    return Stream.of(
+        Arguments.of(null, MIN_SIZE, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE - 1, MIN_SIZE, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE, MIN_SIZE, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE + 1, MIN_SIZE, MIN_PAGE + 1, MIN_SIZE),
+        Arguments.of(MIN_PAGE, null, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE, MIN_SIZE - 1, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE, MIN_SIZE, MIN_PAGE, MIN_SIZE),
+        Arguments.of(MIN_PAGE, MIN_SIZE + 1, MIN_PAGE, MIN_SIZE + 1));
+  }
+
+  @ParameterizedTest
+  @DisplayName("size default 값 설정테스트, deliveryService에 제대로 전달되는지 확인한다.")
+  @MethodSource("pageables")
+  void getDeliveries_success_pageable(
+      Integer page, Integer size, Integer expectedPage, Integer expectedSize) {
+    // Arrange
+    // Stub
+    when(deliveryService.findAll(any(PageRequest.class)))
+        .thenReturn(Flux.fromIterable(makeValidDeliveries(MIN_SIZE)));
+    var uri =
+        UriComponentsBuilder.fromUri(URI.create(DELIVERY_URL))
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .buildAndExpand()
+            .toUri();
+    // Act
+    var response = testClient.get().uri(uri).exchange().expectStatus().isOk();
+    // Assert
+    verify(deliveryService, times(1)).findAll(PageRequest.of(expectedPage, expectedSize));
+  }
+
   private List<Delivery> makeValidDeliveries(int count) {
     var deliveries = new ArrayList<Delivery>();
     for (int i = 1; i <= count; i++) {
@@ -294,6 +336,29 @@ public class DeliveryControllerTest {
         testClient
             .get()
             .uri(DELIVERY_URL + "/{id}", delivery.getId())
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
+    // Assert
+    Assertions.assertEquals(delivery, result);
+  }
+
+  @Test
+  void acceptDelivery() {
+    // Arrange
+    var delivery = makeValidDelivery();
+    delivery.setId("delivery-1234");
+    // Stub
+    when(deliveryService.acceptDelivery(any(Delivery.class))).thenReturn(Mono.just(delivery));
+    // Act
+    var result =
+        testClient
+            .put()
+            .uri(DELIVERY_URL + "/accept")
+            .bodyValue(delivery)
             .exchange()
             .expectStatus()
             .isOk()

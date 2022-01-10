@@ -1,23 +1,23 @@
 package com.inbobwetrust.service;
 
-import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
-import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
 import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
-import java.util.Objects;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 
 @Service
 @Slf4j
@@ -41,33 +41,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> acceptDelivery(Delivery delivery) {
-    try {
-      invalidAcceptDelivery(delivery);
-    } catch (IllegalStateException se) {
-      return Mono.error(IllegalStateException::new);
-    }
-
-    return primaryDeliveryRepository
-        .findById(delivery.getId())
+    return Mono.just(delivery)
+        .flatMap(DeliveryValidator::statusIsNotNull)
+        .flatMap(DeliveryValidator::statusIsAccepted)
+        .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
+        .flatMap(del -> primaryDeliveryRepository.findById(del.getId()))
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(primaryDeliveryRepository::save)
         .flatMap(deliveryPublisher::sendSetRiderEvent);
-  }
-
-  private boolean invalidAcceptDelivery(Delivery delivery) {
-    StringBuilder errorMessage = new StringBuilder("");
-    errorMessage.append(Objects.nonNull(delivery.getDeliveryStatus()) ? "" : "주문상태가 null 입니다.");
-
-    if (!delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
-      errorMessage.append("주문상태가 ACCEPTED가 아닙니다");
-    }
-    if (delivery.getPickupTime().isBefore(delivery.getOrderTime())) {
-      errorMessage.append("픽업시간은 주문시간 이후여야 합니다.");
-    }
-    if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
-      return true;
-    }
-    throw new IllegalArgumentException(errorMessage.toString());
   }
 
   @Override
@@ -80,21 +61,21 @@ public class DeliveryServiceImpl implements DeliveryService {
   }
 
   @Override
-  public Mono<Delivery> setPickedUp(Delivery delivery) {
-    return updateDeliveryWithBiFuncValidator(delivery, DeliveryValidator::canSetPickUp);
-  }
-
-  @Override
-  public Mono<Delivery> setComplete(Delivery delivery) {
-    return updateDeliveryWithBiFuncValidator(delivery, DeliveryValidator::canSetComplete);
-  }
-
-  private Mono<Delivery> updateDeliveryWithBiFuncValidator(
-      Delivery newDelivery, BiFunction<Delivery, Delivery, Mono<Delivery>> validateFunc) {
+  public Mono<Delivery> setPickedUp(Delivery newDelivery) {
     return primaryDeliveryRepository
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(oldDelivery -> validateFunc.apply(oldDelivery, newDelivery))
+        .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
+        .flatMap(primaryDeliveryRepository::save);
+  }
+
+  @Override
+  public Mono<Delivery> setComplete(Delivery newDelivery) {
+    return primaryDeliveryRepository
+        .findById(newDelivery.getId())
+        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
+        .flatMap(
+            existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
         .flatMap(primaryDeliveryRepository::save);
   }
 
@@ -133,37 +114,58 @@ public class DeliveryServiceImpl implements DeliveryService {
       return monoJustOrError(delivery, errorMessage);
     }
 
-    public static Mono<Delivery> canSetPickUp(Delivery before, Delivery after) {
-      assert Objects.nonNull(before) && Objects.nonNull(after);
-      var errorMessage = new StringBuilder("");
-
+    private static Mono<Delivery> canSetPickUp(Delivery before, Delivery after) {
       if (!canUpdateStatus(ACCEPTED, before, after)) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
+        String message =
+            String.format(
+                "픽업완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+                before.getDeliveryStatus(), after.getDeliveryStatus());
+        return Mono.error(new IllegalStateException(message));
       }
-      return monoJustOrError(after, errorMessage);
+      return Mono.just(after);
     }
 
-    public static Mono<Delivery> canSetComplete(Delivery before, Delivery after) {
-      assert Objects.nonNull(before) && Objects.nonNull(after);
-      StringBuilder errorMessage = new StringBuilder("");
-
+    private static Mono<Delivery> canSetComplete(Delivery before, Delivery after) {
       if (!canUpdateStatus(PICKED_UP, before, after)) {
-        errorMessage.append(MSG_INVALID_STATUS_FOR_UPDATE + before.getDeliveryStatus());
+        String message =
+            String.format(
+                "배달완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+                before.getDeliveryStatus(), after.getDeliveryStatus());
+        return Mono.error(new IllegalStateException(message));
       }
-      return monoJustOrError(after, errorMessage);
+      return Mono.just(after);
     }
 
     private static boolean canUpdateStatus(
         DeliveryStatus expectedBeforeStatus, Delivery before, Delivery after) {
-      return before.getDeliveryStatus().equals(expectedBeforeStatus)
-          && before.getDeliveryStatus().canProceedTo(after.getDeliveryStatus());
+      boolean statusSameAsExpected = before.getDeliveryStatus().equals(expectedBeforeStatus);
+      boolean isNext = before.getDeliveryStatus().getNext().equals(after.getDeliveryStatus());
+      log.info("statusSameAsExpected {} && isNext {}", statusSameAsExpected, isNext);
+      return statusSameAsExpected && isNext;
     }
 
     private static Mono<Delivery> monoJustOrError(Delivery after, StringBuilder errorMessage) {
-      if (errorMessage.toString().isEmpty() || errorMessage.toString().isBlank()) {
-        return Mono.just(after);
-      }
-      return Mono.error(new IllegalArgumentException(errorMessage.toString()));
+      return errorMessage.length() == 0
+          ? Mono.just(after)
+          : Mono.error(new IllegalArgumentException(errorMessage.toString()));
+    }
+
+    private static Mono<Delivery> statusIsAccepted(Delivery delivery) {
+      return delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)
+          ? Mono.just(delivery)
+          : Mono.error(new IllegalStateException("주문상태가 ACCEPTED가 아닙니다"));
+    }
+
+    private static Mono<Delivery> statusIsNotNull(Delivery delivery) {
+      return Objects.isNull(delivery.getDeliveryStatus())
+          ? Mono.error(new IllegalStateException("주문상태가 null 입니다."))
+          : Mono.just(delivery);
+    }
+
+    private static Mono<Delivery> pickupTimeIsAfterOrderTime(Delivery delivery) {
+      return delivery.getPickupTime().isAfter(delivery.getOrderTime())
+          ? Mono.just(delivery)
+          : Mono.error(new IllegalStateException("픽업시간은 주문시간 이후여야 합니다."));
     }
   }
 }
