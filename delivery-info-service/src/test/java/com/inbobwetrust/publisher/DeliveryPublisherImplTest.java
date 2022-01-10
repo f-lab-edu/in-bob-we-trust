@@ -110,14 +110,7 @@ class DeliveryPublisherImplTest {
     // when
     var response = deliveryPublisher.sendSetRiderEvent(delivery);
     // then
-    StepVerifier.create(response)
-        .expectErrorMatches(
-            err -> {
-              assertTrue(err instanceof RelayClientException);
-              assertTrue(err.getMessage().contains("Push Event failed for delivery"));
-              return true;
-            })
-        .verify();
+    StepVerifier.create(response).expectNext(delivery).verifyComplete();
     WireMock.verify(
         1, postRequestedFor(urlPathEqualTo("/relay/v1/agency/" + delivery.getAgencyId())));
   }
