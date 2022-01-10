@@ -49,7 +49,6 @@ check {
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestCoverageVerification
 }
 
 
