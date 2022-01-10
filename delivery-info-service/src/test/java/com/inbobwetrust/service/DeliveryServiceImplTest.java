@@ -1,17 +1,13 @@
 package com.inbobwetrust.service;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,10 +19,19 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
   @InjectMocks DeliveryServiceImpl deliveryService;
   @Mock PrimaryDeliveryRepository primaryDeliveryRepository;
+  @Mock SecondaryDeliveryRepository secondaryDeliveryRepository;
   @Mock DeliveryPublisher deliveryPublisher;
 
   private Delivery makeValidDelivery() {
@@ -108,14 +113,12 @@ public class DeliveryServiceImplTest {
     StepVerifier.create(result)
         .consumeErrorWith(
             actual -> {
-              Assertions.assertTrue(
-                  actual.getMessage().contains(DeliveryServiceImpl.MSG_RIDER_ALREADY_SET));
-              Assertions.assertTrue(
+              assertTrue(actual.getMessage().contains(DeliveryServiceImpl.MSG_RIDER_ALREADY_SET));
+              assertTrue(
                   actual
                       .getMessage()
                       .contains(DeliveryServiceImpl.MSG_INVALID_STATUS_FOR_SETRIDER));
-              Assertions.assertTrue(
-                  actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
+              assertTrue(actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
               verify(primaryDeliveryRepository, times(1)).findById(anyString());
               verify(primaryDeliveryRepository, times(0)).save(any());
             })
@@ -140,25 +143,29 @@ public class DeliveryServiceImplTest {
     verify(primaryDeliveryRepository, times(1)).save(any(Delivery.class));
   }
 
-  @Test
-  void setPickUp_fail_invalid_statusChange() {
-    // Arrange
-    var beforeData = makeValidSetPickUpDelivery();
-    beforeData.setDeliveryStatus(DeliveryStatus.COMPLETE);
-    var afterData = makeValidSetPickUpDelivery();
-    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
-    // Stub
-    when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
-    // Act
-    var stream = deliveryService.setPickedUp(afterData);
-    // Assert
-    StepVerifier.create(stream)
-        .consumeErrorWith(
-            err -> Assertions.assertEquals(IllegalArgumentException.class, err.getClass()))
-        .verify();
-    verify(primaryDeliveryRepository, times(1)).findById(anyString());
-    verify(primaryDeliveryRepository, times(0)).save(any(Delivery.class));
-  }
+  //  @Test
+  //  void setPickUp_fail_invalid_statusChange() {
+  //    // Arrange
+  //    var beforeData = makeValidSetPickUpDelivery();
+  //    beforeData.setDeliveryStatus(DeliveryStatus.COMPLETE);
+  //    var afterData = makeValidSetPickUpDelivery();
+  //    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+  //    // Stub
+  //
+  // when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+  //    // Act
+  //    var stream = deliveryService.setPickedUp(afterData);
+  //    // Assert
+  //    StepVerifier.create(stream)
+  //        .expectErrorMatches(
+  //            err -> {
+  //              Assertions.assertEquals(IllegalArgumentException.class, err.getClass()}
+  //        )
+  //            })
+  //        .verify();
+  //    verify(primaryDeliveryRepository, times(1)).findById(anyString());
+  //    verify(primaryDeliveryRepository, times(0)).save(any(Delivery.class));
+  //  }
 
   private Delivery makeValidSetPickUpDelivery() {
     return Delivery.builder()
@@ -197,6 +204,7 @@ public class DeliveryServiceImplTest {
   @Test
   void setComplete_fail_invalid_status() {
     // Arrange
+    var expectedErrorMessage = "배달완료로 전환이 불가한 상태입니다.     기존주문상태: ACCEPTED       요청한주문상태: PICKED_UP";
     var beforeData = makeValidSetPickUpDelivery();
     beforeData.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     var afterData = makeValidSetPickUpDelivery();
@@ -206,7 +214,14 @@ public class DeliveryServiceImplTest {
     // Act
     var stream = deliveryService.setComplete(afterData);
     // Assert
-    StepVerifier.create(stream).expectError(IllegalArgumentException.class).verify();
+    StepVerifier.create(stream)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().equals(expectedErrorMessage));
+              return true;
+            })
+        .verify();
     verify(primaryDeliveryRepository, times(1)).findById(anyString());
     verify(primaryDeliveryRepository, times(0)).save(any(Delivery.class));
   }
@@ -271,5 +286,210 @@ public class DeliveryServiceImplTest {
       deliveries.add(dlvry);
     }
     return deliveries;
+  }
+
+  @Test
+  @DisplayName("주문상태가 null 일경우 IllegalStateException 발생")
+  void acceptDeliveryTest() {
+    // given
+    var delivery = makeValidDelivery();
+    delivery.setDeliveryStatus(null);
+    // when
+    var resultStream = deliveryService.acceptDelivery(delivery);
+    // then
+    StepVerifier.create(resultStream)
+        .consumeErrorWith(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().contains("주문상태가 null 입니다."));
+            })
+        .verify();
+  }
+
+  @Test
+  @DisplayName("[DeliveryServiceImpl] retryExhuasted 에 대한 백업 DB 호출")
+  void addDeliveryTest_retryExhausted() {
+    // given
+    var delivery = makeValidDelivery();
+    // stub
+    when(primaryDeliveryRepository.save(any(Delivery.class)))
+        .thenReturn(
+            Mono.just(delivery)
+                .delayElement(
+                    DeliveryService.FIXED_DELAY.plusMillis(10))); // 지정된 타임아웃시간보다 0.01s 길게 지연시키기
+    when(secondaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(delivery));
+    when(deliveryPublisher.sendAddDeliveryEvent(any(Delivery.class)))
+        .thenReturn(Mono.just(delivery));
+    // when
+    var resultStream = deliveryService.addDelivery(delivery);
+    // then
+    StepVerifier.create(resultStream)
+        .expectSubscription()
+        .expectNoEvent(DeliveryService.FIXED_DELAY.multipliedBy(DeliveryService.MAX_ATTEMPTS + 1))
+        .expectNext(delivery)
+        .verifyComplete();
+    verify(primaryDeliveryRepository, times(1)).save(any());
+    verify(secondaryDeliveryRepository, times(1)).save(any());
+  }
+
+  @Test
+  void monoDelayTest() {
+    var res = makeInvalidDelivery();
+    var stream = Mono.just(res).delayElement(DeliveryService.FIXED_DELAY.plusMillis(1));
+
+    StepVerifier.create(stream).expectNoEvent(DeliveryService.FIXED_DELAY).expectNext(res);
+  }
+
+  @Test
+  void accpetDelivery_fail_StatusIsNotAccepted() {
+    // given
+    var delivery = makeValidDelivery();
+    delivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    // when
+    var stream = deliveryService.acceptDelivery(delivery);
+    // then
+    StepVerifier.create(stream)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().contains("주문상태가 ACCEPTED가 아닙니다"));
+              return true;
+            })
+        .verify();
+    verify(primaryDeliveryRepository, times(0)).save(any());
+    verify(primaryDeliveryRepository, times(0)).findById(anyString());
+    verify(deliveryPublisher, times(0)).sendSetRiderEvent(any());
+  }
+
+  @Test
+  void accpetDelivery_success() {
+    // given
+    var delivery = makeValidDelivery();
+    delivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    delivery.setPickupTime(delivery.getOrderTime().plusSeconds(1));
+    // stub
+    when(primaryDeliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    when(primaryDeliveryRepository.save(any())).thenReturn(Mono.just(delivery));
+    when(deliveryPublisher.sendSetRiderEvent(any())).thenReturn(Mono.just(delivery));
+    // when
+    var stream = deliveryService.acceptDelivery(delivery);
+    // then
+    StepVerifier.create(stream).expectNext(delivery).verifyComplete();
+    verify(primaryDeliveryRepository, times(1)).save(any());
+    verify(primaryDeliveryRepository, times(1)).findById(delivery.getId());
+    verify(deliveryPublisher, times(1)).sendSetRiderEvent(any());
+  }
+
+  @Test
+  @DisplayName("FAIL pickupTime을 orderTime 보다 1초 일찍(빠르게변경)")
+  void acceptDeliveryPickupTImeAfterOrderTime_failTest() {
+    // given
+    var delivery = makeValidDelivery();
+    delivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    delivery.setPickupTime(delivery.getOrderTime().minusSeconds(1));
+    // when
+    var stream = deliveryService.acceptDelivery(delivery);
+    // then
+    StepVerifier.create(stream)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().contains("픽업시간은 주문시간 이후여야 합니다."));
+              return true;
+            })
+        .verify();
+    verify(primaryDeliveryRepository, times(0)).save(any());
+    verify(primaryDeliveryRepository, times(0)).findById(anyString());
+    verify(deliveryPublisher, times(0)).sendSetRiderEvent(any());
+  }
+
+  @Test
+  void canSetPickUpTest() {
+    // given
+    var existingDelivery = makeValidDelivery();
+    existingDelivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    existingDelivery.setPickupTime(existingDelivery.getOrderTime().plusSeconds(1));
+    var newDelivery = makeValidDelivery();
+    newDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
+    // stub
+    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+        .thenReturn(Mono.just(existingDelivery));
+    when(primaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
+    // when
+    var stream = deliveryService.setPickedUp(newDelivery);
+    // then
+    StepVerifier.create(stream).expectNext(newDelivery).verifyComplete();
+  }
+
+  @Test
+  void canSetPickUpTest_fail() {
+    // given
+    var existingDelivery = makeValidDelivery();
+    existingDelivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+    existingDelivery.setPickupTime(existingDelivery.getOrderTime().plusSeconds(1));
+    var newDelivery = makeValidDelivery();
+    newDelivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
+    // stub
+    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+        .thenReturn(Mono.just(existingDelivery));
+    // when
+    var stream = deliveryService.setPickedUp(newDelivery);
+    // then
+    StepVerifier.create(stream)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().contains("픽업완료로 전환이 불가한 상태입니다."));
+              return true;
+            })
+        .verify();
+  }
+
+  @Test
+  void canSetPickUp_failTest() {
+    // given
+    var existingDelivery = makeValidDelivery();
+    existingDelivery.setDeliveryStatus(DeliveryStatus.ACCEPTED.getNext());
+    existingDelivery.setPickupTime(existingDelivery.getOrderTime().plusSeconds(1));
+    var newDelivery = makeValidDelivery();
+    newDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
+    // stub
+    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+        .thenReturn(Mono.just(existingDelivery));
+    // when
+    var stream = deliveryService.setPickedUp(newDelivery);
+    // then
+    StepVerifier.create(stream)
+        .expectErrorMatches(
+            err -> {
+              assertTrue(err instanceof IllegalStateException);
+              assertTrue(err.getMessage().contains("픽업완료로 전환이 불가한 상태입니다.     기존주문상태:"));
+              return true;
+            })
+        .verify();
+  }
+
+  @Test
+  void canSetCompleteTest() {
+    // given
+    var existingDelivery = makeValidDelivery();
+    existingDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    existingDelivery.setPickupTime(existingDelivery.getOrderTime().plusSeconds(1));
+    var newDelivery = makeValidDelivery();
+    newDelivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
+    newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
+    // stub
+    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+        .thenReturn(Mono.just(existingDelivery));
+    when(primaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
+    // when
+    var stream = deliveryService.setComplete(newDelivery);
+    // then
+    StepVerifier.create(stream).expectNext(newDelivery).verifyComplete();
+    verify(primaryDeliveryRepository, times(1)).save(any());
+    verify(primaryDeliveryRepository, times(1)).findById(existingDelivery.getId());
   }
 }

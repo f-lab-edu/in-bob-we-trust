@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.woojoolion'
 sourceCompatibility = 11
-def jacocoMinimumCoverageRatio = 0.4
+def jacocoMinimumCoverageRatio = 0.6
 def jarFileName = 'delivery-info-service'
 
 bootJar {
@@ -40,17 +40,12 @@ task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
-    shouldRunAfter(tasks.named('test'))
-    jacoco {
-        include '**'
-    }
 }
 
 
 check {
     dependsOn integrationTest
 }
-
 
 test {
     useJUnitPlatform()
@@ -61,6 +56,19 @@ jacocoTestReport {
     dependsOn test
     sourceSets sourceSets.main
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/inbobwetrust/config/multidatasource/MongoConfiguration.*",
+                    "com/inbobwetrust/config/multidatasource/CustomMongoProperties.*",
+                    "com/inbobwetrust/config/multidatasource/PrimaryMongoConfig.*",
+                    "com/inbobwetrust/config/multidatasource/SecondaryMongoConfig.*",
+                    "com/inbobwetrust/Application.*"
+            ])
+        }))
+    }
+    finalizedBy jacocoTestCoverageVerification
 }
 
 jacoco {
@@ -73,6 +81,7 @@ jacoco {
             html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
         }
     }
+
 }
 
 jacocoTestCoverageVerification {
@@ -84,6 +93,15 @@ jacocoTestCoverageVerification {
                 minimum = jacocoMinimumCoverageRatio
             }
         }
+        rule {
+            limit {
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = jacocoMinimumCoverageRatio
+                }
+            }
+        }
     }
 }
 
@@ -91,10 +109,10 @@ task generateJacocoTestCoverage(type: JacocoReport) {
     group 'verification'
     description 'Runs tests with coverage'
 
-    dependsOn = [integrationTest, test, jacocoTestReport, jacocoTestCoverageVerification]
+    dependsOn = [test, jacocoTestReport, jacocoTestCoverageVerification]
 
-    tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
     tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
+    tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
 }
 
 
