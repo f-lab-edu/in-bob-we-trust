@@ -22,8 +22,9 @@ wiremock:
 
 restClient:
   proxy:
-    shopUrl: http://localhost:8090/relay/v1/shop
-    agencyUrl: http://localhost:8090/relay/v1/agency
+    host: http://localhost:8090
+    shopUrl: ${restClient.proxy.host}/relay/v1/shop
+    agencyUrl: ${restClient.proxy.host}/relay/v1/agency
 
 
 
