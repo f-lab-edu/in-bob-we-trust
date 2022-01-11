@@ -4,8 +4,7 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
-import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
-import java.util.concurrent.TimeoutException;
 
 import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
 import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
@@ -23,18 +21,15 @@ import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 @Slf4j
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
-  private final PrimaryDeliveryRepository primaryDeliveryRepository;
-  private final SecondaryDeliveryRepository secondaryDeliveryRepository;
+  private final DeliveryRepository deliveryRepository;
   private final DeliveryPublisher deliveryPublisher;
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .save(delivery)
         .timeout(FIXED_DELAY)
         .retryWhen(defaultRetryBackoffSpec())
-        .onErrorResume(
-            ex -> ex instanceof TimeoutException, ex -> secondaryDeliveryRepository.save(delivery))
         .flatMap(deliveryPublisher::sendAddDeliveryEvent)
         .log();
   }
@@ -45,50 +40,50 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(DeliveryValidator::statusIsNotNull)
         .flatMap(DeliveryValidator::statusIsAccepted)
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
-        .flatMap(del -> primaryDeliveryRepository.findById(del.getId()))
+        .flatMap(del -> deliveryRepository.findById(del.getId()))
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(primaryDeliveryRepository::save)
+        .flatMap(deliveryRepository::save)
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
   @Override
   public Mono<Delivery> setDeliveryRider(Delivery delivery) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(primaryDeliveryRepository::save);
+        .flatMap(deliveryRepository::save);
   }
 
   @Override
   public Mono<Delivery> setPickedUp(Delivery newDelivery) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
-        .flatMap(primaryDeliveryRepository::save);
+        .flatMap(deliveryRepository::save);
   }
 
   @Override
   public Mono<Delivery> setComplete(Delivery newDelivery) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
-        .flatMap(primaryDeliveryRepository::save);
+        .flatMap(deliveryRepository::save);
   }
 
   @Override
   public Mono<Delivery> findById(String id) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .findById(id)
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }
 
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
-    return primaryDeliveryRepository
+    return deliveryRepository
         .findAllByOrderIdContaining("", pageRequest)
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }

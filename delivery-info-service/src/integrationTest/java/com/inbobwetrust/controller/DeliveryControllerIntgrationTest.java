@@ -7,8 +7,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
-import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,9 +53,8 @@ public class DeliveryControllerIntgrationTest {
   private static final String DEFAULT_MONGO_DATABASE = "inbob";
   @Autowired WebTestClient testClient;
 
-  @Autowired PrimaryDeliveryRepository primaryDeliveryRepository;
-
-  @Autowired SecondaryDeliveryRepository secondaryDeliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -98,7 +96,7 @@ public class DeliveryControllerIntgrationTest {
     }
     assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
 
-    var setUpDatabase = primaryDeliveryRepository.deleteAll();
+    var setUpDatabase = deliveryRepository.deleteAll();
     StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
   }
 
@@ -147,7 +145,7 @@ public class DeliveryControllerIntgrationTest {
             .returnResult()
             .getResponseBody();
     delivery.setId(Objects.requireNonNull(actual).getId());
-    var savedCnt = primaryDeliveryRepository.findAll();
+    var savedCnt = deliveryRepository.findAll();
     // Assert
     WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
     StepVerifier.create(savedCnt).expectNextCount(1).verifyComplete();
@@ -180,7 +178,7 @@ public class DeliveryControllerIntgrationTest {
             .expectBody(String.class)
             .returnResult()
             .getResponseBody();
-    var saved = primaryDeliveryRepository.findAll();
+    var saved = deliveryRepository.findAll();
     // Assert
     assertTrue(Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
     WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
@@ -225,7 +223,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void acceptDelivery(Delivery delivery) throws JsonProcessingException {
     // when
-    var expected = primaryDeliveryRepository.save(delivery).block().deepCopy();
+    var expected = deliveryRepository.save(delivery).block().deepCopy();
     expected.setDeliveryStatus(DeliveryStatus.NEW);
     expected.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
@@ -274,7 +272,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void setDeliveryRider(Delivery delivery) {
     delivery.setRiderId(null);
-    var expected = primaryDeliveryRepository.save(delivery).block();
+    var expected = deliveryRepository.save(delivery).block();
     // Act
     if (expected.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
       var actual =
@@ -311,7 +309,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void setPickedUp(Delivery delivery) {
     // Arrange
-    var before = primaryDeliveryRepository.save(delivery).block();
+    var before = deliveryRepository.save(delivery).block();
     var expected = before.deepCopy();
     expected.setDeliveryStatus(before.getDeliveryStatus().getNext());
     //
@@ -349,7 +347,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void setComplete(Delivery delivery) {
     // Arrange
-    var expected = primaryDeliveryRepository.save(delivery).block();
+    var expected = deliveryRepository.save(delivery).block();
 
     if (expected.getDeliveryStatus().equals(DeliveryStatus.PICKED_UP)) {
       expected.setDeliveryStatus(DeliveryStatus.COMPLETE);
@@ -386,7 +384,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleAllDelivery")
   void getDeliveries(List<Delivery> deliveries) {
     // Arrange
-    var savedStream = primaryDeliveryRepository.saveAll(deliveries);
+    var savedStream = deliveryRepository.saveAll(deliveries);
     StepVerifier.create(savedStream).expectNextCount(deliveries.size()).verifyComplete();
     int expectedSize = 10;
     int page = 3;
@@ -418,7 +416,7 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void getDelivery(Delivery delivery) {
     // Arrange
-    var expected = primaryDeliveryRepository.save(delivery).block();
+    var expected = deliveryRepository.save(delivery).block();
     boolean isIdWrong = random.nextBoolean();
     expected.setId(isIdWrong ? expected.getId() + "123" : expected.getId());
     // Act

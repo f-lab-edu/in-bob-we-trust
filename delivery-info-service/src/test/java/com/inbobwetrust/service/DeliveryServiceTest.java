@@ -1,8 +1,7 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
-import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DeliveryServiceTest {
 
   @InjectMocks DeliveryServiceImpl deliveryService;
-  @Mock PrimaryDeliveryRepository primaryDeliveryRepository;
-  @Mock SecondaryDeliveryRepository secondaryDeliveryRepository;
+  @Mock
+  DeliveryRepository deliveryRepository;
   @Mock DeliveryPublisher deliveryPublisher;
 
   @Test

@@ -3,9 +3,9 @@ package com.inbobwetrust.service;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
+import com.inbobwetrust.exception.RetryExhaustedException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.primary.PrimaryDeliveryRepository;
-import com.inbobwetrust.repository.secondary.SecondaryDeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +30,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
   @InjectMocks DeliveryServiceImpl deliveryService;
-  @Mock PrimaryDeliveryRepository primaryDeliveryRepository;
-  @Mock SecondaryDeliveryRepository secondaryDeliveryRepository;
+  @Mock DeliveryRepository deliveryRepository;
   @Mock DeliveryPublisher deliveryPublisher;
 
   private Delivery makeValidDelivery() {
@@ -53,24 +52,24 @@ public class DeliveryServiceImplTest {
     // Arrange
     Delivery expected = makeValidDelivery();
     // Stub
-    when(primaryDeliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(expected));
+    when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(expected));
     // Act
     var result = deliveryService.addDelivery(expected);
     // Assert
     StepVerifier.create(result).expectNext(expected);
-    verify(primaryDeliveryRepository, times(1)).save(any(Delivery.class));
+    verify(deliveryRepository, times(1)).save(any(Delivery.class));
   }
 
   @Test
   void addDelivery_fail_null() {
     // Arrange
     // Stub
-    when(primaryDeliveryRepository.save(any()))
+    when(deliveryRepository.save(any()))
         .thenReturn(Mono.error(IllegalArgumentException::new)); // Act
     var result = deliveryService.addDelivery(null);
     // Assert
     StepVerifier.create(result).expectError(IllegalArgumentException.class);
-    verify(primaryDeliveryRepository, times(1)).save(any());
+    verify(deliveryRepository, times(1)).save(any());
   }
 
   @Test
@@ -82,8 +81,8 @@ public class DeliveryServiceImplTest {
     expected.setFinishTime(LocalDateTime.now().plusMinutes(60));
     // Stub
     var output = Mono.just(expected);
-    when(primaryDeliveryRepository.findById(expected.getId())).thenReturn(output);
-    when(primaryDeliveryRepository.save(any(Delivery.class))).thenReturn(output);
+    when(deliveryRepository.findById(expected.getId())).thenReturn(output);
+    when(deliveryRepository.save(any(Delivery.class))).thenReturn(output);
     // Act
     var result = deliveryService.setDeliveryRider(expected);
     // Assert
@@ -91,8 +90,8 @@ public class DeliveryServiceImplTest {
         .consumeNextWith(
             actual -> {
               Assertions.assertEquals(expected, actual);
-              verify(primaryDeliveryRepository, times(1)).findById(anyString());
-              verify(primaryDeliveryRepository, times(1)).save(any());
+              verify(deliveryRepository, times(1)).findById(anyString());
+              verify(deliveryRepository, times(1)).save(any());
             })
         .verifyComplete();
   }
@@ -106,7 +105,7 @@ public class DeliveryServiceImplTest {
     expected.setDeliveryStatus(DeliveryStatus.COMPLETE);
     expected.setFinishTime(null);
     // Stub
-    when(primaryDeliveryRepository.findById(expected.getId())).thenReturn(Mono.just(expected));
+    when(deliveryRepository.findById(expected.getId())).thenReturn(Mono.just(expected));
     // Act
     var result = deliveryService.setDeliveryRider(expected);
     // Assert
@@ -119,8 +118,8 @@ public class DeliveryServiceImplTest {
                       .getMessage()
                       .contains(DeliveryServiceImpl.MSG_INVALID_STATUS_FOR_SETRIDER));
               assertTrue(actual.getMessage().contains(DeliveryServiceImpl.MSG_NULL_FINISHTIME));
-              verify(primaryDeliveryRepository, times(1)).findById(anyString());
-              verify(primaryDeliveryRepository, times(0)).save(any());
+              verify(deliveryRepository, times(1)).findById(anyString());
+              verify(deliveryRepository, times(0)).save(any());
             })
         .verify();
   }
@@ -133,14 +132,14 @@ public class DeliveryServiceImplTest {
     var afterData = makeValidSetPickUpDelivery();
     afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
     // Stub
-    when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
-    when(primaryDeliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
     // Act
     var stream = deliveryService.setPickedUp(afterData);
     // Assert
     StepVerifier.create(stream).expectNext(afterData).verifyComplete();
-    verify(primaryDeliveryRepository, times(1)).findById(anyString());
-    verify(primaryDeliveryRepository, times(1)).save(any(Delivery.class));
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(1)).save(any(Delivery.class));
   }
 
   //  @Test
@@ -191,14 +190,14 @@ public class DeliveryServiceImplTest {
     var afterData = makeValidSetPickUpDelivery();
     afterData.setDeliveryStatus(DeliveryStatus.COMPLETE);
     // Stub
-    when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
-    when(primaryDeliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    when(deliveryRepository.save(isA(Delivery.class))).thenReturn(Mono.just(afterData));
     // Act
     var stream = deliveryService.setComplete(afterData);
     // Assert
     StepVerifier.create(stream).expectNext(afterData).verifyComplete();
-    verify(primaryDeliveryRepository, times(1)).findById(anyString());
-    verify(primaryDeliveryRepository, times(1)).save(any(Delivery.class));
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(1)).save(any(Delivery.class));
   }
 
   @Test
@@ -210,7 +209,7 @@ public class DeliveryServiceImplTest {
     var afterData = makeValidSetPickUpDelivery();
     afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
     // Stub
-    when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
+    when(deliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
     // Act
     var stream = deliveryService.setComplete(afterData);
     // Assert
@@ -222,8 +221,8 @@ public class DeliveryServiceImplTest {
               return true;
             })
         .verify();
-    verify(primaryDeliveryRepository, times(1)).findById(anyString());
-    verify(primaryDeliveryRepository, times(0)).save(any(Delivery.class));
+    verify(deliveryRepository, times(1)).findById(anyString());
+    verify(deliveryRepository, times(0)).save(any(Delivery.class));
   }
 
   @Test
@@ -231,7 +230,7 @@ public class DeliveryServiceImplTest {
     // Arrange
     var delivery = makeValidDelivery();
     // Stub
-    when(primaryDeliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
     // Act
     var resultStream = deliveryService.findById(delivery.getId());
     // Assert
@@ -243,7 +242,7 @@ public class DeliveryServiceImplTest {
     // Arrange
     var delivery = makeValidDelivery();
     // Stub
-    when(primaryDeliveryRepository.findById(delivery.getId())).thenReturn(Mono.empty());
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.empty());
     // Act
     var resultStream = deliveryService.findById(delivery.getId());
     // Assert
@@ -256,7 +255,7 @@ public class DeliveryServiceImplTest {
     var delivery = makeValidDelivery();
     var pageable = PageRequest.of(0, 10);
     // Stub
-    when(primaryDeliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
+    when(deliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
         .thenReturn(Flux.fromIterable(makeValidDeliveries(10)));
     // Act
     var resultStream = deliveryService.findAll(pageable);
@@ -270,7 +269,7 @@ public class DeliveryServiceImplTest {
     var delivery = makeValidDelivery();
     var pageable = PageRequest.of(0, 10);
     // Stub
-    when(primaryDeliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
+    when(deliveryRepository.findAllByOrderIdContaining(anyString(), any(Pageable.class)))
         .thenReturn(Flux.empty());
     // Act
     var resultStream = deliveryService.findAll(pageable);
@@ -307,29 +306,27 @@ public class DeliveryServiceImplTest {
   }
 
   @Test
-  @DisplayName("[DeliveryServiceImpl] retryExhuasted 에 대한 백업 DB 호출")
+  @DisplayName(
+      "[DeliveryServiceImpl] TImeoutException의 retry 를 전부 실패하고 RetryExhaustedException 발생시")
   void addDeliveryTest_retryExhausted() {
     // given
     var delivery = makeValidDelivery();
     // stub
-    when(primaryDeliveryRepository.save(any(Delivery.class)))
+    when(deliveryRepository.save(any(Delivery.class)))
         .thenReturn(
             Mono.just(delivery)
                 .delayElement(
                     DeliveryService.FIXED_DELAY.plusMillis(10))); // 지정된 타임아웃시간보다 0.01s 길게 지연시키기
-    when(secondaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(delivery));
-    when(deliveryPublisher.sendAddDeliveryEvent(any(Delivery.class)))
-        .thenReturn(Mono.just(delivery));
     // when
     var resultStream = deliveryService.addDelivery(delivery);
     // then
     StepVerifier.create(resultStream)
         .expectSubscription()
         .expectNoEvent(DeliveryService.FIXED_DELAY.multipliedBy(DeliveryService.MAX_ATTEMPTS + 1))
-        .expectNext(delivery)
-        .verifyComplete();
-    verify(primaryDeliveryRepository, times(1)).save(any());
-    verify(secondaryDeliveryRepository, times(1)).save(any());
+        .expectError(RetryExhaustedException.class)
+        .verify();
+    verify(deliveryRepository, times(1)).save(any());
+    verify(deliveryPublisher, times(0)).sendAddDeliveryEvent(any());
   }
 
   @Test
@@ -356,8 +353,8 @@ public class DeliveryServiceImplTest {
               return true;
             })
         .verify();
-    verify(primaryDeliveryRepository, times(0)).save(any());
-    verify(primaryDeliveryRepository, times(0)).findById(anyString());
+    verify(deliveryRepository, times(0)).save(any());
+    verify(deliveryRepository, times(0)).findById(anyString());
     verify(deliveryPublisher, times(0)).sendSetRiderEvent(any());
   }
 
@@ -368,15 +365,15 @@ public class DeliveryServiceImplTest {
     delivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     delivery.setPickupTime(delivery.getOrderTime().plusSeconds(1));
     // stub
-    when(primaryDeliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
-    when(primaryDeliveryRepository.save(any())).thenReturn(Mono.just(delivery));
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    when(deliveryRepository.save(any())).thenReturn(Mono.just(delivery));
     when(deliveryPublisher.sendSetRiderEvent(any())).thenReturn(Mono.just(delivery));
     // when
     var stream = deliveryService.acceptDelivery(delivery);
     // then
     StepVerifier.create(stream).expectNext(delivery).verifyComplete();
-    verify(primaryDeliveryRepository, times(1)).save(any());
-    verify(primaryDeliveryRepository, times(1)).findById(delivery.getId());
+    verify(deliveryRepository, times(1)).save(any());
+    verify(deliveryRepository, times(1)).findById(delivery.getId());
     verify(deliveryPublisher, times(1)).sendSetRiderEvent(any());
   }
 
@@ -398,8 +395,8 @@ public class DeliveryServiceImplTest {
               return true;
             })
         .verify();
-    verify(primaryDeliveryRepository, times(0)).save(any());
-    verify(primaryDeliveryRepository, times(0)).findById(anyString());
+    verify(deliveryRepository, times(0)).save(any());
+    verify(deliveryRepository, times(0)).findById(anyString());
     verify(deliveryPublisher, times(0)).sendSetRiderEvent(any());
   }
 
@@ -413,9 +410,9 @@ public class DeliveryServiceImplTest {
     newDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
     newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
     // stub
-    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+    when(deliveryRepository.findById(existingDelivery.getId()))
         .thenReturn(Mono.just(existingDelivery));
-    when(primaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
+    when(deliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
     // when
     var stream = deliveryService.setPickedUp(newDelivery);
     // then
@@ -432,7 +429,7 @@ public class DeliveryServiceImplTest {
     newDelivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
     newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
     // stub
-    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+    when(deliveryRepository.findById(existingDelivery.getId()))
         .thenReturn(Mono.just(existingDelivery));
     // when
     var stream = deliveryService.setPickedUp(newDelivery);
@@ -457,7 +454,7 @@ public class DeliveryServiceImplTest {
     newDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
     newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
     // stub
-    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+    when(deliveryRepository.findById(existingDelivery.getId()))
         .thenReturn(Mono.just(existingDelivery));
     // when
     var stream = deliveryService.setPickedUp(newDelivery);
@@ -482,14 +479,14 @@ public class DeliveryServiceImplTest {
     newDelivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
     newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
     // stub
-    when(primaryDeliveryRepository.findById(existingDelivery.getId()))
+    when(deliveryRepository.findById(existingDelivery.getId()))
         .thenReturn(Mono.just(existingDelivery));
-    when(primaryDeliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
+    when(deliveryRepository.save(any(Delivery.class))).thenReturn(Mono.just(newDelivery));
     // when
     var stream = deliveryService.setComplete(newDelivery);
     // then
     StepVerifier.create(stream).expectNext(newDelivery).verifyComplete();
-    verify(primaryDeliveryRepository, times(1)).save(any());
-    verify(primaryDeliveryRepository, times(1)).findById(existingDelivery.getId());
+    verify(deliveryRepository, times(1)).save(any());
+    verify(deliveryRepository, times(1)).findById(existingDelivery.getId());
   }
 }
