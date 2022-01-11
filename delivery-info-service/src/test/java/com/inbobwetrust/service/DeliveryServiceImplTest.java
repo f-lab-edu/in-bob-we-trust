@@ -142,30 +142,6 @@ public class DeliveryServiceImplTest {
     verify(deliveryRepository, times(1)).save(any(Delivery.class));
   }
 
-  //  @Test
-  //  void setPickUp_fail_invalid_statusChange() {
-  //    // Arrange
-  //    var beforeData = makeValidSetPickUpDelivery();
-  //    beforeData.setDeliveryStatus(DeliveryStatus.COMPLETE);
-  //    var afterData = makeValidSetPickUpDelivery();
-  //    afterData.setDeliveryStatus(DeliveryStatus.PICKED_UP);
-  //    // Stub
-  //
-  // when(primaryDeliveryRepository.findById(beforeData.getId())).thenReturn(Mono.just(beforeData));
-  //    // Act
-  //    var stream = deliveryService.setPickedUp(afterData);
-  //    // Assert
-  //    StepVerifier.create(stream)
-  //        .expectErrorMatches(
-  //            err -> {
-  //              Assertions.assertEquals(IllegalArgumentException.class, err.getClass()}
-  //        )
-  //            })
-  //        .verify();
-  //    verify(primaryDeliveryRepository, times(1)).findById(anyString());
-  //    verify(primaryDeliveryRepository, times(0)).save(any(Delivery.class));
-  //  }
-
   private Delivery makeValidSetPickUpDelivery() {
     return Delivery.builder()
         .id("id-1234")
@@ -274,7 +250,7 @@ public class DeliveryServiceImplTest {
     // Act
     var resultStream = deliveryService.findAll(pageable);
     // Assert
-    StepVerifier.create(resultStream).expectError(DeliveryNotFoundException.class).verify();
+    StepVerifier.create(resultStream).expectNextCount(0).verifyComplete();
   }
 
   private List<Delivery> makeValidDeliveries(int count) {

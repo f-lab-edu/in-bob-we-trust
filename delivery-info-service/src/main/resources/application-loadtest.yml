@@ -2,16 +2,12 @@ server:
   port: 8888
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   data:
     mongodb:
-      primary:
-        database: inbobwetrust
-        uri: mongodb://localhost:27017
-      secondary:
-        uri: mongodb://localhost:27018
-        database: inbobwetrust
+      database: inbobwetrust
+      uri: mongodb://localhost:27017
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 
 management:
   endpoints:
@@ -26,6 +22,9 @@ wiremock:
 
 restClient:
   proxy:
-    shopUrl: http://localhost:8090/relay/v1/shop
-    agencyUrl: http://localhost:8090/relay/v1/agency
+    host: http://localhost:8090
+    shopUrl: ${restClient.proxy.host}/relay/v1/shop
+    agencyUrl: ${restClient.proxy.host}/relay/v1/agency
+
+
 

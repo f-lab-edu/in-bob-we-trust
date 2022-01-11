@@ -24,16 +24,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-import org.testcontainers.junit.jupiter.Container;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -53,8 +48,7 @@ public class DeliveryControllerIntgrationTest {
   private static final String DEFAULT_MONGO_DATABASE = "inbob";
   @Autowired WebTestClient testClient;
 
-  @Autowired
-  DeliveryRepository deliveryRepository;
+  @Autowired DeliveryRepository deliveryRepository;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -72,43 +66,10 @@ public class DeliveryControllerIntgrationTest {
     return Stream.of(Arguments.arguments(possibleDeliveries));
   }
 
-  @Container public static GenericContainer<?> primaryMongo = makeMongoDb();
-
-  @Container public static GenericContainer<?> secondaryMongo = makeMongoDb();
-
-  static GenericContainer makeMongoDb() {
-    return new GenericContainer<>("mongo:latest")
-        .withEnv("MONGO_INITDB_DATABASE", "inbob")
-        .withExposedPorts(MongoProperties.DEFAULT_PORT)
-        .waitingFor(
-            new HttpWaitStrategy()
-                .forPort(MongoProperties.DEFAULT_PORT)
-                .withStartupTimeout(Duration.ofSeconds(10)));
-  }
-
   @BeforeEach
   void setUp() {
-    if (!primaryMongo.isRunning()) {
-      primaryMongo.start();
-    }
-    if (!secondaryMongo.isRunning()) {
-      secondaryMongo.start();
-    }
-    assertTrue(primaryMongo.isRunning() && secondaryMongo.isRunning());
-
     var setUpDatabase = deliveryRepository.deleteAll();
     StepVerifier.create(setUpDatabase).expectNext().verifyComplete();
-  }
-
-  @DynamicPropertySource
-  static void datasourceProperties(DynamicPropertyRegistry registry) {
-    primaryMongo.start();
-    assertTrue(primaryMongo.isRunning());
-    registry.add("spring.data.mongodb.primary.uri", () -> extractSimpleMongoUri(primaryMongo));
-
-    secondaryMongo.start();
-    assertTrue(secondaryMongo.isRunning());
-    registry.add("spring.data.mongodb.secondary.uri", () -> extractSimpleMongoUri(secondaryMongo));
   }
 
   static String extractSimpleMongoUri(GenericContainer<?> container) {

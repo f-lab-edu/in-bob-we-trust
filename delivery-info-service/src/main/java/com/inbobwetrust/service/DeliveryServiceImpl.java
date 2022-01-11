@@ -83,9 +83,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
-    return deliveryRepository
-        .findAllByOrderIdContaining("", pageRequest)
-        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
+    return deliveryRepository.findAllByOrderIdContaining("", pageRequest);
   }
 
   public static final String MSG_RIDER_ALREADY_SET = "배정된 라이더가 존재합니다. 라이더ID : ";

@@ -60,10 +60,6 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                    "com/inbobwetrust/config/multidatasource/MongoConfiguration.*",
-                    "com/inbobwetrust/config/multidatasource/CustomMongoProperties.*",
-                    "com/inbobwetrust/config/multidatasource/PrimaryMongoConfig.*",
-                    "com/inbobwetrust/config/multidatasource/SecondaryMongoConfig.*",
                     "com/inbobwetrust/Application.*"
             ])
         }))

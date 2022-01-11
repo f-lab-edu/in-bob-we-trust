@@ -7,19 +7,10 @@ wiremock:
 spring:
   data:
     mongodb:
-      primary:
-        database: inbob
-        uri: mongodb://localhost:27017
-      secondary:
-        database: inbob
-        uri: mongodb://localhost:27018
+      database: inbob
+      uri: mongodb://localhost:27017
 
 restClient:
   proxy:
     shopUrl: http://localhost:${wiremock.server.port}/relay/v1/shop
     agencyUrl: http://localhost:${wiremock.server.port}/relay/v1/agency
-
-db-ports:
-  primary: ${spring.data.mongodb.primary.uri.port}
-  secondary: ${spring.data.mongodb.secondary.uri.port}
-
