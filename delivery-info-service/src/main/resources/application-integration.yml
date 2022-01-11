@@ -12,4 +12,4 @@ spring:
   data:
     mongodb:
       database: inbob
-      uri: mongodb://localhost:12345
+      uri: mongodb://localhost:27017
