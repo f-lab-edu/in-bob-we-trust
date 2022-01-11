@@ -39,7 +39,7 @@ export function setup() {
 
   var failed = 0;
   for (let index = 1; index < 20; index++) {
-    const payload = makeDelivery(index);
+    const payload = JSON.stringify(makeDelivery(index));
     const saved = http.post(uri, payload, params);
     if (saved.status != 200) {
       console.info('saved failed for id of     ' + index);
