@@ -4,7 +4,7 @@ services:
     image: inbobwetrust/delivery-info-service:loadtest
     container_name: delivery-info-service
     environment:
-      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://host.docker.internal:27017 -Dspring.data.mongodb.secondary.database=inbobwetrust -Dspring.data.mongodb.secondary.uri=mongodb://host.docker.internal:27018
+      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.uri=mongodb://host.docker.internal:27017 -DrestClient.proxy.host=http://host.docker.internal:8090
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
     ports:
       - "8888:8888"
@@ -25,22 +25,7 @@ services:
       retries: 3
       start_period: 20s
 
-  mongo-secondary:
-    image: mongo
-    container_name: mongo-secondary
-    ports:
-      - "27018:27017"
-    networks:
-      - inbobwetrust
-    restart: always
-    healthcheck:
-      test: echo 'db.runCommand({serverStatus:1}).ok'| grep 1
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-
-  wiremock-relay-service:
+  mock-relay-service:
     image: wiremock/wiremock
     container_name: wiremock-relay-service
     volumes:
@@ -61,7 +46,6 @@ services:
       - "9090:9090"
     networks:
       - inbobwetrust
-
 
 networks:
   inbobwetrust:
