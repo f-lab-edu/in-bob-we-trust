@@ -10,42 +10,28 @@ services:
     networks:
       - inbobwetrust
 
+  mongo-info-database:
+    image: mongo
+    ports:
+      - "37017:27017"
+    networks:
+      - inbobwetrust
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok'| grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
   delivery-relay-service:
     image: beanskobe/delivery-relay-service
     environment:
-      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.database=relay -Dspring.data.mongodb.uri=mongodb://host.docker.internal:28017
+      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.database=relay -Dspring.data.mongodb.uri=mongodb://host.docker.internal:37017
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=local
     ports:
       - "8090:8090"
     networks:
       - inbobwetrust
-
-  mongo-info-primary:
-    image: mongo
-    ports:
-      - "27017:27017"
-    networks:
-      - inbobwetrust
-    healthcheck:
-      test: echo 'db.runCommand({serverStatus:1}).ok'| grep 1
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-
-  mongo-info-secondary:
-    image: mongo
-    ports:
-      - "27018:27017"
-    networks:
-      - inbobwetrust
-    restart: always
-    healthcheck:
-      test: echo 'db.runCommand({serverStatus:1}).ok'| grep 1
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
 
   mongo-relay:
     image: mongo
