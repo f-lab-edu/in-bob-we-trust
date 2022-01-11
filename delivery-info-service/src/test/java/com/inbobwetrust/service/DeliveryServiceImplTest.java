@@ -250,7 +250,7 @@ public class DeliveryServiceImplTest {
     // Act
     var resultStream = deliveryService.findAll(pageable);
     // Assert
-    StepVerifier.create(resultStream).expectError(DeliveryNotFoundException.class).verify();
+    StepVerifier.create(resultStream).expectNextCount(0).verifyComplete();
   }
 
   private List<Delivery> makeValidDeliveries(int count) {

@@ -25,11 +25,14 @@ export let options = {
   }
 };
 
+export
+
 export default () => {
   const res = http.get(uri);
 
   check(res, {
     'Body length is greater than 1': () => {
+    console.info(res.body);
       const array = JSON.parse(res.body);
       return array.length > 0;
     }
