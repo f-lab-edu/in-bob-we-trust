@@ -1,7 +1,7 @@
 package com.inbobwetrust.service;
 
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

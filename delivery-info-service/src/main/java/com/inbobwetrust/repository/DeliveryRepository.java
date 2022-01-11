@@ -1,4 +1,4 @@
-package com.inbobwetrust.repository.primary;
+package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
 import org.springframework.data.domain.Pageable;

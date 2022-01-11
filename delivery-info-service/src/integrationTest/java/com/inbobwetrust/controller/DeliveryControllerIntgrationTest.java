@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.RelayClientException;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

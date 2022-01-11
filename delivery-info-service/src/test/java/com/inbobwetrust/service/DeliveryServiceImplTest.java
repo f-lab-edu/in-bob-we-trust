@@ -5,7 +5,7 @@ import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.exception.RetryExhaustedException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

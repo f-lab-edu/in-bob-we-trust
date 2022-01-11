@@ -1,7 +1,7 @@
 package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
-import com.inbobwetrust.repository.primary.DeliveryRepository;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
