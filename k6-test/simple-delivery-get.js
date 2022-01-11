@@ -25,8 +25,6 @@ export let options = {
   }
 };
 
-export
-
 export default () => {
   const res = http.get(uri);
 
