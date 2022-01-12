@@ -1,7 +1,6 @@
 package com.inbobwetrust.domain;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -9,9 +8,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RiderLocationService {
 
-  private final ReactiveRedisTemplate<String, RiderLocation> locationOperations;
+  private final RiderLocationRepository repository;
 
-  public Mono<Boolean> setIfPresent(String id, RiderLocation location) {
-    return locationOperations.opsForValue().setIfPresent(id, location);
+  public Mono<Boolean> setIfPresent(RiderLocation location) {
+    return repository.setIfPresent(location);
   }
 }
