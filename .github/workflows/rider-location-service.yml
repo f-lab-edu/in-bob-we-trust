@@ -1,14 +1,14 @@
-name: Info-service
+name: Relay-service
 
 on: [ push , pull_request ]
+
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: true
       matrix:
-        TEST_COMMAND: [ '--info delivery-info-service:integrationTest', '--info delivery-info-service:test' , '--info :delivery-info-service:generateJacocoTestCoverage' ]
+        TEST_COMMAND: [ '--info rider-location-service:integrationTest', '--info rider-location-service:test', '--info :rider-location-service:generateJacocoTestCoverage' ]
     steps:
       - uses: actions/checkout@v2
 
@@ -28,65 +28,20 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-  load_test:
-    runs-on: [ loadtest, self-hosted ]
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Java / Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'gradle'
-
-      - name: Start Logging
-        run: echo Gradle Build Test Start
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Gradle BootJar
-        if: success()
-        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
-
-      - name: Docker clean
-        if: success()
-        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
-
-      - name: Docker build delivery-info-service Image
-        if: success()
-        run: docker image build -t inbobwetrust/delivery-info-service:loadtest ./delivery-info-service
-
-      - name: Docker compose up
-        if: success()
-        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
-
-      - name: Verify > Sleep for 10 seconds
-        run: sleep 10
-      - name: Verify > test wiremock connection
-        if: success()
-        run: curl --max-time 10 http://localhost:8090/__admin/mappings
-      - name: Verify > test info-service connection
-        if: success()
-        run: curl  --max-time 10  http://localhost:8888/api/delivery
-
-      - name: K6 > Test Local
-        run: ./k6-test/k6 run  ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
-
-  build-image:
+  #----------------------------------------------------------------------------------------------------------
+  build:
     needs:
-      - load_test
       - tests
+    ## origin/main 에서만 이미지 빌드됨.
     if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
       fail-fast: true
       matrix:
-        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
+        IMAGE_BUILD_DIR_PAIR: [ [ 'rider-location-service', './rider-location-service' ] ]
     runs-on: ubuntu-latest
 
     env:
-      MODULE_NAME: delivery-info-service
+      MODULE_NAME: rider-location-service
 
     steps:
       - uses: actions/checkout@v2

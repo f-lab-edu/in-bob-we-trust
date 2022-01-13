@@ -1,3 +1,4 @@
 include 'delivery-info-service'
 include 'delivery-relay-service'
+include 'rider-location-service'
 

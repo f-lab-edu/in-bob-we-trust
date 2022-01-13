@@ -1,0 +1,144 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'jacoco'
+}
+
+group = 'com.woojoolion'
+sourceCompatibility = 11
+def jacocoMinimumCoverageRatio = 0.20
+def jarFileName = 'rider-location-service'
+
+bootJar {
+    baseName jarFileName
+    launchScript()
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+    integrationTest {
+        java.srcDir "$projectDir/src/integrationTest/java"
+        resources.srcDir "$projectDir/src/integrationTest/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task integrationTest(type: Test) {
+    description = 'Rider-Repository-Serivce : Integraion Test'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+    shouldRunAfter(tasks.named('test'))
+}
+
+check {
+    dependsOn integrationTest
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+jacocoTestReport {
+    dependsOn test
+    sourceSets sourceSets.main
+    executionData fileTree(project.rootDir.absolutePath).include("rider-location-service/build/jacoco/*.exec")
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/inbobwetrust/*Application.*",
+                    "com/inbobwetrust/config/*.*",
+                    "com/inbobwetrust/domain/*Repository.*"
+            ])
+        }))
+    }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+    jacocoTestReport {
+        reports {
+            xml.required = false
+            csv.required = false
+            html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        }
+    }
+
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumCoverageRatio
+            }
+        }
+        rule {
+            limit {
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = jacocoMinimumCoverageRatio
+                }
+            }
+        }
+    }
+}
+
+task generateJacocoTestCoverage(type: JacocoReport) {
+    group 'verification'
+    description 'Runs tests with coverage'
+
+    dependsOn = [test, jacocoTestReport, jacocoTestCoverageVerification]
+
+    tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
+    tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
+}
+
+
+apply plugin: 'idea'
+idea {
+    module {
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    }
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
+        implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+    }
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
+    testImplementation "org.testcontainers:testcontainers:1.16.2"
+    testImplementation "org.testcontainers:junit-jupiter:1.16.2"
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+}
