@@ -1,4 +1,4 @@
-name: Relay-service
+name: Rider-location-service
 
 on: [ push , pull_request ]
 
