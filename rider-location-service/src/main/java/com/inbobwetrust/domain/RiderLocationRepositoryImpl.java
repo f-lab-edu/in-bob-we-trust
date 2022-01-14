@@ -1,5 +1,6 @@
 package com.inbobwetrust.domain;
 
+import com.inbobwetrust.config.JacocoNotGenerated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
+@JacocoNotGenerated
 public class RiderLocationRepositoryImpl implements RiderLocationRepository {
   private final ReactiveRedisTemplate<String, RiderLocation> locationOperations;
 

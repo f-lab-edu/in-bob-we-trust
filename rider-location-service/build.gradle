@@ -58,9 +58,6 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, excludes: [
-                    "**/config/*.*",
-                    "com/inbobwetrust/**/*Application.*",
-                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
             ])
         }))
     }
@@ -89,11 +86,6 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = jacocoMinimumCoverageRatio
             }
-            excludes = [
-                    "**/config/*.*",
-                    "com/inbobwetrust/**/*Application.*",
-                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
-            ]
         }
         rule {
             limit {
@@ -101,11 +93,6 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = jacocoMinimumCoverageRatio
             }
-            excludes = [
-                    "**/config/*.*",
-                    "com/inbobwetrust/**/*Application.*",
-                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
-            ]
         }
     }
 }
