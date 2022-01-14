@@ -1,29 +1,15 @@
 package com.inbobwetrust.domain;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Repository
-@RequiredArgsConstructor
-public class RiderLocationRepository {
-  private final ReactiveRedisTemplate<String, RiderLocation> locationOperations;
+public interface RiderLocationRepository {
 
-  public Mono<Boolean> setIfAbsent(RiderLocation location) {
-    return locationOperations.opsForValue().setIfAbsent(location.getId(), location);
-  }
+  Mono<Boolean> setIfAbsent(RiderLocation location);
 
-  public Mono<Boolean> setIfPresent(RiderLocation location) {
-    return locationOperations.opsForValue().setIfPresent(location.getId(), location);
-  }
+  Mono<Boolean> setIfPresent(RiderLocation location);
 
-  public Flux<RiderLocation> findAll() {
-    return locationOperations.keys("*").flatMap(locationOperations.opsForValue()::get);
-  }
+  Flux<RiderLocation> findAll();
 
-  public Flux<Boolean> deleteAll() {
-    return locationOperations.keys("*").flatMap(locationOperations.opsForValue()::delete);
-  }
+  Flux<Boolean> deleteAll();
 }
