@@ -60,19 +60,18 @@ jobs:
 
       - name: Docker compose up
         if: success()
-        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
+        run: docker-compose -f ./k6-linux-test/docker-compose-actions.yml up -d
 
       - name: Verify > Sleep for 10 seconds
         run: sleep 10
       - name: Verify > test wiremock connection
         if: success()
         run: curl --max-time 10 http://localhost:8090/__admin/mappings
-#      - name: Verify > test info-service connection
-#        if: success()
-#        run: curl  --max-time 10  http://localhost:8888/api/delivery
 
+      - name: K6 > execute permission for k6-linux
+        run: chmod +x ./k6-test/k6-linux
       - name: K6 > Test Local
-        run: ./k6-test/k6 run  ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
+        run: ./k6-test/k6-linux run  ./k6-test/simple-delivery-get.js &&  k6-linux run ./k6-linux-test/process_cpu_usage.js
 
   build-image:
     needs:
