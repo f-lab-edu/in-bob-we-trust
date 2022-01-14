@@ -62,7 +62,7 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/inbobwetrust/*Application.*",
                     "com/inbobwetrust/config/*.*",
-                    "com/inbobwetrust/domain/RiderLocationRepository.*"
+                    "com/inbobwetrust/domain/RiderLocationRepositoryImpl.*"
             ])
         }))
     }
