@@ -1,20 +1,22 @@
 package com.inbobwetrust.domain;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/rider/location")
+@RequiredArgsConstructor
 public class RiderLocationController {
   private final RiderLocationService locationService;
 
-  @PutMapping()
-  public Mono<Boolean> updateLocation(@RequestBody RiderLocation location) {
+  @PutMapping
+  public Mono<Boolean> updateLocationPost(@RequestBody RiderLocation location) {
+    return locationService.setIfPresent(location);
+  }
+
+  @PostMapping
+  public Mono<Boolean> updateLocationPut(@RequestBody RiderLocation location) {
     return locationService.setIfPresent(location);
   }
 }
