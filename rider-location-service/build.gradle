@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.woojoolion'
 sourceCompatibility = 11
-def jacocoMinimumCoverageRatio = 0.20
+def jacocoMinimumCoverageRatio = 0.99
 def jarFileName = 'rider-location-service'
 
 bootJar {
@@ -35,13 +35,13 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
-    description = 'Rider-Repository-Serivce : Integraion Test'
+    description = 'Rider-Location-Serivce : Integraion Test'
     group = 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
-    shouldRunAfter(tasks.named('test'))
 }
+
 
 check {
     dependsOn integrationTest
@@ -54,15 +54,10 @@ test {
 
 jacocoTestReport {
     dependsOn test
-    sourceSets sourceSets.main
-    executionData fileTree(project.rootDir.absolutePath).include("rider-location-service/build/jacoco/*.exec")
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "com/inbobwetrust/*Application.*",
-                    "com/inbobwetrust/config/*.*",
-                    "com/inbobwetrust/domain/*Repository.*"
+            fileTree(dir: it, excludes: [
             ])
         }))
     }
@@ -72,6 +67,7 @@ jacocoTestReport {
 jacoco {
     toolVersion = "0.8.7"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+
     jacocoTestReport {
         reports {
             xml.required = false
@@ -93,11 +89,9 @@ jacocoTestCoverageVerification {
         }
         rule {
             limit {
-                limit {
-                    counter = 'BRANCH'
-                    value = 'COVEREDRATIO'
-                    minimum = jacocoMinimumCoverageRatio
-                }
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumCoverageRatio
             }
         }
     }
@@ -125,6 +119,7 @@ idea {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.3'
