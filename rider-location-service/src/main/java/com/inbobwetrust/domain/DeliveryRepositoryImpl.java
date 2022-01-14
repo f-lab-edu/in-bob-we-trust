@@ -1,11 +1,11 @@
 package com.inbobwetrust.domain;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Component
+@Repository
 public class DeliveryRepositoryImpl implements DeliveryRepository {
 
   @Value("${services.deliveryInfoService.path}")
@@ -15,6 +15,10 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
 
   public DeliveryRepositoryImpl() {
     this.webClient = WebClient.builder().build();
+  }
+
+  public void setUriDeliveryInfoService(String uriDeliveryInfoService) {
+    this.uriDeliveryInfoService = uriDeliveryInfoService;
   }
 
   @Override

@@ -35,6 +35,7 @@ class DeliveryRepositoryImplTest {
   void setup() {
     wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
     wireMockServer.start();
+    deliveryRepository.setUriDeliveryInfoService("http://127.0.0.1:" + wireMockServer.port());
   }
 
   static Stream<Arguments> isPickedUpParameters() {
