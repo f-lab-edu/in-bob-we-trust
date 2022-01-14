@@ -55,7 +55,7 @@ test {
 jacocoTestReport {
     dependsOn test
     sourceSets sourceSets.main
-    executionData fileTree(project.rootDir.absolutePath).include("rider-location-service/build/jacoco/*.exec")
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
