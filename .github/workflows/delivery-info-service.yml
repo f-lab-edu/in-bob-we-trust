@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
   load_test:
-    runs-on: [ loadtest, self-hosted ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
