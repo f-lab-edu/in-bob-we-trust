@@ -95,9 +95,9 @@ public class RiderLocationWriteTest {
         .expectBody(Boolean.class)
         .isEqualTo(false);
     // then
-    var resultStream =
-        locationRepository.findAll().filter(r -> r.getId().equals(riderLocation.getId()));
-    StepVerifier.create(resultStream).expectNextCount(1).verifyComplete();
+    verify(locationService, times(1)).setIfPresent(any(RiderLocation.class));
+    verify(locationRepository, times(1)).setIfPresent(riderLocation);
+    verify(deliveryRepository, times(1)).isPickedUp(riderLocation.getDeliveryId());
   }
 
   @Test
@@ -123,7 +123,6 @@ public class RiderLocationWriteTest {
         .isOk()
         .expectBody(Boolean.class)
         .isEqualTo(Boolean.TRUE);
-
     // then
     var cache = locationRepository.findAll().collectList().block();
     System.out.println(cache);
