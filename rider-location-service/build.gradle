@@ -54,16 +54,13 @@ test {
 
 jacocoTestReport {
     dependsOn test
-    sourceSets sourceSets.main
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "com/inbobwetrust/config/*.*",
-                    "com/inbobwetrust/*Application.java",
-                    "com/inbobwetrust/domain/RiderLocationRepositoryImpl.*",
-                    "com/inbobwetrust/*Application.*"
+            fileTree(dir: it, excludes: [
+                    "**/config/*.*",
+                    "com/inbobwetrust/**/*Application.*",
+                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
             ])
         }))
     }
@@ -92,15 +89,23 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = jacocoMinimumCoverageRatio
             }
+            excludes = [
+                    "**/config/*.*",
+                    "com/inbobwetrust/**/*Application.*",
+                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
+            ]
         }
         rule {
             limit {
-                limit {
-                    counter = 'BRANCH'
-                    value = 'COVEREDRATIO'
-                    minimum = jacocoMinimumCoverageRatio
-                }
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumCoverageRatio
             }
+            excludes = [
+                    "**/config/*.*",
+                    "com/inbobwetrust/**/*Application.*",
+                    "com/inbobwetrust/domain/RiderLocationRepository*.*",
+            ]
         }
     }
 }
