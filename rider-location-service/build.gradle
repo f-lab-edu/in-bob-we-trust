@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.woojoolion'
 sourceCompatibility = 11
-def jacocoMinimumCoverageRatio = 0.20
+def jacocoMinimumCoverageRatio = 0.99
 def jarFileName = 'rider-location-service'
 
 bootJar {
@@ -62,7 +62,7 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/inbobwetrust/*Application.*",
                     "com/inbobwetrust/config/*.*",
-                    "com/inbobwetrust/domain/*Repository.*"
+                    "com/inbobwetrust/domain/RiderLocationRepository.*"
             ])
         }))
     }
