@@ -49,5 +49,5 @@ services:
 
 networks:
   inbobwetrust:
-    driver: host
+    driver: bridge
 
