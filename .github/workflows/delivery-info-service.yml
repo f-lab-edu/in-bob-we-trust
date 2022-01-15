@@ -54,6 +54,10 @@ jobs:
         if: success()
         run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
 
+      - name: Docker > clean
+        if: success()
+        run: docker volume prune
+
       - name: Docker > build Image
         if: success()
         run: docker image build -t inbobwetrust/delivery-info-service:loadtest ./delivery-info-service
