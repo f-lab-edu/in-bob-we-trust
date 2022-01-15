@@ -91,11 +91,9 @@ jacocoTestCoverageVerification {
         }
         rule {
             limit {
-                limit {
-                    counter = 'BRANCH'
-                    value = 'COVEREDRATIO'
-                    minimum = jacocoMinimumCoverageRatio
-                }
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumCoverageRatio
             }
         }
     }
