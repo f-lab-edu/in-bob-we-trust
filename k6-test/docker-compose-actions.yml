@@ -4,7 +4,7 @@ services:
     image: inbobwetrust/delivery-info-service:loadtest
     container_name: delivery-info-service
     environment:
-      - COMMAND_LINE_ARGS_BEFORE="-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.uri=mongodb://localhost:27017 -DrestClient.proxy.host=http://localhost:8090"
+      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.uri=mongodb://localhost:27017 -DrestClient.proxy.host=http://localhost:8090
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
     ports:
       - "8888:8888"
