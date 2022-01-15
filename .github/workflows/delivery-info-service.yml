@@ -62,12 +62,11 @@ jobs:
         if: success()
         run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
+      - name: docker  run auth
+        run: chmod +x ./docker-run-info-service.sh
       - name: docker run
-        run: docker run |
-          -p 8888:8888 \
-          -e COMMAND_LINE_ARGS_BEFORE='-Dspring.data.mongodb.database=inbobwetrust -Dspring.data.mongodb.primary.uri=mongodb://localhost:27017'  \
-          -e COMMAND_LINE_ARGS_AFTER='--spring.profiles.active=loadtest'  \
-          --network inbobwetrust
+        run: ./sh docker-run-info-service.sh
+
       - name: Verify > Sleep for 10 seconds
         run: sleep 10
       - name: Verify > test wiremock connection
