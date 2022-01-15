@@ -8,14 +8,22 @@ services:
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
     ports:
       - "8888:8888"
-    network_mode: "host"
+    networks:
+      - inbobwetrust
 
   mongo-primary:
     image: mongo
     container_name: mongo-primary
     ports:
       - "27017:27017"
-    network_mode: "host"
+    networks:
+      - inbobwetrust
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok'| grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   mock-relay-service:
     image: wiremock/wiremock
@@ -25,7 +33,8 @@ services:
       - ./wiremock/mappings:/home/wiremock/mappings
     ports:
       - "8090:8080"
-    network_mode: "host"
+    networks:
+      - inbobwetrust
 
   prometheus:
     image: prom/prometheus
@@ -35,7 +44,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-    network_mode: "host"
+    networks:
+      - inbobwetrust
 
 networks:
   inbobwetrust:
