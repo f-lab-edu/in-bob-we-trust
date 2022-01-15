@@ -67,6 +67,10 @@ jobs:
       - name: Verify > test wiremock connection
         if: success()
         run: curl --max-time 10 http://localhost:8090/__admin/mappings
+      - name: Verify > test wiremock connection
+        if: success()
+        run: curl --max-time 10 http://localhost:8888/api/delivery
+
 
       - name: K6 > execute permission for k6
         run: chmod +x ./k6-test/k6
