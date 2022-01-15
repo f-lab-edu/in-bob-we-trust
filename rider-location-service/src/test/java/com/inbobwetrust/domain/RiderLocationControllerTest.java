@@ -23,15 +23,36 @@ class RiderLocationControllerTest {
   String riderLocationMapping = "/rider/location";
 
   @Test
-  void updateLocation_test() {
+  void updateLocationPut_test() {
     // given
-    var location = new RiderLocation("hi", 23.0f, 190f);
+    var location = new RiderLocation("rider-1234", "delivery-1234", 23.0f, 190f);
     // when
     when(riderLocationService.setIfPresent(any(RiderLocation.class)))
         .thenReturn(Mono.just(Boolean.TRUE));
     var result =
         testClient
             .put()
+            .uri(riderLocationMapping)
+            .bodyValue(location)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(Boolean.class)
+            .getResponseBody();
+    // then
+    StepVerifier.create(result).expectNextMatches(Boolean::booleanValue).verifyComplete();
+  }
+
+  @Test
+  void updateLocationPost_test() {
+    // given
+    var location = new RiderLocation("rider-1234", "delivery-1234", 23.0f, 190f);
+    // when
+    when(riderLocationService.setIfPresent(any(RiderLocation.class)))
+        .thenReturn(Mono.just(Boolean.TRUE));
+    var result =
+        testClient
+            .post()
             .uri(riderLocationMapping)
             .bodyValue(location)
             .exchange()

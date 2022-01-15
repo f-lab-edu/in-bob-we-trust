@@ -2,9 +2,11 @@ version: "3.4"
 services:
   delivery-info-service:
     image: inbobwetrust/delivery-info-service:loadtest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     container_name: delivery-info-service
     environment:
-      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.uri=mongodb://localhost:27017 -DrestClient.proxy.host=http://localhost:8090
+      - COMMAND_LINE_ARGS_BEFORE=-Dspring.data.mongodb.primary.database=inbobwetrust -Dspring.data.mongodb.uri=mongodb://host.docker.internal:27017 -DrestClient.proxy.host=http://host.docker.internal:8090
       - COMMAND_LINE_ARGS_AFTER=--spring.profiles.active=loadtest
     ports:
       - "8888:8888"
@@ -13,6 +15,8 @@ services:
 
   mongo-primary:
     image: mongo
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     container_name: mongo-primary
     ports:
       - "27017:27017"
@@ -27,6 +31,8 @@ services:
 
   mock-relay-service:
     image: wiremock/wiremock
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     container_name: wiremock-relay-service
     volumes:
       - ./wiremock/ __files:/home/wiremock/__files
@@ -42,6 +48,8 @@ services:
     command: --enable-feature=remote-write-receiver --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "9090:9090"
     networks:
