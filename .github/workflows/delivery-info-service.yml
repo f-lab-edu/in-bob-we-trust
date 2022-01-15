@@ -62,11 +62,6 @@ jobs:
         if: success()
         run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
 
-      - name: docker  run auth
-        run: chmod +x ./docker-run-info-service.sh
-      - name: docker run
-        run: ./docker-run-info-service.sh
-
       - name: Verify > Sleep for 10 seconds
         run: sleep 10
       - name: Verify > test wiremock connection
@@ -74,7 +69,7 @@ jobs:
         run: curl --max-time 10 http://localhost:8090/__admin/mappings
       - name: Verify > test wiremock connection
         if: success()
-        run: curl --max-time 10 http://127.0.0.1:8888/api/delivery
+        run: curl http://localhost:8888/actuator/metrics/process.cpu.usage
 
       - name: K6 > execute permission for k6
         run: chmod +x ./k6-test/k6
