@@ -85,7 +85,7 @@ jobs:
         run: chmod +x ./k6-test/k6
 
       - name: K6 > Test Local
-        run: ./k6-test/k6 run  ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
+        run: ./k6-test/k6 run  ./k6-test/simple-delivery-get.js &&  ./k6-test/k6 run ./k6-test/process_cpu_usage.js
 
   build-image:
     needs:
