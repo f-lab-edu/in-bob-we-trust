@@ -28,54 +28,54 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-#  load_test:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Java / Set up JDK 11
-#        uses: actions/setup-java@v2
-#        with:
-#          java-version: '11'
-#          distribution: 'adopt'
-#          cache: 'gradle'
-#
-#      - name: Start Logging
-#        run: echo Gradle Build Test Start
-#
-#      - name: Grant execute permission for gradlew
-#        run: chmod +x gradlew
-#
-#      - name: Gradle BootJar
-#        if: success()
-#        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
-#
-#      - name: Docker clean
-#        if: success()
-#        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
-#
-#      - name: Docker build delivery-info-service Image
-#        if: success()
-#        run: docker image build -t inbobwetrust/delivery-info-service:loadtest ./delivery-info-service
-#
-#      - name: Docker compose up
-#        if: success()
-#        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
-#
-#      - name: Verify > Sleep for 10 seconds
-#        run: sleep 10
-#      - name: Verify > test wiremock connection
-#        if: success()
-#        run: curl --max-time 10 http://localhost:8090/__admin/mappings
-#
-#      - name: K6 > execute permission for k6-linux
-#        run: chmod +x ./k6-test/k6-linux
-#      - name: K6 > Test Local
-#        run: ./k6-test/k6-linux run  ./k6-test/simple-delivery-get.js &&  k6-linux run ./k6-linux-test/process_cpu_usage.js
+  load_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Java / Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Start Logging
+        run: echo Gradle Build Test Start
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Gradle BootJar
+        if: success()
+        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
+
+      - name: Docker clean
+        if: success()
+        run: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)  || true
+
+      - name: Docker build delivery-info-service Image
+        if: success()
+        run: docker image build -t inbobwetrust/delivery-info-service:loadtest ./delivery-info-service
+
+      - name: Docker compose up
+        if: success()
+        run: docker-compose -f ./k6-test/docker-compose-actions.yml up -d
+
+      - name: Verify > Sleep for 10 seconds
+        run: sleep 10
+      - name: Verify > test wiremock connection
+        if: success()
+        run: curl --max-time 10 http://localhost:8090/__admin/mappings
+
+      - name: K6 > execute permission for k6
+        run: chmod +x ./k6-test/k6
+      - name: K6 > Test Local
+        run: ./k6-test/k6 run  ./k6-test/simple-delivery-get.js &&  k6 run ./k6-test/process_cpu_usage.js
 
   build-image:
     needs:
-#      - load_test
+      - load_test
       - tests
     if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
