@@ -9,6 +9,7 @@ jobs:
       fail-fast: true
       matrix:
         TEST_COMMAND: [ '--info delivery-relay-service:integrationTest', '--info delivery-relay-service:test', '--info :delivery-relay-service:generateJacocoTestCoverage' ]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -28,8 +29,7 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-  #----------------------------------------------------------------------------------------------------------
-  build:
+  image_build:
     needs:
       - tests
     ## origin/main 에서만 이미지 빌드됨.
@@ -60,7 +60,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build
+        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
 
       - name: Login to Docker Hub
         if: success()

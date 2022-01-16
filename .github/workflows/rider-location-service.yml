@@ -28,7 +28,7 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-  build:
+  image_build:
     needs:
       - tests
     if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
@@ -58,7 +58,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build
+        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
 
       - name: Login to Docker Hub
         if: success()
