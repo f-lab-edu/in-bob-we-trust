@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,7 +24,9 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -33,7 +38,7 @@ public class DeliveryServiceImplTest {
   @Mock DeliveryRepository deliveryRepository;
   @Mock DeliveryPublisher deliveryPublisher;
 
-  private Delivery makeValidDelivery() {
+  static Delivery makeValidDelivery() {
     return Delivery.builder()
         .orderId("order-1234")
         .customerId("customer-1234")
@@ -41,6 +46,12 @@ public class DeliveryServiceImplTest {
         .phoneNumber("01031583212")
         .orderTime(LocalDateTime.now())
         .build();
+  }
+
+  static Delivery makeValidDelivery(DeliveryStatus status) {
+    var del = makeValidDelivery();
+    del.setDeliveryStatus(status);
+    return del;
   }
 
   private Delivery makeInvalidDelivery() {
@@ -448,10 +459,9 @@ public class DeliveryServiceImplTest {
   @Test
   void canSetCompleteTest() {
     // given
-    var existingDelivery = makeValidDelivery();
-    existingDelivery.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+    var existingDelivery = makeValidDelivery(DeliveryStatus.PICKED_UP);
     existingDelivery.setPickupTime(existingDelivery.getOrderTime().plusSeconds(1));
-    var newDelivery = makeValidDelivery();
+    var newDelivery = existingDelivery.deepCopy();
     newDelivery.setDeliveryStatus(DeliveryStatus.COMPLETE);
     newDelivery.setPickupTime(newDelivery.getOrderTime().plusSeconds(1));
     // stub
@@ -464,5 +474,27 @@ public class DeliveryServiceImplTest {
     StepVerifier.create(stream).expectNext(newDelivery).verifyComplete();
     verify(deliveryRepository, times(1)).save(any());
     verify(deliveryRepository, times(1)).findById(existingDelivery.getId());
+  }
+
+  @DisplayName("[배달완료 여부 조회 기능]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
+  @MethodSource("isPickedUp_methodSource")
+  void isPickedUpTest(Delivery delivery, Boolean isPickedUp) {
+    // given
+    // when
+    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
+    // then
+    StepVerifier.create(deliveryService.isPickedUp(delivery.getId()))
+        .expectNext(isPickedUp)
+        .verifyComplete();
+  }
+
+  static Stream<Arguments> isPickedUp_methodSource() {
+    return Arrays.stream(DeliveryStatus.values())
+        .map(
+            status ->
+                status.equals(DeliveryStatus.PICKED_UP)
+                    ? Arguments.of(makeValidDelivery(status), Boolean.TRUE)
+                    : Arguments.of(makeValidDelivery(status), Boolean.FALSE));
   }
 }
