@@ -1,7 +1,9 @@
 name: Rider-location-service
 
-on: [ push , pull_request ]
-
+on:
+  push:
+    branches:
+      - '32132'
 jobs:
   tests:
     runs-on: ubuntu-latest

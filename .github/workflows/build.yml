@@ -13,34 +13,52 @@ env:
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  CONTAINER_IMAGE: inbobwetrust:${{ github.sha }}
+  CONTAINER_IMAGE: delivery-info-service:${{ github.sha }}
 
 jobs:
-
   build-and-push:
     name: Build and deploy
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
 
-      - name: Checkout
-        uses: actions/checkout@master
+      - name: Start Logging
+        run: echo Gradle Build Test Start
 
-      # Add steps here like linting, testing, minification, etc.
-      - name: Setup ECR
-        run: aws ecr get-login-password
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Gradle BootJar
+        if: success()
+        run: ./gradlew :delivery-info-service:build --x test --x integrationTest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - name: Build and tag the image
         run: |
-          # Build and tag the image
-          docker build \
-            -t $CONTAINER_IMAGE \
-            -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CONTAINER_IMAGE ./app
+          docker build -t delivery-info-service ./delivery-info-service
 
-      # Add additional steps here like scanning of image
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # Only push to registry on master
-      - name: Push
-        if: github.ref == 'refs/heads/master'
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+          IMAGE_TAG: 1.0
         run: |
-          # Push image to AWS ECR
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CONTAINER_IMAGE
+          # Build a docker container and push it to ECR
+          docker build -t $ECR_REGISTRY/delivery-info-service:$IMAGE_TAG ./delivery-info-service
+          echo "Pushing image to ECR..."
+          echo "Pushing image to ECR..."
+          echo "Pushing image to ECR..."
+          echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

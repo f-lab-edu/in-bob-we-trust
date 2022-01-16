@@ -3,8 +3,8 @@ name: google-java-format
 
 on:
   push:
-    branches-ignore:
-      - 'main'
+    branches:
+      - '12345'
 jobs:
 
   formatting:
