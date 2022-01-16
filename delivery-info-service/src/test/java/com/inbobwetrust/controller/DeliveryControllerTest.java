@@ -368,4 +368,27 @@ public class DeliveryControllerTest {
     // Assert
     Assertions.assertEquals(delivery, result);
   }
+
+  @DisplayName("[배달완료여부 조회API]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
+  @MethodSource("isPickedUpSource")
+  void isPickedUp(boolean isPickedUp) {
+    // Arrange
+    var delivery = makeValidDelivery();
+    // Stub
+    when(deliveryService.isPickedUp(anyString())).thenReturn(Mono.just(isPickedUp));
+    // Act
+    testClient
+        .get()
+        .uri(DELIVERY_URL + "/is-picked-up/" + delivery.getId())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Boolean.class)
+        .isEqualTo(isPickedUp);
+  }
+
+  static Stream<Arguments> isPickedUpSource() {
+    return Stream.of(Arguments.of(true), Arguments.of(false));
+  }
 }

@@ -62,4 +62,9 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   public Mono<Delivery> getDelivery(@PathVariable @NotBlank(message = "배달번호가 비어있습니다.") String id) {
     return deliveryService.findById(id);
   }
+
+  @GetMapping("/is-picked-up/{id}")
+  public Mono<Boolean> isPickedUp(@PathVariable @NotBlank(message="배달번호가 명시되지 않았습니다.") String id){
+    return deliveryService.isPickedUp(id);
+  }
 }
