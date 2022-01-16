@@ -11,10 +11,13 @@ restClient:
     shopUrl: http://localhost:8090/relay/v1/shop
     agencyUrl: http://localhost:8090/relay/v1/agency
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   data:
     mongodb:
       database: inbobwetrust
