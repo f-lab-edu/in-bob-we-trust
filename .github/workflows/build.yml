@@ -16,6 +16,7 @@ env:
   CONTAINER_IMAGE: inbobwetrust:${{ github.sha }}
 
 jobs:
+
   build-and-push:
     name: Build and deploy
     runs-on: ubuntu-latest
@@ -24,12 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
-        # Add steps here like linting, testing, minification, etc.
-
+      # Add steps here like linting, testing, minification, etc.
       - name: Setup ECR
         run: |
           # Login to AWS ECR
-          $( aws ecr get-login --no-include-email )
+          $( aws ecr get-login-password --no-include-email )
 
       - name: Build and tag the image
         run: |
