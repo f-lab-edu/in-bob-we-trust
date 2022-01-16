@@ -52,7 +52,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: delivery-info-service
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${GITHUB_SHA::7}
         run: |
           # Build a docker container and push it to ECR
           docker build -t $ECR_REGISTRY/delivery-info-service:$IMAGE_TAG ./delivery-info-service
