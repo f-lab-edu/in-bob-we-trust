@@ -116,8 +116,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: echo
-        run: ${{ steps.create-image-fcn.outputs.image }}
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
         uses: aws-actions/amazon-ecs-render-task-definition@v1
