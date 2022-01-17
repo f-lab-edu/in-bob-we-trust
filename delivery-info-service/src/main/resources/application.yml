@@ -4,3 +4,10 @@ server:
 spring:
   profiles:
     active: production
+
+docker:
+  image:
+    version: -1
+
+hello:
+  world: Hello World! from Delivery-Info-Service v.${docker.image.version}
