@@ -34,10 +34,11 @@
 - [프로젝트 Validation전략](https://github.com/f-lab-edu/in-bob-we-trust/wiki/Validation%EC%A0%84%EB%9E%B5)
 - [프로젝트 커밋 메시지 컨벤션](https://github.com/f-lab-edu/in-bob-we-trust/wiki/commit-message-convention)
 - [프로젝트 용어정리 dto vo entity dao](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%9A%A9%EC%96%B4%EC%A0%95%EB%A6%AC-dto-vo-entity-dao)
- 
+
 <br>
 
 ### :blue_book: 프로젝트 블로그 읽어보기
+
 - [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
 - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
 - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
@@ -58,8 +59,6 @@
 
 ### :bicyclist: 로컬에서 프로젝트를 실행하려면?
 
-#### Method 1. "Docker-way"
-
 1. 로컬에 `docker`를 설치합니다. :point_right: https://docs.docker.com/get-docker/
 2. 필요한 포트들이 사용중인지 확인합니다.
     - `8888` delivery-info-service 서버
@@ -67,12 +66,10 @@
     - `27017` delivery-info-service 메인DB
     - `27018` delivery-info-service 백업DB
     - `28017` delivery-relay-service 메인DB
-3. 프로젝트 루트 디렉토리에서 다음 명령을 실행해줍니다. `docker-compose -f ./samples/docker-compose-actions.yml up -d`
-4. :loudspeaker::loudspeaker: compose 파일의 다이나믹한 포트바인딩을 원하신다면 수정 후 PR을 올려주세요 큰 도움이 됩니다. :+1::+1:
 
-#### Method 2. "Just way"
+3. 프로젝트 루트 디렉토리에서 다음 명령을 실행해줍니다.
 
-1. Intellij 를 실행해주세요!
+`docker-compose -f ./samples/docker-compose-actions.yml up -d`
 
 <br>
 
