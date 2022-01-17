@@ -1,3 +1,5 @@
 package com.inbobwetrust;
 
-public class ApplicationTest {}
+public class ApplicationTest {
+
+}

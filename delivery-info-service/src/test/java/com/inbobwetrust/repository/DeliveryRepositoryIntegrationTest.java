@@ -1,6 +1,7 @@
 package com.inbobwetrust.repository;
 
 import com.inbobwetrust.domain.Delivery;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +19,8 @@ import reactor.test.StepVerifier;
 @DataMongoTest
 public class DeliveryRepositoryIntegrationTest {
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
   @AfterEach
   void tearDown() {

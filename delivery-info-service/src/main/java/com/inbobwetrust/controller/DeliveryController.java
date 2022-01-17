@@ -3,15 +3,16 @@ package com.inbobwetrust.controller;
 import com.inbobwetrust.config.swaggerdoc.DeliveryControllerSwaggerDoc;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.service.DeliveryService;
-import java.util.Objects;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/delivery")
@@ -63,8 +64,7 @@ public class DeliveryController implements DeliveryControllerSwaggerDoc {
   }
 
   @GetMapping("/is-picked-up/{id}")
-  public Mono<Boolean> isPickedUp(
-      @PathVariable @NotBlank(message = "배달번호가 명시되지 않았습니다.") String id) {
+  public Mono<Boolean> isPickedUp(@PathVariable @NotBlank(message="배달번호가 명시되지 않았습니다.") String id){
     return deliveryService.isPickedUp(id);
   }
 }

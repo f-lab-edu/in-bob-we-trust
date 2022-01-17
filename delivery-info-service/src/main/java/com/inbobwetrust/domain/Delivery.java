@@ -1,12 +1,13 @@
 package com.inbobwetrust.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -87,4 +88,5 @@ public class Delivery {
     setFinishTime(actual.getFinishTime());
     setPickupTime(actual.getPickupTime());
   }
+
 }
