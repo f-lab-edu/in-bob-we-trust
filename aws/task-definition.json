@@ -38,11 +38,11 @@
       "workingDirectory": null,
       "secrets": null,
       "dockerSecurityOptions": null,
-      "memory": 4000,
+      "memory": 1000,
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "beanskobe/delivery-info-service",
+      "image": "beanskobe/delivery-info-service:latest",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -63,13 +63,13 @@
     }
   ],
   "placementConstraints": [],
-  "memory": "4096",
+  "memory": "1024",
   "taskRoleArn": "arn:aws:iam::745401984353:role/ecsTaskExecutionRole",
   "compatibilities": [
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:us-east-2:745401984353:task-definition/DeliveryInfoTaskDef:2",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-2:745401984353:task-definition/DeliveryInfoTaskDef:12",
   "family": "DeliveryInfoTaskDef",
   "requiresAttributes": [
     {
@@ -118,8 +118,8 @@
     "operatingSystemFamily": "LINUX",
     "cpuArchitecture": null
   },
-  "cpu": "2048",
-  "revision": 2,
+  "cpu": "512",
+  "revision": 12,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
