@@ -1,7 +1,10 @@
 package com.inbobwetrust.domain;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,10 +19,6 @@ import org.springframework.http.MediaType;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.test.StepVerifier;
-
-import java.util.stream.Stream;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @AutoConfigureWireMock(port = 0)
 @ExtendWith(MockitoExtension.class)

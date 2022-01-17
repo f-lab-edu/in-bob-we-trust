@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.SocketUtils;
 
-
 public class DeliveryRelayServiceApplicationTest {
   int serverPort;
 
