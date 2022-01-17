@@ -67,21 +67,20 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build image w/ version
-        if: success()
-        run: docker image build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
+      - name: Docker > Build image
+        run: |
+          docker image build \
+          --build-arg VERSION='-Ddocker.image.version=${GITHUB_SHA::7}' \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
+          ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
 
-      - name: Push Image w/ version
-        if: success()
+      - name: Docker > Push Image w/ version
         uses: actions-hub/docker@master
         with:
           args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
 
-      - name: Build image latest
-        if: success()
-        run: docker image build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
-      - name: Push Image latest
-        if: success()
+      - name: Docer > Push Image w/ latest
         uses: actions-hub/docker@master
         with:
           args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest

@@ -1,2 +1,6 @@
+docker:
+  image:
+    version: -1
+
 hello:
-  world: "Hello World! (Delivery-Relay-Service)"
+  world: Hello World! from Delivery-Relay-Service v.${docker.image.version}
