@@ -43,7 +43,7 @@
 - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
 - [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25?category=973188)
 - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
-- [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 위치정보 저장 기능 구현까지](https://vince-kim.tistory.com/29?category=973188)
+- [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
 
 <br>
 
