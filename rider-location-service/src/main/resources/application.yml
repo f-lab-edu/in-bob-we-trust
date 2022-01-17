@@ -16,5 +16,9 @@ services:
   deliveryInfoService:
     path: http://localhost:${wiremock.server.port}
 
+docker:
+  image:
+    version: -1
+
 hello:
-  world: "Hello World! (Rider-Location-Service)"
+  world: Hello World! from Rider-Location-Service v.${docker.image.version}
