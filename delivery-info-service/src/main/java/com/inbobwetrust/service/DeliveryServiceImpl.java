@@ -85,6 +85,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     return deliveryRepository.findAllByOrderIdContaining("", pageRequest);
   }
 
+  @Override
+  public Mono<Boolean> isPickedUp(String id) {
+    return deliveryRepository
+        .findById(id)
+        .flatMap(del -> Mono.just(del.getDeliveryStatus().equals(PICKED_UP)))
+        .onErrorReturn(NullPointerException.class, false);
+  }
+
   public static final String MSG_RIDER_ALREADY_SET = "배정된 라이더가 존재합니다. 라이더ID : ";
   public static final String MSG_INVALID_STATUS_FOR_SETRIDER = "라이더배정가능한 상태가 아닙니다. 현재상태 : ";
   public static final String MSG_NULL_FINISHTIME = "배달완료시간이 설정되지 않았습니다.";

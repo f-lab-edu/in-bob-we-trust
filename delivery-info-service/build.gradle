@@ -59,7 +59,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
+            fileTree(dir: it, excludes: [
                     "com/inbobwetrust/Application.*"
             ])
         }))
@@ -91,11 +91,9 @@ jacocoTestCoverageVerification {
         }
         rule {
             limit {
-                limit {
-                    counter = 'BRANCH'
-                    value = 'COVEREDRATIO'
-                    minimum = jacocoMinimumCoverageRatio
-                }
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = jacocoMinimumCoverageRatio
             }
         }
     }

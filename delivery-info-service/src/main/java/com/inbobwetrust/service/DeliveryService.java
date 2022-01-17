@@ -40,4 +40,6 @@ public interface DeliveryService {
         .onRetryExhaustedThrow(
             ((retryBackoffSpec, retrySignal) -> new RetryExhaustedException(retrySignal)));
   }
+
+  Mono<Boolean> isPickedUp(String id);
 }

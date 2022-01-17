@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 5000
+
+wiremock:
+  server:
+    httpsPort: -1
+  reset-mappings-after-each-test: true
+
+services:
+  deliveryInfoService:
+    path: http://localhost:${wiremock.server.port}
+
+docker:
+  image:
+    version: -1
+
+hello:
+  world: Hello World! from Rider-Location-Service v.${docker.image.version}
