@@ -4,7 +4,7 @@
 </p>
 
 
-<p align="center"><b>"우리가 어떤 민족입니까"</b><br> <span>사장님-고객님-라이더님-배달대행사를 있는 배달의민족의 중계서비스입니다.</p>
+<p align="center"><b>"우리가 어떤 민족입니까"</b><br> <span>사장님-고객님-라이더님-배달대행사를 있는 배달의민족의 우아한 중계서비스입니다.</p>
 
 <br>
 
@@ -27,9 +27,23 @@
 
 <br>
 
-### 프로젝트 적극 활용 안내서
+### :triangular_ruler: 프로젝트 설명서 읽어보기
 
+- [프로젝트 Use-Case 목록](https://github.com/f-lab-edu/in-bob-we-trust/wiki/Use-Case)
+- [프로젝트 Validation 목록](https://github.com/f-lab-edu/in-bob-we-trust/wiki/Validation-%EB%AA%A9%EB%A1%9D)
+- [프로젝트 Validation전략](https://github.com/f-lab-edu/in-bob-we-trust/wiki/Validation%EC%A0%84%EB%9E%B5)
+- [프로젝트 커밋 메시지 컨벤션](https://github.com/f-lab-edu/in-bob-we-trust/wiki/commit-message-convention)
+- [프로젝트 용어정리 dto vo entity dao](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%9A%A9%EC%96%B4%EC%A0%95%EB%A6%AC-dto-vo-entity-dao)
+ 
+<br>
 
+### :blue_book: 프로젝트 블로그 읽어보기
+- [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
+- [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
+- [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
+- [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25?category=973188)
+- [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
+- [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 위치정보 저장 기능 구현까지](https://vince-kim.tistory.com/29?category=973188)
 
 <br>
 
@@ -47,7 +61,7 @@
 #### Method 1. "Docker-way"
 
 1. 로컬에 `docker`를 설치합니다. :point_right: https://docs.docker.com/get-docker/
-2. 필요한 포트들이 사용중인지 확인합니다. ()
+2. 필요한 포트들이 사용중인지 확인합니다.
     - `8888` delivery-info-service 서버
     - `8090` delivery-relay-service 서버
     - `27017` delivery-info-service 메인DB
@@ -83,5 +97,7 @@
 - @JooHyukKim 의 DockerHub 저장소에서 pull 해옵니다.
 - 이미지들은 프로젝트 `origin/main`의 push 이벤트에 의해 트리거되고 사전에 작성한 `build docker image 워크플로우`에서 빌드됩니다.
 - 이미지 사용법 링크
-    - :link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
-    - :link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
+    - :
+      link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
+    - :
+      link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
