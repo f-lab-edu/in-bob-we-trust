@@ -70,7 +70,7 @@ jobs:
       - name: Docker > Build image
         run: |
           docker image build \
-          --build-arg VERSION=-Ddocker.image.version=${GITHUB_SHA::7} \
+          --build-arg VERSION='-Ddocker.image.version=${GITHUB_SHA::7}' \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
           ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
