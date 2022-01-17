@@ -6,4 +6,4 @@ spring:
     active: production
 
 hello:
-  world: "Hello Bob! (Delivery-Info-Service)"
+  world: "Hello World! (Delivery-Info-Service)"

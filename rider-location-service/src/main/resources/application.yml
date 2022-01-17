@@ -17,4 +17,4 @@ services:
     path: http://localhost:${wiremock.server.port}
 
 hello:
-  world: "Hello Bob! (Rider-Location-Service)"
+  world: "Hello World! (Rider-Location-Service)"
