@@ -122,7 +122,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: Container-DeliveryInfoService
-          image: beanskobe/delivery-info-service:${GITHUB_SHA::7}
+          image: beanskobe/delivery-info-service:latest
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
