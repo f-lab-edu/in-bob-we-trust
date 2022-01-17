@@ -4,3 +4,6 @@ server:
 spring:
   profiles:
     active: production
+
+hello:
+  world: "Hello Bob! (Delivery-Info-Service)"
