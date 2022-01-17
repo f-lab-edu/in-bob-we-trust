@@ -29,7 +29,7 @@ jobs:
 #        run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
   image_build:
-    needs:
+#    needs:
 #      - tests
     #    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
