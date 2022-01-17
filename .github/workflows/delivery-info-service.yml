@@ -105,7 +105,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
         uses: aws-actions/amazon-ecs-render-task-definition@v1
