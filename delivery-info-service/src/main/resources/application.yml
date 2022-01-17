@@ -5,5 +5,8 @@ spring:
   profiles:
     active: production
 
+docker:
+  image:
+    version: -1
 hello:
-  world: "Hello World! (Delivery-Info-Service)"
+  world: Hello World! - delivery-info-service/${docker.image.version}
