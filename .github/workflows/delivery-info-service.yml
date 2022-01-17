@@ -119,6 +119,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.updatedTaskDef.outputs.task-definition }}
-          service: ecs_service_deliveryInfoServiceUpdate
+          service: ecs_service_deliveryInfoService
           cluster: prod-inbobwetrust
           wait-for-service-stability: true
