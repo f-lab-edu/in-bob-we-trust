@@ -21,14 +21,11 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 class RiderLocationServiceTest {
 
-  @InjectMocks
-  RiderLocationService locationService;
+  @InjectMocks RiderLocationService locationService;
 
-  @Mock
-  RiderLocationRepository locationRepository;
+  @Mock RiderLocationRepository locationRepository;
 
-  @Mock
-  DeliveryRepository deliveryRepository;
+  @Mock DeliveryRepository deliveryRepository;
 
   @ParameterizedTest
   @DisplayName("캐시에 저장하는 워크플로우")
@@ -78,9 +75,10 @@ class RiderLocationServiceTest {
   @Test
   void findAllTest() {
     // given
-    var locations = List.of(
-        new RiderLocation("rider-1234", "delivery-1234", 23.0f, Float.MIN_VALUE),
-        new RiderLocation("rider-12222", "delivery-12222", 23.0f, Float.MIN_VALUE));
+    var locations =
+        List.of(
+            new RiderLocation("rider-1234", "delivery-1234", 23.0f, Float.MIN_VALUE),
+            new RiderLocation("rider-12222", "delivery-12222", 23.0f, Float.MIN_VALUE));
     var returnValue = Flux.fromIterable(locations);
     // when
     when(locationRepository.findAll()).thenReturn(returnValue);
