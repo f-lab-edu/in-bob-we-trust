@@ -101,6 +101,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: shell > create variable
+        id: create-image-fcn
+        env:
+          DOCKER_REPO: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_IMG: ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}
+          DOCKER_IMG_TAG: ${GITHUB_SHA::7}
+        run: |
+          ehco "::set-output name=image::$DOCKER_REPO/$DOCKER_IMG:$DOCKER_IMG_TAG"
+
       - name: AWS > Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -111,7 +120,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: Container-DeliveryInfoService
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
+          image: ${{ steps.create-image-fcn.outputs.image }}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
