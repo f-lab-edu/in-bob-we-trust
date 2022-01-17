@@ -108,7 +108,7 @@ jobs:
           DOCKER_IMG: ${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}
           DOCKER_IMG_TAG: ${GITHUB_SHA::7}
         run: |
-          echo "::set-output name=image::$DOCKER_REPO/$DOCKER_IMG:$DOCKER_IMG_TAG"
+          echo $DOCKER_REPO/$DOCKER_IMG:$DOCKER_IMG_TAG
 
       - name: AWS > Login to Amazon ECR
         id: login-ecr
@@ -122,7 +122,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: Container-DeliveryInfoService
-          image: ${{ steps.create-image-fcn.outputs.image }}
+          image: beanskobe/delivery-info-service:${GITHUB_SHA::7}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
