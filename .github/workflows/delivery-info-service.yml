@@ -109,7 +109,7 @@ jobs:
         id: updatedTaskDef
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: ./aws/task-definition.json
           container-name: Container-DeliveryInfoService
           image: ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
 
