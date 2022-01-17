@@ -9,7 +9,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-          "awslogs-group": "/ecs/DeliveryInfoTaskDef",
+          "awslogs-group": "/ecs/taskDef_DeliveryInfoService",
           "awslogs-region": "us-east-2",
           "awslogs-stream-prefix": "ecs"
         }
@@ -42,7 +42,7 @@
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "beanskobe/delivery-info-service:latest",
+      "image": "beanskobe/delivery-info-service",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -59,7 +59,7 @@
       "dockerLabels": null,
       "systemControls": null,
       "privileged": null,
-      "name": "Container-DeliveryInfoService"
+      "name": "delivery-info-service"
     }
   ],
   "placementConstraints": [],
@@ -69,8 +69,8 @@
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:us-east-2:745401984353:task-definition/DeliveryInfoTaskDef:12",
-  "family": "DeliveryInfoTaskDef",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-2:745401984353:task-definition/taskDef_DeliveryInfoService:1",
+  "family": "taskDef_DeliveryInfoService",
   "requiresAttributes": [
     {
       "targetId": null,
@@ -119,7 +119,7 @@
     "cpuArchitecture": null
   },
   "cpu": "512",
-  "revision": 12,
+  "revision": 1,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
