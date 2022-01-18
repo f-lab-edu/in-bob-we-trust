@@ -127,7 +127,7 @@ jobs:
         env:
           CONTAINER_REGISTRY: beanskobe
           CONTAINER_REPOSITORY: delivery-info-service
-          IMAGE_TAG: ${GITHUB_SHA::7}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "::set-output name=image::$CONTAINER_REGISTRY/$CONTAINER_REPOSITORY:$IMAGE_TAG"
 
