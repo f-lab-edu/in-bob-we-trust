@@ -131,6 +131,11 @@ jobs:
         run: |
           echo "::set-output name=image::$CONTAINER_REGISTRY/$CONTAINER_REPOSITORY:$IMAGE_TAG"
 
+      - name: CHECK SHA
+        id: check
+        run: |
+          echo ${{ steps.create-image-tag.outputs.image }}
+
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
         uses: aws-actions/amazon-ecs-render-task-definition@v1
