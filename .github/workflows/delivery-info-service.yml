@@ -63,15 +63,15 @@ jobs:
       - name: Docker > Build image
         run: |
           docker image build \
-          --build-arg VERSION=-Ddocker.image.version=${GITHUB_SHA::7} \
+          --build-arg VERSION=-Ddocker.image.version=${{github.sha}} \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${{github.sha}} \
           ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
 
       - name: Docker > Push Image w/ version
         uses: actions-hub/docker@master
         with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
+          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${{github.sha}}
 
       - name: Docer > Push Image w/ latest
         uses: actions-hub/docker@master
