@@ -102,7 +102,7 @@ jobs:
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --ip-permissions "`aws ec2 describe-security-groups --output json --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --query "SecurityGroups[0].IpPermissions" `"
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --protocol tcp --port 80 --cidr $(cat ipnew.txt)
       - name: AWS > try PING health check
-        run: curl --max-time 30 ALB-delivery-info-service-2136156475.us-east-2.elb.amazonaws.com
+        run: curl --max-time 30 ${{ secrets.AWS_ALB_DNS }}
 
   aws_update_ecs:
     runs-on: ubuntu-latest
