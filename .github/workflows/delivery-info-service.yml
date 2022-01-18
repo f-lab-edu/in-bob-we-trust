@@ -35,13 +35,8 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
     runs-on: ubuntu-latest
-
-    env:
-      MODULE_NAME: delivery-info-service
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -51,12 +46,12 @@ jobs:
 
       - name: Start Logging
         run: echo Gradle Build Test Start
-
+        
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
+        run: ./gradlew ${{ matrix.IMAGE_BUILD_DIR_PAIR[0] }}:build -x test -x integrationTest
 
       - name: Login to Docker Hub
         if: success()
@@ -83,11 +78,11 @@ jobs:
         with:
           args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
 
-  update_ecs:
+  aws_modify_security_group:
     runs-on: ubuntu-latest
-    #    if: success()
-    #    needs:
-    #      - image_build
+    if: success()
+    needs:
+      - image_build
     steps:
       - name: GitHub Actions > Checkout
         uses: actions/checkout@v1
@@ -104,16 +99,19 @@ jobs:
         run: |
           curl https://checkip.amazonaws.com > ip.txt
           awk '{ print $0 "/32" }' < ip.txt > ipnew.txt
-          aws configure list
-          export stuff=$(cat ipnew.txt)
-          ALB_SG=sg-06ffb158ada9fdc37
-          aws ec2 revoke-security-group-ingress --group-id sg-06ffb158ada9fdc37 --ip-permissions "`aws ec2 describe-security-groups --output json --group-id sg-06ffb158ada9fdc37 --query "SecurityGroups[0].IpPermissions" `"
-          aws ec2 authorize-security-group-ingress --group-id sg-06ffb158ada9fdc37 --protocol tcp --port 80 --cidr $stuff
-          exit
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --ip-permissions "`aws ec2 describe-security-groups --output json --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --query "SecurityGroups[0].IpPermissions" `"
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --protocol tcp --port 80 --cidr $(cat ipnew.txt)
       - name: AWS > try PING health check
         run: curl --max-time 30 ALB-delivery-info-service-2136156475.us-east-2.elb.amazonaws.com
 
-
+  aws_update_ecs:
+    runs-on: ubuntu-latest
+    if: success()
+    needs:
+      - aws_modify_security_group
+    steps:
+      - name: GitHub Actions > Checkout
+        uses: actions/checkout@v1
       - name: AWS > Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -130,7 +128,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:latest
+          image: beanskobe/delivery-info-service:${GITHUB_SHA::7}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -139,4 +137,3 @@ jobs:
           service: service-delivery-info-service
           cluster: prod-inbobwetrust
           wait-for-service-stability: true
-
