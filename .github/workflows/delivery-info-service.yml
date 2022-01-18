@@ -1,6 +1,6 @@
 name: Info-service
 
-on: [ push , pull_request ]
+on: [ push ]
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -35,13 +35,8 @@ jobs:
       matrix:
         IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
     runs-on: ubuntu-latest
-
-    env:
-      MODULE_NAME: delivery-info-service
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -56,7 +51,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
+        run: ./gradlew ${{ matrix.IMAGE_BUILD_DIR_PAIR[0] }}:build -x test -x integrationTest
 
       - name: Login to Docker Hub
         if: success()
@@ -68,22 +63,22 @@ jobs:
       - name: Docker > Build image
         run: |
           docker image build \
-          --build-arg VERSION=-Ddocker.image.version=${GITHUB_SHA::7} \
+          --build-arg VERSION=-Ddocker.image.version=${{github.sha}} \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${{github.sha}} \
           ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
 
       - name: Docker > Push Image w/ version
         uses: actions-hub/docker@master
         with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
+          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${{github.sha}}
 
       - name: Docer > Push Image w/ latest
         uses: actions-hub/docker@master
         with:
           args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
 
-  update_ecs:
+  aws_modify_security_group:
     runs-on: ubuntu-latest
     if: success()
     needs:
@@ -98,10 +93,43 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+      - name: AWS > reset Security Group
+        run: |
+          curl https://checkip.amazonaws.com > ip.txt
+          awk '{ print $0 "/32" }' < ip.txt > ipnew.txt
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --ip-permissions "`aws ec2 describe-security-groups --output json --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --query "SecurityGroups[0].IpPermissions" `"
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_ALB_SECURITY_GROUP }} --protocol tcp --port 80 --cidr $(cat ipnew.txt)
+      - name: AWS > try PING health check
+        run: curl --max-time 30 ${{ secrets.AWS_ALB_DNS }}
 
+  aws_update_ecs:
+    runs-on: ubuntu-latest
+    if: success()
+    needs:
+      - aws_modify_security_group
+    steps:
+      - name: GitHub Actions > Checkout
+        uses: actions/checkout@v1
+      - name: AWS > Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: AWS > Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: AWS > create version number
+        id: create-image-tag
+        env:
+          CONTAINER_REGISTRY: beanskobe
+          CONTAINER_REPOSITORY: delivery-info-service
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "::set-output name=image::$CONTAINER_REGISTRY/$CONTAINER_REPOSITORY:$IMAGE_TAG"
 
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
@@ -109,7 +137,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:latest
+          image: ${{ steps.create-image-tag.outputs.image }}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
