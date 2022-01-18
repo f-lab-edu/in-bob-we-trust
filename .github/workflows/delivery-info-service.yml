@@ -122,9 +122,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: create version number
-        id: version_step
-        run: echo '::set-output name=version_number::$(GITHUB_SHA::7)'
+      - name: AWS > create version number
+        id: create-image-tag
+        env:
+          CONTAINER_REGISTRY: beanskobe
+          CONTAINER_REPOSITORY: delivery-info-service
+          IMAGE_TAG: ${GITHUB_SHA::7}
+        run: |
+          echo "::set-output name=image::$CONTAINER_REGISTRY/$CONTAINER_REPOSITORY:$IMAGE_TAG"
 
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
@@ -132,7 +137,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:${{ steps.version_step.outputs.version_number }}
+          image: ${{ steps.create-image-tag.outputs.image }}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
