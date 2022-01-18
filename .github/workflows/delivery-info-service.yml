@@ -123,7 +123,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: create version number
-      - id: version_step
+        id: version_step
         run: echo '::set-output name=version_number::$(GITHUB_SHA::7)'
 
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
