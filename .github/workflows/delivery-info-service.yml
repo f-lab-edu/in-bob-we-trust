@@ -85,9 +85,9 @@ jobs:
 
   update_ecs:
     runs-on: ubuntu-latest
-    if: success()
-    needs:
-      - image_build
+    #    if: success()
+    #    needs:
+    #      - image_build
     steps:
       - name: GitHub Actions > Checkout
         uses: actions/checkout@v1
@@ -98,7 +98,28 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+      - name: AWS > reset Security Group
+        run: |
+          curl https://checkip.amazonaws.com > ip.txt
+          awk '{ print $0 "/32" }' < ip.txt > ipnew.txt
+          aws configure list
+          export stuff=$(cat ipnew.txt)
+          ALB_SG=sg-06ffb158ada9fdc37
+          aws ec2 revoke-security-group-ingress --group-id sg-06ffb158ada9fdc37 --ip-permissions "`aws ec2 describe-security-groups --output json --group-id sg-06ffb158ada9fdc37 --query "SecurityGroups[0].IpPermissions" `"
+          aws ec2 authorize-security-group-ingress --group-id sg-06ffb158ada9fdc37 --protocol tcp --port 80 --cidr $stuff
+          exit
+      - name: AWS > try PING health check
+        run: curl --max-time 30 ALB-delivery-info-service-2136156475.us-east-2.elb.amazonaws.com
 
+
+      - name: AWS > Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: AWS > Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -118,3 +139,4 @@ jobs:
           service: service-delivery-info-service
           cluster: prod-inbobwetrust
           wait-for-service-stability: true
+
