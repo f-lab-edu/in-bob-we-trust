@@ -46,7 +46,7 @@ jobs:
 
       - name: Start Logging
         run: echo Gradle Build Test Start
-        
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -122,13 +122,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: create version number
+      - id: version_step
+        run: echo '::set-output name=version_number::$(GITHUB_SHA::7)'
+
       - name: AWS > Fill in the new image ID in the Amazon ECS task definition
         id: updatedTaskDef
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ./aws/task-definition.json
           container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:${GITHUB_SHA::7}
+          image: beanskobe/delivery-info-service:${{ jobs.aws_update_ecs.steps.version_step.outputs.version_number }}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
