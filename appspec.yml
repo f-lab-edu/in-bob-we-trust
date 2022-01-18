@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: .
+    destination: /home/ec2-user/in-bob-we-trust
+
+hooks:
+  AfterInstall:
+    - location: aws/install_app_dependencies
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: aws/start_server
+      timeout: 300
+      runas: root

@@ -1,0 +1,9 @@
+aws:
+  secretsmanager:
+    name: application_production
+    prefix: /secret
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2

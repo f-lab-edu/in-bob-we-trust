@@ -1,6 +1,6 @@
 name: Info-service
 
-on: [ push , pull_request ]
+on: [ push ]
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -11,6 +11,13 @@ jobs:
         TEST_COMMAND: [ '--info delivery-info-service:integrationTest', '--info delivery-info-service:test' , '--info :delivery-info-service:generateJacocoTestCoverage' ]
     steps:
       - uses: actions/checkout@v2
+
+      - name: AWS > Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
 
       - name: Set up JDK 11
         uses: actions/setup-java@v2
@@ -28,93 +35,25 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-
-  image_build:
-    strategy:
-      fail-fast: true
-      matrix:
-        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-info-service', './delivery-info-service' ] ]
+  aws_update_ecs:
     runs-on: ubuntu-latest
-
-    env:
-      MODULE_NAME: delivery-info-service
-
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
+      - name: SSH > git checkout > run new
+        uses: appleboy/ssh-action@master
         with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'gradle'
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          script: |
+            cd /home/ec2-user/in-bob-we-trust
+            git fetch origin
+            git checkout ${{ github.sha }}
+            ./gradlew :delivery-info-service:build -x test -x integrationTest
+            sudo lsof -t -i tcp:"8888" | xargs kill
+            cd /home/ec2-user/in-bob-we-trust
+            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" -jar ./delivery-info-service/build/libs/delivery-info-service.jar --spring.profiles.active=production > /dev/null 2>&1 & disown
 
-      - name: Start Logging
-        run: echo Gradle Build Test Start
+# The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
+# To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
+# adding disown also makes sure the process is not killed after you close the terminal.
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
-
-      - name: Login to Docker Hub
-        if: success()
-        uses: actions-hub/docker/login@master
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker > Build image
-        run: |
-          docker image build \
-          --build-arg VERSION=-Ddocker.image.version=${GITHUB_SHA::7} \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
-          ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
-
-      - name: Docker > Push Image w/ version
-        uses: actions-hub/docker@master
-        with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
-
-      - name: Docer > Push Image w/ latest
-        uses: actions-hub/docker@master
-        with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
-
-  update_ecs:
-    runs-on: ubuntu-latest
-    if: success()
-    needs:
-      - image_build
-    steps:
-      - name: GitHub Actions > Checkout
-        uses: actions/checkout@v1
-
-      - name: AWS > Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: AWS > Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: AWS > Fill in the new image ID in the Amazon ECS task definition
-        id: updatedTaskDef
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ./aws/task-definition.json
-          container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:latest
-
-      - name: AWS > Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.updatedTaskDef.outputs.task-definition }}
-          service: service-delivery-info-service
-          cluster: prod-inbobwetrust
-          wait-for-service-stability: true
