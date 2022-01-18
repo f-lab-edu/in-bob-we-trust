@@ -132,7 +132,7 @@ jobs:
         with:
           task-definition: ./aws/task-definition.json
           container-name: delivery-info-service
-          image: beanskobe/delivery-info-service:${{ jobs.aws_update_ecs.steps.version_step.outputs.version_number }}
+          image: beanskobe/delivery-info-service:${{ steps.version_step.outputs.version_number }}
 
       - name: AWS > Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
