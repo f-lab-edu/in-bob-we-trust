@@ -28,10 +28,8 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
+
   image_build:
-    needs:
-      - tests
-    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
     strategy:
       fail-fast: true
       matrix:
@@ -84,3 +82,39 @@ jobs:
         uses: actions-hub/docker@master
         with:
           args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
+
+  update_ecs:
+    runs-on: ubuntu-latest
+    if: success()
+    needs:
+      - image_build
+    steps:
+      - name: GitHub Actions > Checkout
+        uses: actions/checkout@v1
+
+      - name: AWS > Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: AWS > Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: AWS > Fill in the new image ID in the Amazon ECS task definition
+        id: updatedTaskDef
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./aws/task-definition.json
+          container-name: delivery-info-service
+          image: beanskobe/delivery-info-service:latest
+
+      - name: AWS > Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.updatedTaskDef.outputs.task-definition }}
+          service: service-delivery-info-service
+          cluster: prod-inbobwetrust
+          wait-for-service-stability: true
