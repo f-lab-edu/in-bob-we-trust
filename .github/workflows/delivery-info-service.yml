@@ -1,6 +1,6 @@
 name: Info-service
 
-on: [ push , pull_request ]
+on: [ push ]
 jobs:
   tests:
     runs-on: ubuntu-latest
