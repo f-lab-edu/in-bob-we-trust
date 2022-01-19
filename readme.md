@@ -51,11 +51,7 @@
 ### :bicyclist: 서비스 플로우
 
 <p align="left">
-<<<<<<< Updated upstream
-  <div align="left"><img src="https://user-images.githubusercontent.com/61615301/147374405-65639f4b-08c6-4512-88c2-d5e5a1ec39ab.png" width="80%"/></div>
-=======
-  <div align="left"><img src="https://github.com/f-lab-edu/in-bob-we-trust/main/.docs/serviceflow-snapshot2.md.md" width="80%"/></div>
->>>>>>> Stashed changes
+  <div align="left"><img src=".docs/serviceflow-snapshot2.md" width="80%"/></div>
   <br>  
 </p>
 
