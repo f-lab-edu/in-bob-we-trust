@@ -10,5 +10,5 @@ spring:
     exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   data:
     mongodb:
-        database: inbob
-        uri: mongodb://localhost:27017
+      database: inbob
+      uri: mongodb://localhost:27017
