@@ -51,7 +51,7 @@
 ### :bicyclist: 서비스 플로우
 
 <p align="left">
-  <div align="left"><img src=".docs/serviceflow-snapshot2.png" width="80%"/></div>
+  <div align="left"><img src=".docs/serviceflow-snapshot2.png" width="100%"/></div>
   <br>  
 </p>
 
