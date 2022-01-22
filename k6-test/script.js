@@ -3,16 +3,18 @@ import http from 'k6/http';
 import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 export let options = {
-    vus: 100,
-    startTime: '10s', // the ramping API test starts a little later
-    startRate: 10,
-    timeUnit: '1s', // we start at 50 iterations per second
-    stages: [
-        {duration: '30s', target: 100},
-        {duration: '30s', target: 300},
-        {duration: '30s', target: 500},
-        {duration: '30s', target: 100}, // below normal load
-    ],
+    vus: 1,
+    duration: '1s',
+    // vus: 100,
+    // startTime: '10s', // the ramping API test starts a little later
+    // startRate: 10,
+    // timeUnit: '1s', // we start at 50 iterations per second
+    // stages: [
+    //     {duration: '30s', target: 100},
+    //     {duration: '30s', target: 300},
+    //     {duration: '30s', target: 500},
+    //     {duration: '30s', target: 100}, // below normal load
+    // ],
     thresholds: {
         // http errors should be less than 1%
         http_req_failed: ['rate<=0.05'],
@@ -23,7 +25,7 @@ export let options = {
     }
 };
 
-const uri = "http://alb-delivery-info-service-2136156475.us-east-2.elb.amazonaws.com";
+const uri = "http://ec2-3-37-15-222.ap-northeast-2.compute.amazonaws.com:8888";
 
 const params = {
     headers: {
@@ -36,6 +38,8 @@ export default () => {
     const payload = JSON.stringify(delivery);
     const URI = uri + "/api/delivery"
     const res = http.post(URI, payload, params);
+    console.info("status is....", res.status);
+    console.info("status is....", res);
     check(res, {
         'Status is OK 200': () => {
             return res.status === 200;
@@ -60,5 +64,3 @@ function makeDelivery(id) {
         'finishTime': '2022-01-11T09:49:00.279Z'
     }
 }
-
-
