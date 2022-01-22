@@ -57,3 +57,4 @@ jobs:
 # To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
 # adding disown also makes sure the process is not killed after you close the terminal.
 
+  java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" -jar ./delivery-info-service/build/libs/delivery-info-service.jar --spring.profiles.active=production > /dev/null 2>&1 & disown
