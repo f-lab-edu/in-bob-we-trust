@@ -1,6 +1,6 @@
 name: Relay-service
 
-on: [ push , pull_request ]
+on: [ push ]
 
 jobs:
   tests:
