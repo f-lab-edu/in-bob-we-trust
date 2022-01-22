@@ -17,6 +17,12 @@ management:
     web:
       exposure:
         include: health,info,metrics,prometheus
+  metrics:
+    export:
+      cloudwatch:
+        namespace: m3trics2
+        batchSize: 20
+
 
 spring:
   data:
