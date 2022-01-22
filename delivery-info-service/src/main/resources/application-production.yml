@@ -8,8 +8,9 @@ server:
 
 restClient:
   proxy:
-    shopUrl: http://localhost:8090/relay/v1/shop
-    agencyUrl: http://localhost:8090/relay/v1/agency
+    baseUrl: http://localhost:8090
+    shopUrl: ${restClient.proxy.baseUrl}/relay/v1/shop
+    agencyUrl: ${restClient.proxy.baseUrl}/relay/v1/agency
 
 management:
   endpoints:
@@ -22,4 +23,3 @@ spring:
     mongodb:
       database: inbobwetrust
       uri: mongodb://localhost:27017
-

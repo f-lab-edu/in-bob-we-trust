@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "${restClient.proxy.baseUrl}")
+@RequestMapping(value = "/relay/v1")
 @Slf4j
 public class RelayController {
 

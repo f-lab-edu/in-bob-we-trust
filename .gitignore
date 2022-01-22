@@ -18,3 +18,5 @@ gradle-app.setting
 
 **/bin/**
 k6-test/results
+
+**/logs/**/*.log

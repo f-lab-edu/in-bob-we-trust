@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: AWS > Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -22,67 +29,35 @@ jobs:
 
       - name: Start Logging
         run: echo Gradle Build Test Start
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-  image_build:
-    needs:
-      - tests
-    if: success() && github.repository == 'f-lab-edu/in-bob-we-trust' && github.ref == 'refs/heads/main'
-    strategy:
-      fail-fast: true
-      matrix:
-        IMAGE_BUILD_DIR_PAIR: [ [ 'delivery-relay-service', './delivery-relay-service' ] ]
+  aws_update_ecs:
     runs-on: ubuntu-latest
-
-    env:
-      MODULE_NAME: delivery-relay-service
-
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
+      - name: SSH > git checkout > run new
+        uses: appleboy/ssh-action@master
         with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: 'gradle'
-
-      - name: Start Logging
-        run: echo Gradle Build Test Start
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew ${{ env.MODULE_NAME }}:build -x test -x integrationTest
-
-      - name: Login to Docker Hub
-        if: success()
-        uses: actions-hub/docker/login@master
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker > Build image
-        run: |
-          docker image build \
-          --build-arg VERSION=-Ddocker.image.version=${GITHUB_SHA::7} \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7} \
-          ${{matrix.IMAGE_BUILD_DIR_PAIR[1]}}
-
-      - name: Docker > Push Image w/ version
-        uses: actions-hub/docker@master
-        with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:${GITHUB_SHA::7}
-
-      - name: Docer > Push Image w/ latest
-        uses: actions-hub/docker@master
-        with:
-          args: push ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.IMAGE_BUILD_DIR_PAIR[0]}}:latest
-
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          host: ${{ secrets.AWS_EC2_RELAY_SERVICE }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          script: |
+            echo "1---------------------------"
+            cd /home/ec2-user/in-bob-we-trust
+            echo "2---------------------------"
+            git fetch origin
+            echo "3---------------------------"
+            git checkout ${{ github.sha }}
+            echo "4---------------------------"
+            ./gradlew :delivery-relay-service:build -x test -x integrationTest
+            echo "5---------------------------"
+            sudo lsof -t -i tcp:"8090" | xargs kill
+            echo "6---------------------------"
+            cd /home/ec2-user/in-bob-we-trust
+            echo "7---------------------------"
+            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar --spring.profiles.active=production > /dev/null 2>&1 & disown
+# The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
+# To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
+# adding disown also makes sure the process is not killed after you close the terminal.
