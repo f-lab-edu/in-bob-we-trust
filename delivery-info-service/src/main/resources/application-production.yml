@@ -28,4 +28,3 @@ spring:
     mongodb:
       database: inbobwetrust
       uri: mongodb://localhost:27017
-  
