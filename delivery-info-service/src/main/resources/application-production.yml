@@ -12,11 +12,7 @@ restClient:
     shopUrl: ${restClient.proxy.baseUrl}/relay/v1/shop
     agencyUrl: ${restClient.proxy.baseUrl}/relay/v1/agency
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
+
   metrics:
     export:
       cloudwatch:

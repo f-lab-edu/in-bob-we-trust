@@ -8,5 +8,12 @@ spring:
 docker:
   image:
     version: -1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
+
 hello:
   world: Hello World! - delivery-info-service/${docker.image.version}
