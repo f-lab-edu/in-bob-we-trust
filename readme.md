@@ -44,10 +44,12 @@
 
 <br>
 
-### :bicyclist: 서비스 플로우
+### :bicyclist: 서비스플로우 Snapshot (2022.01.19)
+
+- :link: [Snapshot 과거버전 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <p align="left">
-  <div align="left"><img src="https://user-images.githubusercontent.com/61615301/147374405-65639f4b-08c6-4512-88c2-d5e5a1ec39ab.png" width="80%"/></div>
+  <div align="left"><img src=".docs/serviceflow-snapshot2.png" width="100%"/></div>
   <br>  
 </p>
 
