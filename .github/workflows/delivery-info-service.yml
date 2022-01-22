@@ -45,11 +45,13 @@ jobs:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
           script: |
+            sudo rm -R /home/ec2-user/in-bob-we-trust
+            cd /home/ec2-user
+            git clone https://github.com/f-lab-edu/in-bob-we-trust
             cd /home/ec2-user/in-bob-we-trust
-            git fetch origin
             git checkout ${{ github.sha }}
             ./gradlew :delivery-info-service:build -x test -x integrationTest
-            sudo lsof -t -i tcp:"8888" | xargs kill
+            sudo lsof -t -i tcp:"8888" | sudo xargs kill
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" -jar ./delivery-info-service/build/libs/delivery-info-service.jar --spring.profiles.active=production > /dev/null 2>&1 & disown
 
