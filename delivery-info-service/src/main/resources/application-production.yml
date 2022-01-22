@@ -8,7 +8,6 @@ server:
 
 restClient:
   proxy:
-    baseUrl: http://localhost:8090
     shopUrl: ${restClient.proxy.baseUrl}/relay/v1/shop
     agencyUrl: ${restClient.proxy.baseUrl}/relay/v1/agency
 
@@ -18,10 +17,3 @@ restClient:
       cloudwatch:
         namespace: m3trics2
         batchSize: 20
-
-
-spring:
-  data:
-    mongodb:
-      database: inbobwetrust
-      uri: mongodb://localhost:27017
