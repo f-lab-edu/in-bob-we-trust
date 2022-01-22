@@ -142,5 +142,3 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter:1.16.2"
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }
-
-
