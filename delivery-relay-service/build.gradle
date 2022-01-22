@@ -115,6 +115,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws-secrets-manager-config:2.2.6.RELEASE'
     if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
         implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
     }

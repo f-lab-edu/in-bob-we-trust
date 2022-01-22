@@ -3,7 +3,6 @@ package com.inbobwetrust;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.SocketUtils;
 
 public class DeliveryRelayServiceApplicationTest {
@@ -16,8 +15,7 @@ public class DeliveryRelayServiceApplicationTest {
 
   @Test
   void defaultProfileTest() {
-    Assertions.assertThrows(
-        BeanCreationException.class,
+    Assertions.assertDoesNotThrow(
         () -> {
           DeliveryRelayServiceApplication.main(new String[] {});
         });
