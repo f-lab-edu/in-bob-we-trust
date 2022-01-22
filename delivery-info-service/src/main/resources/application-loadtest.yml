@@ -15,11 +15,6 @@ management:
       exposure:
         include: health,info,metrics,prometheus
 
-wiremock:
-  server:
-    httpsPort: -1
-  reset-mappings-after-each-test: true
-
 restClient:
   proxy:
     host: http://localhost:8090
