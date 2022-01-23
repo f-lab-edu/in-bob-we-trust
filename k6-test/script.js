@@ -3,18 +3,13 @@ import http from 'k6/http';
 import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 export let options = {
-    vus: 1,
-    duration: '1s',
-    // vus: 100,
-    // startTime: '10s', // the ramping API test starts a little later
-    // startRate: 10,
-    // timeUnit: '1s', // we start at 50 iterations per second
-    // stages: [
-    //     {duration: '30s', target: 100},
-    //     {duration: '30s', target: 300},
-    //     {duration: '30s', target: 500},
-    //     {duration: '30s', target: 100}, // below normal load
-    // ],
+    vus: 100,
+    startTime: '10s', // the ramping API test starts a little later
+    startRate: 10,
+    timeUnit: '1s', // we start at 50 iterations per second
+    stages: [
+        {duration: '30s', target: 200},
+    ],
     thresholds: {
         // http errors should be less than 1%
         http_req_failed: ['rate<=0.05'],
@@ -45,7 +40,7 @@ export default () => {
             return res.status === 200;
         }
     });
-    sleep(1);
+    sleep(0.1);
 };
 
 function makeDelivery(id) {
