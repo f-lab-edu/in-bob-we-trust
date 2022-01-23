@@ -42,7 +42,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
         .flatMap(del -> deliveryRepository.findById(del.getId()))
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(del -> deliveryRepository.insert(delivery))
+        .flatMap(del -> deliveryRepository.save(delivery))
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
@@ -52,7 +52,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(del -> deliveryRepository.insert(delivery));
+        .flatMap(del -> deliveryRepository.save(delivery));
   }
 
   @Override
@@ -61,7 +61,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
-        .flatMap(del -> deliveryRepository.insert(newDelivery));
+        .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
@@ -71,12 +71,14 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
-        .flatMap(del -> deliveryRepository.insert(newDelivery));
+        .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
   public Mono<Delivery> findById(String id) {
-    return deliveryRepository.findById(id);
+    return deliveryRepository
+        .findById(id)
+        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
   }
 
   @Override
