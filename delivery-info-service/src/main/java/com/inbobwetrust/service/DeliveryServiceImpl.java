@@ -41,7 +41,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
         .flatMap(del -> deliveryRepository.findById(del.getId()))
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(del -> deliveryRepository.save(delivery))
+        .flatMap(del -> deliveryRepository.insert(delivery))
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
@@ -51,7 +51,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(del -> deliveryRepository.save(delivery));
+        .flatMap(del -> deliveryRepository.insert(delivery));
   }
 
   @Override
@@ -60,7 +60,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
-        .flatMap(del -> deliveryRepository.save(newDelivery));
+        .flatMap(del -> deliveryRepository.insert(newDelivery));
   }
 
   @Override
@@ -70,11 +70,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
+<<<<<<< Updated upstream
         .flatMap(del -> deliveryRepository.save(newDelivery));
-  }
-
+=======
+        .flatMap(del -> deliveryRepository.insert(newDelivery));
   @Override
-  public Mono<Delivery> findById(String id) {
     return deliveryRepository
         .findById(id)
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
@@ -116,10 +116,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private static Mono<Delivery> canSetPickUp(Delivery before, Delivery after) {
       if (!canUpdateStatus(ACCEPTED, before, after)) {
-        String message =
-            String.format(
-                "픽업완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
-                before.getDeliveryStatus(), after.getDeliveryStatus());
+        String message = String.format(
+            "픽업완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+            before.getDeliveryStatus(), after.getDeliveryStatus());
         return Mono.error(new IllegalStateException(message));
       }
       return Mono.just(after);
@@ -127,10 +126,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private static Mono<Delivery> canSetComplete(Delivery before, Delivery after) {
       if (!canUpdateStatus(PICKED_UP, before, after)) {
-        String message =
-            String.format(
-                "배달완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
-                before.getDeliveryStatus(), after.getDeliveryStatus());
+        String message = String.format(
+            "배달완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+            before.getDeliveryStatus(), after.getDeliveryStatus());
         return Mono.error(new IllegalStateException(message));
       }
       return Mono.just(after);
