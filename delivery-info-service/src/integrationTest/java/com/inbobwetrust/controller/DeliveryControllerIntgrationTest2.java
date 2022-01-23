@@ -10,7 +10,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -73,5 +72,4 @@ public class DeliveryControllerIntgrationTest2 {
                     ? Arguments.of(makeDeliveryIsPickedUp(status), true)
                     : Arguments.of(makeDeliveryIsPickedUp(status), false));
   }
-
 }
