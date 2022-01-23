@@ -37,11 +37,11 @@ public class DeliveryServiceImpl implements DeliveryService {
   public Mono<Delivery> acceptDelivery(Delivery delivery) {
     return Mono.just(delivery)
         .flatMap(DeliveryValidator::statusIsNotNull)
-        .flatMap(DeliveryValidator::statusIsNew)
+        .flatMap(DeliveryValidator::statusIsAccepted)
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
         .flatMap(del -> deliveryRepository.findById(del.getId()))
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(deliveryRepository::save)
+        .flatMap(del -> deliveryRepository.save(delivery))
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
@@ -150,10 +150,10 @@ public class DeliveryServiceImpl implements DeliveryService {
           : Mono.error(new IllegalArgumentException(errorMessage.toString()));
     }
 
-    private static Mono<Delivery> statusIsNew(Delivery delivery) {
-      return delivery.getDeliveryStatus().equals(DeliveryStatus.NEW)
+    private static Mono<Delivery> statusIsAccepted(Delivery delivery) {
+      return delivery.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)
           ? Mono.just(delivery)
-          : Mono.error(new IllegalStateException("주문상태가 NEW가 아닙니다"));
+          : Mono.error(new IllegalStateException("주문상태가 ACCEPTED가 아닙니다"));
     }
 
     private static Mono<Delivery> statusIsNotNull(Delivery delivery) {
