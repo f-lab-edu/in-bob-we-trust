@@ -52,11 +52,7 @@ jobs:
             git checkout ${{ github.sha }}
             ./gradlew :delivery-info-service:build -x test -x integrationTest
             echo "running processes 1-----------------------------"
-            sudo lsof -t -i:8888
-            sudo kill $(sudo lsof -t -i:8888)
-            echo "running processes 2-----------------------------"
-            lsof -t -i:8080
-            sudo kill -9 $(lsof -t -i:8080)
+            kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
             -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \

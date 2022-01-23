@@ -53,7 +53,7 @@ jobs:
             echo "4---------------------------"
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
             echo "5---------------------------"
-            sudo lsof -t -i tcp:"8090" | xargs kill
+            kill -9 $(lsof -t -i:8090 -sTCP:LISTEN)
             echo "6---------------------------"
             cd /home/ec2-user/in-bob-we-trust
             echo "7---------------------------"
