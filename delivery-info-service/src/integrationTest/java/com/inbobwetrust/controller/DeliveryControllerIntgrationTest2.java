@@ -72,5 +72,4 @@ public class DeliveryControllerIntgrationTest2 {
                     ? Arguments.of(makeDeliveryIsPickedUp(status), true)
                     : Arguments.of(makeDeliveryIsPickedUp(status), false));
   }
-
 }
