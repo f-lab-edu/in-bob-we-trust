@@ -41,7 +41,7 @@ export default () => {
     const ORDER_ID = new Date().toISOString();
 
     // 신규주문
-    const req_addDelivery = makeDelivery(ORDER_ID, 'COMPLETE');
+    const req_addDelivery = makeDelivery(ORDER_ID, 'NEW');
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
@@ -67,7 +67,7 @@ export default () => {
     });
 
     sleep(1)
-    const z = http.get(URI + "/2022-01-23T21:28:12.878Z")
+    const z = http.get(URI + "/"+req_acceptDelivery.id);
     console.info("skerrrrrrl       " + z.body);
     //
     //

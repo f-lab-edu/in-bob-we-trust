@@ -40,8 +40,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(DeliveryValidator::statusIsNotNull)
         .flatMap(DeliveryValidator::statusIsAccepted)
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
-        .flatMap(del -> deliveryRepository.findById(del.getId()))
-        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(del -> deliveryRepository.save(delivery))
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
