@@ -6,12 +6,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.repository.DeliveryRepository;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,98 +21,100 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "restClient.proxy.shopUrl=http://DOESNOTEXIST",
-                "restClient.proxy.agencyUrl=http://DOESNOTEXIST"
-        })
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+      "restClient.proxy.shopUrl=http://DOESNOTEXIST",
+      "restClient.proxy.agencyUrl=http://DOESNOTEXIST"
+    })
 @AutoConfigureWebTestClient
 public class DeliveryControllerIntgrationTest2 {
-    @Autowired
-    WebTestClient testClient;
-    @Autowired
-    DeliveryRepository deliveryRepository;
+  @Autowired WebTestClient testClient;
+  @Autowired DeliveryRepository deliveryRepository;
 
-    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+  ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    static Delivery makeDeliveryIsPickedUp(DeliveryStatus status) {
-        return Delivery.builder()
-                .orderId(LocalDateTime.now().toString())
-                .customerId("customer-1234")
-                .shopId("shop-1234")
-                .address("서울시 강남구 삼성동 봉은사로 12-41")
-                .deliveryStatus(status)
-                .phoneNumber("01031583212")
-                .orderTime(LocalDateTime.now())
-                .pickupTime(LocalDateTime.now().plusMinutes(1))
-                .build();
-    }
+  static Delivery makeDeliveryIsPickedUp(DeliveryStatus status) {
+    return Delivery.builder()
+        .orderId(LocalDateTime.now().toString())
+        .customerId("customer-1234")
+        .shopId("shop-1234")
+        .address("서울시 강남구 삼성동 봉은사로 12-41")
+        .deliveryStatus(status)
+        .phoneNumber("01031583212")
+        .orderTime(LocalDateTime.now())
+        .pickupTime(LocalDateTime.now().plusMinutes(1))
+        .build();
+  }
 
-    @DisplayName("[배달완료 여부 조회API]")
-    @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
-    @MethodSource("isPickedUp_methodSource")
-    void isPickedUp_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
-        // Arrange
-        deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
-        final String testUrl = "/api/delivery/is-picked-up/" + delivery.getId();
-        // Act
-        var actual =
-                testClient
-                        .get()
-                        .uri(testUrl)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(Boolean.class)
-                        .isEqualTo(isPickedUp);
-    }
+  @DisplayName("[배달완료 여부 조회API]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
+  @MethodSource("isPickedUp_methodSource")
+  void isPickedUp_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
+    // Arrange
+    deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
+    final String testUrl = "/api/delivery/is-picked-up/" + delivery.getId();
+    // Act
+    var actual =
+        testClient
+            .get()
+            .uri(testUrl)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Boolean.class)
+            .isEqualTo(isPickedUp);
+  }
 
-    static Stream<Arguments> isPickedUp_methodSource() {
-        return Arrays.stream(DeliveryStatus.values())
-                .map(
-                        status ->
-                                status.equals(DeliveryStatus.PICKED_UP)
-                                        ? Arguments.of(makeDeliveryIsPickedUp(status), true)
-                                        : Arguments.of(makeDeliveryIsPickedUp(status), false));
-    }
+  static Stream<Arguments> isPickedUp_methodSource() {
+    return Arrays.stream(DeliveryStatus.values())
+        .map(
+            status ->
+                status.equals(DeliveryStatus.PICKED_UP)
+                    ? Arguments.of(makeDeliveryIsPickedUp(status), true)
+                    : Arguments.of(makeDeliveryIsPickedUp(status), false));
+  }
 
-    @DisplayName("[주문접수 API]")
-    @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
-    @MethodSource("acceptDelivery_methodSource")
-    void acceptDelivery_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
-        // given
-        deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
-        final String testUrl = "/api/delivery/accept";
+  @DisplayName("[주문접수 API]")
+  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
+  @MethodSource("acceptDelivery_methodSource")
+  void acceptDelivery_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
+    // given
+    deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
+    final String testUrl = "/api/delivery/accept";
 
-        // when
-        var actual =
-                testClient
-                        .put()
-                        .uri("/api/delivery/accept")
-                        .bodyValue(delivery)
-                        .exchange();
+    // when
+    var actual = testClient.put().uri("/api/delivery/accept").bodyValue(delivery).exchange();
 
-        // then
-        if (delivery.getDeliveryStatus().equals(DeliveryStatus.NEW)) {
-            actual.expectStatus().isOk().expectBody(Delivery.class).consumeWith(res -> {
+    // then
+    if (delivery.getDeliveryStatus().equals(DeliveryStatus.NEW)) {
+      actual
+          .expectStatus()
+          .isOk()
+          .expectBody(Delivery.class)
+          .consumeWith(
+              res -> {
                 var del = res.getResponseBody();
                 Assertions.assertEquals(DeliveryStatus.ACCEPTED, del.getDeliveryStatus());
-            });
-        } else {
-            actual.expectStatus().isBadRequest().expectBody(String.class).consumeWith(res -> {
+              });
+    } else {
+      actual
+          .expectStatus()
+          .isBadRequest()
+          .expectBody(String.class)
+          .consumeWith(
+              res -> {
                 var errMsg = res.getResponseBody();
                 Assertions.assertTrue(errMsg.contains("주문상태가 ACCEPTED가 아닙니다"));
-            });
-        }
+              });
     }
+  }
 
-    static Stream<Arguments> acceptDelivery_methodSource() {
-        return Arrays.stream(DeliveryStatus.values())
-                .map(
-                        status ->
-                                status.equals(DeliveryStatus.NEW)
-                                        ? Arguments.of(makeDeliveryIsPickedUp(status), true)
-                                        : Arguments.of(makeDeliveryIsPickedUp(status), false));
-
-    }
+  static Stream<Arguments> acceptDelivery_methodSource() {
+    return Arrays.stream(DeliveryStatus.values())
+        .map(
+            status ->
+                status.equals(DeliveryStatus.NEW)
+                    ? Arguments.of(makeDeliveryIsPickedUp(status), true)
+                    : Arguments.of(makeDeliveryIsPickedUp(status), false));
+  }
 }
