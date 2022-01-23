@@ -74,47 +74,4 @@ public class DeliveryControllerIntgrationTest2 {
                     : Arguments.of(makeDeliveryIsPickedUp(status), false));
   }
 
-  @DisplayName("[주문접수 API]")
-  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument0={0}, Argument1={1}")
-  @MethodSource("acceptDelivery_methodSource")
-  void acceptDelivery_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
-    // given
-    deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
-    final String testUrl = "/api/delivery/accept";
-
-    // when
-    var actual = testClient.put().uri("/api/delivery/accept").bodyValue(delivery).exchange();
-
-    // then
-    if (delivery.getDeliveryStatus().equals(DeliveryStatus.NEW)) {
-      actual
-          .expectStatus()
-          .isOk()
-          .expectBody(Delivery.class)
-          .consumeWith(
-              res -> {
-                var del = res.getResponseBody();
-                Assertions.assertEquals(DeliveryStatus.ACCEPTED, del.getDeliveryStatus());
-              });
-    } else {
-      actual
-          .expectStatus()
-          .isBadRequest()
-          .expectBody(String.class)
-          .consumeWith(
-              res -> {
-                var errMsg = res.getResponseBody();
-                Assertions.assertTrue(errMsg.contains("주문상태가 ACCEPTED가 아닙니다"));
-              });
-    }
-  }
-
-  static Stream<Arguments> acceptDelivery_methodSource() {
-    return Arrays.stream(DeliveryStatus.values())
-        .map(
-            status ->
-                status.equals(DeliveryStatus.NEW)
-                    ? Arguments.of(makeDeliveryIsPickedUp(status), true)
-                    : Arguments.of(makeDeliveryIsPickedUp(status), false));
-  }
 }
