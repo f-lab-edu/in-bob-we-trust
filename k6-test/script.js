@@ -3,16 +3,16 @@ import http from 'k6/http';
 import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 export let options = {
-    vus: 1,
-    iterations: 1,
-    //
-    // vus: 100,
-    // startTime: '10s', // the ramping API test starts a little later
-    // startRate: 10,
-    // timeUnit: '1s', // we start at 50 iterations per second
-    // stages: [
-    //     {duration: '30s', target: 200},
-    // ],
+    vus: 100,
+    startTime: '10s', // the ramping API test starts a little later
+    startRate: 10,
+    timeUnit: '1s', // we start at 50 iterations per second
+    stages: [
+        {duration: '30s', target: 100},
+        {duration: '30s', target: 300},
+        {duration: '30s', target: 500},
+        {duration: '30s', target: 100}, // below normal load
+    ],
     thresholds: {
         // http errors should be less than 1%
         http_req_failed: ['rate<=0.05'],
@@ -32,7 +32,7 @@ const params = {
 
 export default () => {
 
-    const minWaitTime = 0.01;
+    const minWaitTime = 0.05;
     const maxWaitTime = 1.00;
 
     const uri = "http://ec2-3-37-15-222.ap-northeast-2.compute.amazonaws.com:8888";
@@ -50,8 +50,8 @@ export default () => {
         }
     });
 
-    sleep(2)
     sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+
 
     // 주문접수
     const req_acceptDelivery = makeDelivery(ORDER_ID, 'ACCEPTED');
@@ -66,61 +66,53 @@ export default () => {
             return acceptDelivery.status === 200;
         }
     });
+    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
 
-    sleep(2)
+
+    // 라이더 배정
+    const req_setDeliveryRider = makeDelivery(ORDER_ID, 'ACCEPTED');
+    req_setDeliveryRider['riderId'] = null;
+
+    const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
+    check(setDeliveryRider, {
+        'setDeliveryRider is OK 200': () => {
+            console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
+            return setDeliveryRider.status === 200;
+        }
+    });
+
+    const curr = http.get(URI + "/" + req_setDeliveryRider["id"]);
+    console.info("currrr   " + curr.body);
     sleep(1)
-    const z = http.get(URI + "/"+req_acceptDelivery.id);
-    console.info("skerrrrrrl       " + z.body);
-    //
-    //
-    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
-    //
-    // sleep(1)
-    //
-    // // 라이더 배정
-    // const req_setDeliveryRider = makeDelivery(ORDER_ID, 'ACCEPTED');
-    // req_setDeliveryRider['riderId'] = null;
-    //
-    // const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
-    // check(setDeliveryRider, {
-    //     'setDeliveryRider is OK 200': () => {
-    //         console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
-    //         return setDeliveryRider.status === 200;
-    //     }
-    // });
-    //
-    // const curr = http.get(URI + "/" + req_setDeliveryRider["id"]);
-    // console.info("currrr   " + curr.body);
-    // sleep(1)
-    //
-    //
-    // // 픽업완료
-    // const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
-    // req_setPickedUp['deliveryStatus'] = 'PICKED_UP';
-    //
-    // const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
-    // check(setPickedUp, {
-    //     'setPickedUp is OK 200': () => {
-    //         console.info('setPickedUp result >>> ' + setPickedUp.body);
-    //         return setPickedUp.status === 200;
-    //     }
-    // });
-    //
-    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
-    //
-    //
-    // // 배달완료
-    // const req_setComplete = makeDelivery(ORDER_ID, 'COMPLETE');
-    //
-    // const setComplete = http.put(URI + "complete", JSON.stringify(req_setComplete), params);
-    // check(setComplete, {
-    //     'setComplete is OK 200': () => {
-    //         console.info('setComplete result >>> ' + setComplete.body);
-    //         return setComplete.status === 200;
-    //     }
-    // });
-    //
-    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+
+
+    // 픽업완료
+    const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
+    req_setPickedUp['deliveryStatus'] = 'PICKED_UP';
+
+    const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
+    check(setPickedUp, {
+        'setPickedUp is OK 200': () => {
+            console.info('setPickedUp result >>> ' + setPickedUp.body);
+            return setPickedUp.status === 200;
+        }
+    });
+
+    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+
+
+    // 배달완료
+    const req_setComplete = makeDelivery(ORDER_ID, 'COMPLETE');
+
+    const setComplete = http.put(URI + "/complete", JSON.stringify(req_setComplete), params);
+    check(setComplete, {
+        'setComplete is OK 200': () => {
+            console.info('setComplete result >>> ' + setComplete.body);
+            return setComplete.status === 200;
+        }
+    });
+
+    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
 };
 
 function makeDelivery(id, status) {
