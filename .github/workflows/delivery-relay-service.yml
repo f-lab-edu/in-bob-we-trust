@@ -50,13 +50,12 @@ jobs:
             cd /home/ec2-user/in-bob-we-trust
             git checkout ${{ github.sha }}
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
-            echo "5---------------------------"
-            kill -9 $(lsof -t -i:8090 -sTCP:LISTEN)
-            echo "6---------------------------"
+            echo "running processes 1-----------------------------"
+            kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
             cd /home/ec2-user/in-bob-we-trust
-            echo "7---------------------------"
-            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar --spring.profiles.active=production > /dev/null 2>&1 & disown
-
+            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
+            -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar \
+            --spring.profiles.active=production > /dev/null 2>&1 & disown
 # The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
 # To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
 # adding disown also makes sure the process is not killed after you close the terminal.
