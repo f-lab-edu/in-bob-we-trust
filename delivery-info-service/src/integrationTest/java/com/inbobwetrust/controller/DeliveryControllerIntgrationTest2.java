@@ -14,31 +14,50 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "restClient.proxy.shopUrl=http://DOESNOTEXIST",
-                "restClient.proxy.agencyUrl=http://DOESNOTEXIST"
-        })
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integration")
 @AutoConfigureWebTestClient
+@AutoConfigureWireMock(port = 0)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeliveryControllerIntgrationTest2 {
     @Autowired
     WebTestClient testClient;
-    @Autowired
+    @SpyBean
     DeliveryRepository deliveryRepository;
+
+
+    private String proxyShopUrl = "/relay/v1/shop";
+
+    private String proxyAgencyUrl = "/relay/v1/agency";
 
     ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     static Delivery makeDeliveryIsPickedUp(DeliveryStatus status) {
         return Delivery.builder()
+                .id(LocalDateTime.now().toString())
                 .orderId(LocalDateTime.now().toString())
                 .customerId("customer-1234")
                 .shopId("shop-1234")
@@ -84,7 +103,16 @@ public class DeliveryControllerIntgrationTest2 {
     void acceptDelivery_Test(Delivery delivery, boolean isPickedUp) throws JsonProcessingException {
         // given
         deliveryRepository.save(delivery).block(Duration.ofSeconds(1));
-        final String testUrl = "/api/delivery/accept";
+        delivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
+
+        final String testUrl = proxyAgencyUrl + "/" + delivery.getAgencyId();
+        stubFor(
+                post(urlMatching(proxyAgencyUrl + "/.*"))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(HttpStatus.OK.value())
+                                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                        .withBody(mapper.writeValueAsString(delivery))));
 
         // when
         var actual =
@@ -98,12 +126,13 @@ public class DeliveryControllerIntgrationTest2 {
         if (delivery.getDeliveryStatus().equals(DeliveryStatus.NEW)) {
             actual.expectStatus().isOk().expectBody(Delivery.class).consumeWith(res -> {
                 var del = res.getResponseBody();
+                deliveryRepository.findById(delivery.getId()).block(Duration.ofSeconds(2)).getDeliveryStatus().equals(DeliveryStatus.ACCEPTED);
                 Assertions.assertEquals(DeliveryStatus.ACCEPTED, del.getDeliveryStatus());
             });
         } else {
             actual.expectStatus().isBadRequest().expectBody(String.class).consumeWith(res -> {
                 var errMsg = res.getResponseBody();
-                Assertions.assertTrue(errMsg.contains("주문상태가 ACCEPTED가 아닙니다"));
+                Assertions.assertTrue(errMsg.contains("주문상태가 NEW가 아닙니다"));
             });
         }
     }
