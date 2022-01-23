@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.RetryBackoffSpec;
 
 @Service
 @Slf4j
@@ -70,19 +71,22 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
-<<<<<<< Updated upstream
-        .flatMap(del -> deliveryRepository.save(newDelivery));
-=======
         .flatMap(del -> deliveryRepository.insert(newDelivery));
+  }
+
   @Override
-    return deliveryRepository
-        .findById(id)
-        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new));
+  public Mono<Delivery> findById(String id) {
+    return deliveryRepository.findById(id);
   }
 
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
     return deliveryRepository.findAllByOrderIdContaining("", pageRequest);
+  }
+
+  @Override
+  public RetryBackoffSpec defaultRetryBackoffSpec() {
+    return DeliveryService.super.defaultRetryBackoffSpec();
   }
 
   @Override
@@ -116,9 +120,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private static Mono<Delivery> canSetPickUp(Delivery before, Delivery after) {
       if (!canUpdateStatus(ACCEPTED, before, after)) {
-        String message = String.format(
-            "픽업완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
-            before.getDeliveryStatus(), after.getDeliveryStatus());
+        String message =
+            String.format(
+                "픽업완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+                before.getDeliveryStatus(), after.getDeliveryStatus());
         return Mono.error(new IllegalStateException(message));
       }
       return Mono.just(after);
@@ -126,9 +131,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private static Mono<Delivery> canSetComplete(Delivery before, Delivery after) {
       if (!canUpdateStatus(PICKED_UP, before, after)) {
-        String message = String.format(
-            "배달완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
-            before.getDeliveryStatus(), after.getDeliveryStatus());
+        String message =
+            String.format(
+                "배달완료로 전환이 불가한 상태입니다.     기존주문상태: %s       요청한주문상태: %s",
+                before.getDeliveryStatus(), after.getDeliveryStatus());
         return Mono.error(new IllegalStateException(message));
       }
       return Mono.just(after);
