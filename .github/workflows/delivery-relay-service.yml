@@ -44,13 +44,11 @@ jobs:
           host: ${{ secrets.AWS_EC2_RELAY_SERVICE }}
           username: ${{ secrets.AWS_EC2_USER }}
           script: |
-            echo "1---------------------------"
+            sudo rm -R /home/ec2-user/in-bob-we-trust
+            cd /home/ec2-user
+            git clone https://github.com/f-lab-edu/in-bob-we-trust
             cd /home/ec2-user/in-bob-we-trust
-            echo "2---------------------------"
-            git fetch origin
-            echo "3---------------------------"
             git checkout ${{ github.sha }}
-            echo "4---------------------------"
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
             echo "5---------------------------"
             kill -9 $(lsof -t -i:8090 -sTCP:LISTEN)
