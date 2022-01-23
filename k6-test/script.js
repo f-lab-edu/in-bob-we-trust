@@ -41,7 +41,7 @@ export default () => {
     const ORDER_ID = new Date().toISOString();
 
     // 신규주문
-    const req_addDelivery = makeDelivery(ORDER_ID, 'NEW');
+    const req_addDelivery = makeDelivery(ORDER_ID, 'COMPLETE');
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
@@ -58,7 +58,6 @@ export default () => {
     sleep(0.1)
     req_acceptDelivery['pickupTime'] = new Date().toISOString();
 
-    console.info(JSON.stringify(req_acceptDelivery))
     const acceptDelivery = http.put(URI + "/accept", JSON.stringify(req_acceptDelivery), params);
     check(acceptDelivery, {
         'acceptDelivery is OK 200': () => {
@@ -67,53 +66,59 @@ export default () => {
         }
     });
 
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
-
-
-    // 라이더 배정
-    const req_setDeliveryRider = makeDelivery(ORDER_ID, 'ACCEPTED');
-    req_setDeliveryRider['riderId'] = null;
-
-    const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
-    check(setDeliveryRider, {
-        'setDeliveryRider is OK 200': () => {
-            console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
-            return setDeliveryRider.status === 200;
-        }
-    });
-
-    const curr = http.get(URI + "/" + req_setDeliveryRider["id"]);
-    console.info("currrr   " + curr.body);
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
-
-
-    // 픽업완료
-    const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
-    req_setPickedUp['deliveryStatus'] = 'PICKED_UP';
-
-    const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
-    check(setPickedUp, {
-        'setPickedUp is OK 200': () => {
-            console.info('setPickedUp result >>> ' + setPickedUp.body);
-            return setPickedUp.status === 200;
-        }
-    });
-
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
-
-
-    // 배달완료
-    const req_setComplete = makeDelivery(ORDER_ID, 'COMPLETE');
-
-    const setComplete = http.put(URI + "complete", JSON.stringify(req_setComplete), params);
-    check(setComplete, {
-        'setComplete is OK 200': () => {
-            console.info('setComplete result >>> ' + setComplete.body);
-            return setComplete.status === 200;
-        }
-    });
-
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1)
+    const z = http.get(URI + "/2022-01-23T21:28:12.878Z")
+    console.info("skerrrrrrl       " + z.body);
+    //
+    //
+    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    //
+    // sleep(1)
+    //
+    // // 라이더 배정
+    // const req_setDeliveryRider = makeDelivery(ORDER_ID, 'ACCEPTED');
+    // req_setDeliveryRider['riderId'] = null;
+    //
+    // const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
+    // check(setDeliveryRider, {
+    //     'setDeliveryRider is OK 200': () => {
+    //         console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
+    //         return setDeliveryRider.status === 200;
+    //     }
+    // });
+    //
+    // const curr = http.get(URI + "/" + req_setDeliveryRider["id"]);
+    // console.info("currrr   " + curr.body);
+    // sleep(1)
+    //
+    //
+    // // 픽업완료
+    // const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
+    // req_setPickedUp['deliveryStatus'] = 'PICKED_UP';
+    //
+    // const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
+    // check(setPickedUp, {
+    //     'setPickedUp is OK 200': () => {
+    //         console.info('setPickedUp result >>> ' + setPickedUp.body);
+    //         return setPickedUp.status === 200;
+    //     }
+    // });
+    //
+    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    //
+    //
+    // // 배달완료
+    // const req_setComplete = makeDelivery(ORDER_ID, 'COMPLETE');
+    //
+    // const setComplete = http.put(URI + "complete", JSON.stringify(req_setComplete), params);
+    // check(setComplete, {
+    //     'setComplete is OK 200': () => {
+    //         console.info('setComplete result >>> ' + setComplete.body);
+    //         return setComplete.status === 200;
+    //     }
+    // });
+    //
+    // sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
 };
 
 function makeDelivery(id, status) {
