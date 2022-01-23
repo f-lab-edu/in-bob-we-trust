@@ -50,6 +50,7 @@ export default () => {
         }
     });
 
+    sleep(2)
     sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
 
     // 주문접수
@@ -66,6 +67,7 @@ export default () => {
         }
     });
 
+    sleep(2)
     sleep(1)
     const z = http.get(URI + "/"+req_acceptDelivery.id);
     console.info("skerrrrrrl       " + z.body);
