@@ -7,14 +7,6 @@ restClient:
     shopUrl: ${restClient.proxy.baseUrl}/relay/v1/shop
     agencyUrl: ${restClient.proxy.baseUrl}/relay/v1/agency
 
-
-  metrics:
-    export:
-      cloudwatch:
-        namespace: m3trics2
-        batchSize: 20
-
-
 spring:
   data:
     mongodb:
