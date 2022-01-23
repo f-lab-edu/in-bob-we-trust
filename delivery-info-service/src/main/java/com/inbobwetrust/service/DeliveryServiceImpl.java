@@ -51,7 +51,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(deliveryRepository::save);
+        .flatMap(del -> deliveryRepository.save(delivery));
   }
 
   @Override
@@ -60,7 +60,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
-        .flatMap(deliveryRepository::save);
+      .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
@@ -70,7 +70,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
-        .flatMap(deliveryRepository::save);
+      .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
