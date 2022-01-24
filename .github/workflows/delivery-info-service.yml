@@ -68,7 +68,7 @@ jobs:
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
               -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \
-              -javaagent:/home/ec2-user/newrelic/newrelic/newrelic.jar \
+              -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
               -jar ./delivery-info-service/build/libs/delivery-info-service.jar \
               --spring.profiles.active=production > /dev/null 2>&1 & disown 
 
