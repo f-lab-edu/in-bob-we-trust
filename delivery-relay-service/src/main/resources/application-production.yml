@@ -8,3 +8,10 @@ spring:
     mongodb:
         database: inbob
         uri: mongodb://localhost:27017
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 0.05
+  application:
+    name: delivery-relay-service
