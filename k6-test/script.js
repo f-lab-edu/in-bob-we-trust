@@ -31,8 +31,7 @@ const params = {
 };
 
 export default () => {
-
-    const minWaitTime = 0.05;
+    const minWaitTime = 0.00;
     const maxWaitTime = 1.00;
 
     const uri = "http://ec2-3-37-15-222.ap-northeast-2.compute.amazonaws.com:8888";
@@ -45,7 +44,9 @@ export default () => {
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
-            console.info('addDelivery result >>> ' + addDelivery.body);
+            if (addDelivery.status !== 200) {
+                console.info('addDelivery result >>> ' + addDelivery.body);
+            }
             return addDelivery.status === 200;
         }
     });
@@ -62,7 +63,9 @@ export default () => {
     const acceptDelivery = http.put(URI + "/accept", JSON.stringify(req_acceptDelivery), params);
     check(acceptDelivery, {
         'acceptDelivery is OK 200': () => {
-            console.info('acceptDelivery result >>> ' + acceptDelivery.body);
+            if (acceptDelivery.status !== 200) {
+                console.info('acceptDelivery result >>> ' + acceptDelivery.body);
+            }
             return acceptDelivery.status === 200;
         }
     });
@@ -76,15 +79,14 @@ export default () => {
     const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
     check(setDeliveryRider, {
         'setDeliveryRider is OK 200': () => {
-            console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
+            if (setDeliveryRider.status !== 200) {
+                console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
+            }
             return setDeliveryRider.status === 200;
         }
     });
 
-    const curr = http.get(URI + "/" + req_setDeliveryRider["id"]);
-    console.info("currrr   " + curr.body);
-    sleep(1)
-
+    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
 
     // 픽업완료
     const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
@@ -93,7 +95,9 @@ export default () => {
     const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
     check(setPickedUp, {
         'setPickedUp is OK 200': () => {
-            console.info('setPickedUp result >>> ' + setPickedUp.body);
+            if (setPickedUp.status !== 200) {
+                console.info('setPickedUp result >>> ' + setPickedUp.body);
+            }
             return setPickedUp.status === 200;
         }
     });
@@ -107,7 +111,9 @@ export default () => {
     const setComplete = http.put(URI + "/complete", JSON.stringify(req_setComplete), params);
     check(setComplete, {
         'setComplete is OK 200': () => {
-            console.info('setComplete result >>> ' + setComplete.body);
+            if (setComplete.status !== 200) {
+                console.info('setComplete result >>> ' + setComplete.body);
+            }
             return setComplete.status === 200;
         }
     });
