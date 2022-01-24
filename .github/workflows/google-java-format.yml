@@ -1,7 +1,11 @@
 # Example workflow
 name: google-java-format
 
-on: [ push ]
+on:
+  push:
+    branches-ignore:
+      - main
+
 jobs:
 
   formatting:
