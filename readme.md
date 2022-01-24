@@ -1,3 +1,6 @@
+### Ver. 1
+
+![ver1](./resources/serviceflow-snapshot1.png)
 <p align="center">
   <div align="center"><img src="https://user-images.githubusercontent.com/61615301/147374289-23ea1a9a-5d60-4057-affe-26444e67791f.jpeg" width="20%"/></div>
   <br>  
@@ -44,12 +47,12 @@
 
 <br>
 
-### :bicyclist: 서비스플로우 Snapshot (2022.01.19)
 
-- :link: [Snapshot 과거버전 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
+- :link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <p align="left">
-  <div align="left"><img src=".docs/serviceflow-snapshot2.png" width="100%"/></div>
+  <div align="left"><img src="https://github.com/f-lab-edu/in-bob-we-trust/blob/main/.docs/serviceflow-snapshot2.md.md" width="80%"/></div>
   <br>  
 </p>
 
@@ -92,7 +95,5 @@
 - @JooHyukKim 의 DockerHub 저장소에서 pull 해옵니다.
 - 이미지들은 프로젝트 `origin/main`의 push 이벤트에 의해 트리거되고 사전에 작성한 `build docker image 워크플로우`에서 빌드됩니다.
 - 이미지 사용법 링크
-    - :
-      link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
-    - :
-      link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
+    - :link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
+    - :link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
