@@ -33,7 +33,7 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
 
-  aws_update_ecs:
+  aws_deploy_server:
     runs-on: ubuntu-latest
     steps:
       - name: SSH > git checkout > run new
