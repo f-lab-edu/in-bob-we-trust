@@ -11,11 +11,11 @@ spring:
   data:
     mongodb:
       database: inbobwetrust
-      uri: mongodb://localhost:27017
+      uri: mongodb+srv://beanskobe:3gosemvha@inbobwetrust-cluster.cyf7s.mongodb.net/inbobwetrust?retryWrites=true&w=majority
   zipkin:
     base-url: http://localhost:9411
   sleuth:
     sampler:
-      probability: 0.2
+      probability: 0.05
   application:
     name: delivery-info-service
