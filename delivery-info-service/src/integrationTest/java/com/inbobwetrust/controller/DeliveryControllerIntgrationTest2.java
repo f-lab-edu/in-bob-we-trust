@@ -36,11 +36,12 @@ public class DeliveryControllerIntgrationTest2 {
     return Delivery.builder()
         .orderId(LocalDateTime.now().toString())
         .customerId("customer-1234")
+        .shopId("shop-1234")
         .address("서울시 강남구 삼성동 봉은사로 12-41")
         .deliveryStatus(status)
         .phoneNumber("01031583212")
-        .pickupTime(LocalDateTime.now())
         .orderTime(LocalDateTime.now())
+        .pickupTime(LocalDateTime.now().plusMinutes(1))
         .build();
   }
 
