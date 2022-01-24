@@ -51,7 +51,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          host: ${{ secrets.AWS_EC2_HOST }}
+          host: ${{ secrets.AWS_EC2_HOST }}:22
           username: ${{ secrets.AWS_EC2_USER }}
           script: |
             sudo rm -R /home/ec2-user/in-bob-we-trust
