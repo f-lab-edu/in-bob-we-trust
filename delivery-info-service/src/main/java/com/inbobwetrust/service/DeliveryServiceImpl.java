@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.RetryBackoffSpec;
 
 @Service
 @Slf4j
@@ -39,9 +40,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .flatMap(DeliveryValidator::statusIsNotNull)
         .flatMap(DeliveryValidator::statusIsAccepted)
         .flatMap(DeliveryValidator::pickupTimeIsAfterOrderTime)
-        .flatMap(del -> deliveryRepository.findById(del.getId()))
-        .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
-        .flatMap(deliveryRepository::save)
+        .flatMap(del -> deliveryRepository.save(delivery))
         .flatMap(deliveryPublisher::sendSetRiderEvent);
   }
 
@@ -51,7 +50,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(delivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(DeliveryValidator::canSetDeliveryRider)
-        .flatMap(deliveryRepository::save);
+        .flatMap(del -> deliveryRepository.save(delivery));
   }
 
   @Override
@@ -60,7 +59,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .findById(newDelivery.getId())
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(existingDelivery -> DeliveryValidator.canSetPickUp(existingDelivery, newDelivery))
-        .flatMap(deliveryRepository::save);
+        .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
@@ -70,7 +69,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .switchIfEmpty(Mono.error(DeliveryNotFoundException::new))
         .flatMap(
             existingDelivery -> DeliveryValidator.canSetComplete(existingDelivery, newDelivery))
-        .flatMap(deliveryRepository::save);
+        .flatMap(del -> deliveryRepository.save(newDelivery));
   }
 
   @Override
@@ -83,6 +82,11 @@ public class DeliveryServiceImpl implements DeliveryService {
   @Override
   public Flux<Delivery> findAll(PageRequest pageRequest) {
     return deliveryRepository.findAllByOrderIdContaining("", pageRequest);
+  }
+
+  @Override
+  public RetryBackoffSpec defaultRetryBackoffSpec() {
+    return DeliveryService.super.defaultRetryBackoffSpec();
   }
 
   @Override

@@ -4,7 +4,13 @@ name: google-java-format
 on:
   push:
     branches-ignore:
-      - 'main'
+      - main
+
+  pull_request:
+    branches-ignore:
+      - main
+
+
 jobs:
 
   formatting:
