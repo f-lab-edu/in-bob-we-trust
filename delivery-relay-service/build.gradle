@@ -56,6 +56,14 @@ jacocoTestReport {
     dependsOn test
     sourceSets sourceSets.main
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: [
+                    "com/inbobwetrust/*Application.*"
+            ])
+        }))
+    }
     mustRunAfter('integrationTest')
 }
 
