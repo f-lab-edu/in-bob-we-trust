@@ -88,6 +88,7 @@ jacocoTestCoverageVerification {
                 minimum = jacocoMinimumCoverageRatio
             }
         }
+        
         rule {
             limit {
                 limit {
