@@ -2,9 +2,15 @@ server:
   port: 8090
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   data:
     mongodb:
-        database: inbob
-        uri: mongodb://localhost:27017
+      database: inbobwetrust
+      uri: localhost:27107
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+  application:
+    name: delivery-relay-service
+

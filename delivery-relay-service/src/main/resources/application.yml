@@ -1,5 +1,17 @@
 server:
   port: 8090
 
+
 hello:
   world: Hello World! from Delivery-Relay-Service .from Here
+
+spring:
+  profiles:
+    active: production
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
