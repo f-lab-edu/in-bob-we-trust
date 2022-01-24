@@ -351,7 +351,6 @@ public class DeliveryServiceImplTest {
     delivery.setDeliveryStatus(DeliveryStatus.ACCEPTED);
     delivery.setPickupTime(delivery.getOrderTime().plusSeconds(1));
     // stub
-    when(deliveryRepository.findById(delivery.getId())).thenReturn(Mono.just(delivery));
     when(deliveryRepository.save(any())).thenReturn(Mono.just(delivery));
     when(deliveryPublisher.sendSetRiderEvent(any())).thenReturn(Mono.just(delivery));
     // when
