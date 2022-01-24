@@ -6,6 +6,11 @@ on:
     branches-ignore:
       - main
 
+  pull_request:
+    branches-ignore:
+      - main
+
+
 jobs:
 
   formatting:
