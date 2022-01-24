@@ -47,6 +47,7 @@
 
 <br>
 
+
 ### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
 - :link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
