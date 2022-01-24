@@ -359,7 +359,7 @@ public class DeliveryServiceImplTest {
     // then
     StepVerifier.create(stream).expectNext(delivery).verifyComplete();
     verify(deliveryRepository, times(1)).save(any());
-    verify(deliveryRepository, times(1)).findById(delivery.getId());
+    verify(deliveryRepository, times(0)).findById(delivery.getId());
     verify(deliveryPublisher, times(1)).sendSetRiderEvent(any());
   }
 
