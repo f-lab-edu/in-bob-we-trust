@@ -3,7 +3,7 @@ server:
 
 
 hello:
-  world: Hello Bug! from Delivery-Relay-Service .from Here
+  world: Hello Wruug! from Delivery-Relay-Service .from Here
 
 spring:
   profiles:

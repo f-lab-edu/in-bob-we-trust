@@ -25,5 +25,5 @@ management:
 
 
 hello:
-  world: Hello Bug! - delivery-info-service v.${docker.image.version}
+  world: Hello Wruug! - delivery-info-service v.${docker.image.version}
 
