@@ -51,7 +51,7 @@ jobs:
             git checkout ${{ github.sha }}
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
             echo "running processes 1-----------------------------"
-            kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
+            sudo kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
             -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
