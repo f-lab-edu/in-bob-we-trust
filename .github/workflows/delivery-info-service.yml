@@ -72,9 +72,11 @@ jobs:
               -jar ./delivery-info-service/build/libs/delivery-info-service.jar \
               --spring.profiles.active=production > /dev/null 2>&1 & disown 
 
-      - name: K6 > run test
-        run: |
-          ./k6-test/k6 run ./k6-test/script.js
+
+      - name: Run local k6 test
+        uses: k6io/action@v0.1
+        with:
+          filename: ./k6-test/script.js
 
   # The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
   # To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
