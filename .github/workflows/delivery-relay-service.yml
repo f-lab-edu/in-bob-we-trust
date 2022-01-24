@@ -57,6 +57,3 @@ jobs:
             -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
             -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar \
             --spring.profiles.active=production > /dev/null 2>&1 & disown
-# The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
-# To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
-# adding disown also makes sure the process is not killed after you close the terminal.
