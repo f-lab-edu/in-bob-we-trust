@@ -3,3 +3,16 @@ server:
 
 hello:
   world: Hello World! from Delivery-Relay-Service .from Here
+
+spring:
+  profiles:
+    active: production
+  mongodb:
+    embedded:
+      version: 3.5.5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
