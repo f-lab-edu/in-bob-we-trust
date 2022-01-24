@@ -9,4 +9,4 @@ docker:
   image:
     version: -1
 hello:
-  world: Hello World! - delivery-info-service/${docker.image.version}
+  world: Hello World! - delivery-info-service v.${docker.image.version}
