@@ -50,50 +50,8 @@
   link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <p align="left">
-  <div align="left"><img src="./resources/serviceflow-snapshot2.png" width="80%"/></div>
+  <div align="left"><img src="./resources/serviceflow-snapshot2.png" width="100%"/></div>
   <br>  
 </p>
 
 <br>
-
-### :bicyclist: 로컬에서 프로젝트를 실행하려면?
-
-1. 로컬에 `docker`를 설치합니다. :point_right: https://docs.docker.com/get-docker/
-2. 필요한 포트들이 사용중인지 확인합니다.
-    - `8888` delivery-info-service 서버
-    - `8090` delivery-relay-service 서버
-    - `27017` delivery-info-service 메인DB
-    - `27018` delivery-info-service 백업DB
-    - `28017` delivery-relay-service 메인DB
-
-3. 프로젝트 루트 디렉토리에서 다음 명령을 실행해줍니다.
-
-`docker-compose -f ./samples/docker-compose-actions.yml up -d`
-
-<br>
-
-### :bicyclist: Tips?
-
-#### 1. 개발도중 프로젝트의 docker image를 빠르게 빌드해보고 싶다면?
-
-- 다음 스크립트를 실행하세요. `${프로젝트root}/scripts/build-images.sh`
-- (현재 Unix && Linux 에서만 가능합니다 :cry:)
-- :warning: 해당 스크립트는 다음 순서로 진행됩니다.
-    - 기존 이미지들을 삭제하고 (이미지 `beanskobe/delivery-info-service:latest`:
-      heavy_plus_sign: `beanskobe/delivery-relay-service:latest`)
-    - `gradle build`를 실행하고 (모든 테스트를 건너뒤고)
-    - 이미지들을 빌드합니다.
-
-<br>
-
-### :bicyclist: Q/A
-
-#### 1. 프로젝트의 <i class="fa fa-docker"></i> docker 이미지들은 어떻게 생성되고 어디에서 pull을 해오는 건가요?
-
-- @JooHyukKim 의 DockerHub 저장소에서 pull 해옵니다.
-- 이미지들은 프로젝트 `origin/main`의 push 이벤트에 의해 트리거되고 사전에 작성한 `build docker image 워크플로우`에서 빌드됩니다.
-- 이미지 사용법 링크
-    - :
-      link: [delivery-info-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-info-service)
-    - :
-      link: [delivery-relay-service의 DockerHub 이미지 저장소 바로가기](https://hub.docker.com/repository/docker/beanskobe/delivery-relay-service)
