@@ -22,6 +22,18 @@
 
 <br>
 
+### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
+
+- :
+  link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+
+<p align="left">
+  <div align="left"><img src="./resources/serviceflow-snapshot2.png" width="100%"/></div>
+  <br>  
+</p>
+
+<br>
+
 ### :triangular_ruler: 프로젝트 설명서 읽어보기
 
 - [프로젝트 Use-Case 목록](https://github.com/f-lab-edu/in-bob-we-trust/wiki/Use-Case)
@@ -32,7 +44,7 @@
 
 <br>
 
-### :blue_book: 프로젝트 블로그 읽어보기
+### :blue_book: 프로젝트 진행 블로그 읽어보기
 
 - [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
 - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
@@ -41,17 +53,5 @@
 - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
 - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
 - [프로젝트 비용 최적화를 위한 Reactive + MongoDB Atlas Serverless 적용 및 예시 (in Spring Webflux)](https://vince-kim.tistory.com/30)
-
-<br>
-
-### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
-
-- :
-  link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
-
-<p align="left">
-  <div align="left"><img src="./resources/serviceflow-snapshot2.png" width="100%"/></div>
-  <br>  
-</p>
 
 <br>
