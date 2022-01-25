@@ -2,6 +2,13 @@ import {sleep, check, fail} from 'k6';
 import http from 'k6/http';
 import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
+
+export let options = {
+    vus:1,
+    duration:'1s',
+
+}
+/*
 export let options = {
     vus: 100,
     startTime: '10s', // the ramping API test starts a little later
@@ -23,12 +30,14 @@ export let options = {
     }
 };
 
+*/
 
 const params = {
     headers: {
         'Content-Type': 'application/json',
     },
 };
+
 
 export default () => {
     const minWaitTime = 0.00;
