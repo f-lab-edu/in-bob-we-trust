@@ -8,9 +8,6 @@ spring:
     embedded:
       version: 3.5.5
 
-docker:
-  image:
-    version: -1
 hello:
-  world: Hello World! - delivery-info-service v.${docker.image.version}
-
+  sha: aaaaaa
+  world: Hello World! from Delivery-Relay-Service ${hello.sha}.from Here

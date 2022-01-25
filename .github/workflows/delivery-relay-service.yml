@@ -53,6 +53,7 @@ jobs:
             sudo kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
+            -Dhello.sha="${{ github.sha }}" \
             -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
             -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar \
             --spring.profiles.active=production > /dev/null 2>&1 & disown

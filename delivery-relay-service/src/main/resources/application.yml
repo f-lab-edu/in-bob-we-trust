@@ -2,7 +2,8 @@ server:
   port: 8090
 
 hello:
-  world: Hello World! from Delivery-Relay-Service .from Here
+  sha: aaaaaa
+  world: Hello World! from Delivery-Relay-Service ${hello.sha}.from Here
 
 spring:
   profiles:
