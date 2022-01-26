@@ -15,10 +15,10 @@ export let options = {
     startRate: 1,
     timeUnit: '1s', // we start at 50 iterations per second
     stages: [
-        {duration: '300s', target: 30},
-        {duration: '300s', target: 10},
-        {duration: '300s', target: 100},
-        {duration: '300s', target: 100},
+        {duration: '10s', target: 30},
+        {duration: '10s', target: 10},
+        {duration: '10s', target: 100},
+        {duration: '10s', target: 100},
     ],
     thresholds: {
         // http errors should be less than 1%
@@ -40,24 +40,21 @@ const params = {
 
 
 export default () => {
-    const minWaitTime = 0.00;
-    const maxWaitTime = 1.00;
-
-    
     const uri = "http://localhost:8888"
     const URI = uri + "/api/delivery"
 
     // 신규주문
     const req_addDelivery = makeNewDelivery();
     req_addDelivery['riderId'] = null;
+
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
-            if (addDelivery.status !== 200) {
-                console.info('addDelivery result >>> ' + addDelivery.body);
-                fail();
+            if (addDelivery.status === 200) {
+                return addDelivery.status === 200;
             }
-            return addDelivery.status === 200;
+            console.info('addDelivery result >>> ' + addDelivery.body);
+            fail();
         }
     });
 
