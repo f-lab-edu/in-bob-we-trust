@@ -50,7 +50,7 @@ jobs:
             git checkout ${{ github.sha }}
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
             echo "running processes 1-----------------------------"
-            sudo kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
+            sudo lsof -t -i tcp:8090 | xargs kill
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
             -Dhello.sha="${{ github.sha }}" \

@@ -61,7 +61,7 @@ jobs:
             git checkout ${{ github.sha }}
             ./gradlew :delivery-info-service:build -x test -x integrationTest
             echo "killing process -----------------------------"
-            sudo kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
+            sudo lsof -t -i tcp:8888 | xargs kill
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
               -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \
