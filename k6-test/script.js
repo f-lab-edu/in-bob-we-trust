@@ -9,16 +9,33 @@ import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 //
 // }
 
+export function setup() {
+    console.info("------------------------------------------------------");
+    console.info("------------------------------------------------------");
+    console.info(new Date().toString());
+    console.info(new Date().toString());
+    console.info(new Date().toString());
+    console.info(new Date().toString());
+    console.info(new Date().toString());
+    console.info("------------------------------------------------------");
+    console.info("------------------------------------------------------");
+    console.info("------------------------------------------------------");
+    console.info("------------------------------------------------------");
+    const req_addDelivery = makeNewDelivery();
+    req_addDelivery['riderId'] = null;
+    const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
+    if (addDelivery.status !== 200) {
+        throw new Error("somethigns wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+}
+
 export let options = {
-    vus: 1,
-    startTime: '10s', // the ramping API test starts a little later
-    startRate: 1,
-    timeUnit: '1s', // we start at 50 iterations per second
     stages: [
-        {duration: '10s', target: 30},
-        {duration: '10s', target: 10},
-        {duration: '10s', target: 100},
-        {duration: '10s', target: 100},
+        {duration: '1m', target: 10},
+        {duration: '5m', target: 300},
+        {duration: '5m', target: 500},
+        {duration: '5m', target: 700},
+        {duration: '5m', target: 1000}
     ],
     thresholds: {
         // http errors should be less than 1%
@@ -38,11 +55,9 @@ const params = {
     },
 };
 
+const URI = uri + "/api/delivery"
 
 export default () => {
-    const uri = "http://localhost:8888"
-    const URI = uri + "/api/delivery"
-
     // 신규주문
     const req_addDelivery = makeNewDelivery();
     req_addDelivery['riderId'] = null;
@@ -50,11 +65,10 @@ export default () => {
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
-            if (addDelivery.status === 200) {
-                return addDelivery.status === 200;
+            if (addDelivery.status !== 200) {
+                console.info('addDelivery result >>> ' + addDelivery.body);
             }
-            console.info('addDelivery result >>> ' + addDelivery.body);
-            fail();
+            return addDelivery.status === 200;
         }
     });
 
@@ -75,7 +89,6 @@ export default () => {
         'acceptDelivery is OK 200': () => {
             if (acceptDelivery.status !== 200) {
                 console.info('acceptDelivery result >>> ' + acceptDelivery.body);
-                fail();
             }
             return acceptDelivery.status === 200;
         }
@@ -86,18 +99,15 @@ export default () => {
     // 라이더 배정
     const req_setDeliveryRider = makeDelivery(DELIVRY_ID, 'ACCEPTED');
 
-
     const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
     check(setDeliveryRider, {
         'setDeliveryRider is OK 200': () => {
             if (setDeliveryRider.status !== 200) {
                 console.info('setDeliveryRider result >>> ' + setDeliveryRider.body);
-                fail();
             }
             return setDeliveryRider.status === 200;
         }
     });
-
     sleep(1);
 
     // 픽업완료
@@ -109,12 +119,10 @@ export default () => {
         'setPickedUp is OK 200': () => {
             if (setPickedUp.status !== 200) {
                 console.info('setPickedUp result >>> ' + setPickedUp.body);
-                fail();
             }
             return setPickedUp.status === 200;
         }
     });
-
     sleep(1);
 
 
@@ -126,12 +134,10 @@ export default () => {
         'setComplete is OK 200': () => {
             if (setComplete.status !== 200) {
                 console.info('setComplete result >>> ' + setComplete.body);
-                fail();
             }
             return setComplete.status === 200;
         }
     });
-
     sleep(1);
 };
 
