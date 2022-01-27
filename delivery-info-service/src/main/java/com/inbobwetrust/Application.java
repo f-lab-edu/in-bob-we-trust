@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import reactor.blockhound.BlockHound;
 
 @SpringBootApplication
 @Slf4j
