@@ -145,6 +145,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'io.projectreactor.tools:blockhound-junit-platform:1.0.6.RELEASE'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner:3.0.3'
     testImplementation "org.testcontainers:testcontainers:1.16.2"
     testImplementation "org.testcontainers:junit-jupiter:1.16.2"
