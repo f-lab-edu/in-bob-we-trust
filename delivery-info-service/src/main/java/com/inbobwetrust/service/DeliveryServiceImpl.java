@@ -28,8 +28,6 @@ public class DeliveryServiceImpl implements DeliveryService {
   public Mono<Delivery> addDelivery(Delivery delivery) {
     return deliveryRepository
         .save(delivery)
-        .timeout(FIXED_DELAY)
-        .retryWhen(defaultRetryBackoffSpec())
         .flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
