@@ -56,7 +56,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
   }
 
   private Mono<? extends Throwable> handleOn5xxStatus(
-      Delivery delivery, ClientResponse serverResponse){
+      Delivery delivery, ClientResponse serverResponse) {
     log.info("Status code 5XX is : {}", serverResponse.statusCode().value());
     log.info("Error Status 5XX for delivery : {}", delivery);
     try {
