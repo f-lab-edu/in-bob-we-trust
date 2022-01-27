@@ -58,7 +58,7 @@ jobs:
             cd /home/ec2-user
             git clone https://github.com/f-lab-edu/in-bob-we-trust
             cd /home/ec2-user/in-bob-we-trust
-            git checkout ${{ github.sha }}
+            git checkout -b ${{ github.sha }} ${{ github.sha }}
             ./gradlew :delivery-info-service:build -x test -x integrationTest
             echo "killing process -----------------------------"
             sudo lsof -t -i tcp:8888 | xargs kill
