@@ -30,8 +30,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         .save(delivery)
         .timeout(FIXED_DELAY)
         .retryWhen(defaultRetryBackoffSpec())
-        .flatMap(deliveryPublisher::sendAddDeliveryEvent)
-        .log();
+        .flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
   @Override
@@ -144,7 +143,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         DeliveryStatus expectedBeforeStatus, Delivery before, Delivery after) {
       boolean statusSameAsExpected = before.getDeliveryStatus().equals(expectedBeforeStatus);
       boolean isNext = before.getDeliveryStatus().getNext().equals(after.getDeliveryStatus());
-      log.info("statusSameAsExpected {} && isNext {}", statusSameAsExpected, isNext);
       return statusSameAsExpected && isNext;
     }
 
