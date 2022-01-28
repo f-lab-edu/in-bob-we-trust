@@ -46,7 +46,7 @@ jobs:
             cd /home/ec2-user
             git clone https://github.com/f-lab-edu/in-bob-we-trust
             cd /home/ec2-user/in-bob-we-trust
-            git checkout ${{ github.sha }}
+            git checkout remotes/origin/${{ github.head_ref }}
             ./gradlew :delivery-relay-service:build -x test -x integrationTest
             echo "running processes 1-----------------------------"
             sudo lsof -t -i tcp:8090 | xargs kill
