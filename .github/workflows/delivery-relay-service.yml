@@ -51,7 +51,7 @@ jobs:
             echo "running processes 1-----------------------------"
             sudo lsof -t -i tcp:8090 | xargs kill
             cd /home/ec2-user/in-bob-we-trust
-            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_SERVERLESS_CONN }}" \
+            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_RELAY_DB_CONN }}" \
             -Dhello.sha="${{ github.sha }}" \
             -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
             -jar ./delivery-relay-service/build/libs/delivery-relay-service.jar \
