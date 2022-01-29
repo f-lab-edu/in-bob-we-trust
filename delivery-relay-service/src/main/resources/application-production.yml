@@ -15,3 +15,4 @@ spring:
       probability: 0.05
   application:
     name: delivery-relay-service
+
