@@ -10,7 +10,16 @@ import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 // }
 
 export function setup() {
-    console.info("------------------------------------------------------");
+    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     console.info("------------------------------------------------------");
     console.info(new Date().toString());
     console.info(new Date().toString());
@@ -31,15 +40,8 @@ export function setup() {
 
 export let options = {
     stages: [
-        {duration: '1m', target: 10},
-        {duration: '1m', target: 100},
-        {duration: '1m', target: 500},
-        {duration: '1m', target: 750},
-        {duration: '1m', target: 1000},
-        {duration: '1m', target: 1250},
-        {duration: '1m', target: 1500},
-        {duration: '1m', target: 1750},
-        {duration: '5m', target: 2000}
+        {duration: '5m', target: 1100},
+        {duration: '55m', target: 1100},
     ],
     thresholds: {
         // http errors should be less than 1%
@@ -72,6 +74,7 @@ export default () => {
         'addDelivery is OK 200': () => {
             if (addDelivery.status !== 200) {
                 console.info('addDelivery result >>> ' + addDelivery.body);
+                fail();
             }
             return addDelivery.status === 200;
         }
