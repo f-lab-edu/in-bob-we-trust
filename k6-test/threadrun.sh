@@ -1,1 +1,0 @@
-k6 run --console-output=./thread.log thread.js

@@ -59,7 +59,7 @@ const params = {
     },
 };
 
-const uri = "localhost:8888";
+const uri = "http://localhost.ap-northeast-2.compute.amazonaws.com:8888";
 const URI = uri + "/api/delivery"
 
 export default () => {

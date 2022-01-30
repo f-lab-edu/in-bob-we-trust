@@ -17,6 +17,6 @@ gradle-app.setting
 .idea/*
 
 **/bin/**
-k6-test/results
+k6-test/**
 
 **/logs/**/*.log
