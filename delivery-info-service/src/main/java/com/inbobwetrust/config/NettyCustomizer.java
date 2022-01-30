@@ -1,18 +1,18 @@
-//package com.inbobwetrust.config;
+// package com.inbobwetrust.config;
 //
-//import io.netty.channel.EventLoopGroup;
-//import io.netty.channel.nio.NioEventLoopGroup;
-//import io.netty.channel.socket.nio.NioServerSocketChannel;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-//import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import reactor.netty.http.server.HttpServer;
+// import io.netty.channel.EventLoopGroup;
+// import io.netty.channel.nio.NioEventLoopGroup;
+// import io.netty.channel.socket.nio.NioServerSocketChannel;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+// import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import reactor.netty.http.server.HttpServer;
 //
-//@Configuration
-//@Slf4j
-//public class NettyCustomizer {
+// @Configuration
+// @Slf4j
+// public class NettyCustomizer {
 //
 //  @Bean
 //  public NettyReactiveWebServerFactory nettyReactiveWebServerFactory() {
@@ -30,4 +30,4 @@
 //      return httpServer.runOn(eventLoopGroup);
 //    }
 //  }
-//}
+// }
