@@ -1,20 +1,10 @@
 package com.inbobwetrust.service;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
-import com.inbobwetrust.exception.RetryExhaustedException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +20,16 @@ import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceImplTest {
@@ -289,30 +289,6 @@ public class DeliveryServiceImplTest {
               assertTrue(err.getMessage().contains("주문상태가 null 입니다."));
             })
         .verify();
-  }
-
-  @Test
-  @DisplayName(
-      "[DeliveryServiceImpl] TImeoutException의 retry 를 전부 실패하고 RetryExhaustedException 발생시")
-  void addDeliveryTest_retryExhausted() {
-    // given
-    var delivery = makeValidDelivery();
-    // stub
-    when(deliveryRepository.save(any(Delivery.class)))
-        .thenReturn(
-            Mono.just(delivery)
-                .delayElement(
-                    DeliveryService.FIXED_DELAY.plusMillis(10))); // 지정된 타임아웃시간보다 0.01s 길게 지연시키기
-    // when
-    var resultStream = deliveryService.addDelivery(delivery);
-    // then
-    StepVerifier.create(resultStream)
-        .expectSubscription()
-        .expectNoEvent(DeliveryService.FIXED_DELAY.multipliedBy(DeliveryService.MAX_ATTEMPTS + 1))
-        .expectError(RetryExhaustedException.class)
-        .verify();
-    verify(deliveryRepository, times(1)).save(any());
-    verify(deliveryPublisher, times(0)).sendAddDeliveryEvent(any());
   }
 
   @Test
