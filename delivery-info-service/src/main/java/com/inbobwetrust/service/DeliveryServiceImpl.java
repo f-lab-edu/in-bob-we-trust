@@ -26,12 +26,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return deliveryRepository
-        .save(delivery)
-        .timeout(FIXED_DELAY)
-        .retryWhen(defaultRetryBackoffSpec())
-        .flatMap(deliveryPublisher::sendAddDeliveryEvent)
-        .log();
+    return deliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
   @Override
@@ -144,7 +139,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         DeliveryStatus expectedBeforeStatus, Delivery before, Delivery after) {
       boolean statusSameAsExpected = before.getDeliveryStatus().equals(expectedBeforeStatus);
       boolean isNext = before.getDeliveryStatus().getNext().equals(after.getDeliveryStatus());
-      log.info("statusSameAsExpected {} && isNext {}", statusSameAsExpected, isNext);
       return statusSameAsExpected && isNext;
     }
 

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
-import com.inbobwetrust.exception.RetryExhaustedException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
 import java.time.LocalDateTime;
@@ -289,30 +288,6 @@ public class DeliveryServiceImplTest {
               assertTrue(err.getMessage().contains("주문상태가 null 입니다."));
             })
         .verify();
-  }
-
-  @Test
-  @DisplayName(
-      "[DeliveryServiceImpl] TImeoutException의 retry 를 전부 실패하고 RetryExhaustedException 발생시")
-  void addDeliveryTest_retryExhausted() {
-    // given
-    var delivery = makeValidDelivery();
-    // stub
-    when(deliveryRepository.save(any(Delivery.class)))
-        .thenReturn(
-            Mono.just(delivery)
-                .delayElement(
-                    DeliveryService.FIXED_DELAY.plusMillis(10))); // 지정된 타임아웃시간보다 0.01s 길게 지연시키기
-    // when
-    var resultStream = deliveryService.addDelivery(delivery);
-    // then
-    StepVerifier.create(resultStream)
-        .expectSubscription()
-        .expectNoEvent(DeliveryService.FIXED_DELAY.multipliedBy(DeliveryService.MAX_ATTEMPTS + 1))
-        .expectError(RetryExhaustedException.class)
-        .verify();
-    verify(deliveryRepository, times(1)).save(any());
-    verify(deliveryPublisher, times(0)).sendAddDeliveryEvent(any());
   }
 
   @Test

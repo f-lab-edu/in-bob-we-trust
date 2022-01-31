@@ -16,7 +16,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,env,configprops
+        include: health,info,metrics,prometheus,env,configprops,threaddump
 
 spring:
   data:
