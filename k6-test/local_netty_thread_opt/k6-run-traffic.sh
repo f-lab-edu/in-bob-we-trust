@@ -1,1 +1,0 @@
-k6 run script3-thread-local-traffic.js
