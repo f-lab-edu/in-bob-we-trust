@@ -39,7 +39,7 @@
 
 <br>
 
-### :blue_book: 프로젝트 진행 블로그 읽어보기
+### :blue_book: 프로젝트 기술 블로그 읽어보기
 
 - [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
 - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
