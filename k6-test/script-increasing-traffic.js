@@ -9,25 +9,13 @@ import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 //
 // }
 
+
 export function setup() {
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    const req_addDelivery = makeNewDelivery();
-    req_addDelivery['riderId'] = null;
-    const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
-    if (addDelivery.status !== 200) {
-        throw new Error("somethigns wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    if (!isRunnable()) {
+        throw Error("Server is not runnable");
     }
 }
+
 
 export let options = {
     stages: [
@@ -50,8 +38,6 @@ export let options = {
         checks: ['rate>=0.95']
     }
 };
-/*
-*/
 
 const params = {
     headers: {
@@ -147,6 +133,22 @@ export default () => {
 };
 
 
+function isRunnable() {
+    const req_addDelivery = makeNewDelivery();
+    req_addDelivery['riderId'] = null;
+
+    let canRun = false;
+    for (let i = 0; i < 3; i++) {
+        const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
+        if (addDelivery.status === 200) {
+            canRun = true;
+        }
+        sleep(1);
+    }
+    return canRun;
+}
+
+
 function makeNewDelivery(time) {
     return {
         'orderId': 'orderId-' + time,
@@ -179,8 +181,4 @@ function makeDelivery(id, status) {
         'finishTime': new Date().toISOString()
     }
 }
-
-function generateRandomNumberBetween(min, max) {
-    return (Math.random() * (max - min) + min).toFixed(3);
-};
 
