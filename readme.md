@@ -10,7 +10,7 @@
 ### :bicyclist: 프로젝트 목표
 
 - [x] 단위테스트 커버리지 체크 적용 및 유지
-  - :link:[테스트, 인스트럭션,브랜치 커버리지를 95% 유지하며 얻은 것들 feat. Spring, JUnit, WebFlux]()
+  - :link:[테스트 커버리지를 95% 이상 유지하며 얻은 것들 feat. Spring, JUnit, WebFlux]()
 - [ ] 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트
   - :link: [서버 성능테스트 이야기 1 \[ Overview \]](https://vince-kim.tistory.com/31)
   - :link: [서버 성능테스트 이야기 2 \[ 첫 테스트 \]](https://vince-kim.tistory.com/32)
