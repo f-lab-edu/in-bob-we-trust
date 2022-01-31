@@ -3,22 +3,20 @@ import http from 'k6/http';
 import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 
-export let options = {
-    vus:1,
-    duration:'1s',
+// export let options = {
+//     vus: 1,
+//     duration: '1s',
+//
+// }
+
+export function setup() {
 
 }
-/*
+
 export let options = {
-    vus: 100,
-    startTime: '10s', // the ramping API test starts a little later
-    startRate: 10,
-    timeUnit: '1s', // we start at 50 iterations per second
     stages: [
-        {duration: '30s', target: 100},
-        {duration: '30s', target: 300},
-        {duration: '30s', target: 500},
-        {duration: '30s', target: 100}, // below normal load
+        {duration: '5m', target: 1100},
+        {duration: '55m', target: 1100},
     ],
     thresholds: {
         // http errors should be less than 1%
@@ -29,7 +27,7 @@ export let options = {
         checks: ['rate>=0.95']
     }
 };
-
+/*
 */
 
 const params = {
@@ -38,35 +36,35 @@ const params = {
     },
 };
 
+const uri = "http://localhost.ap-northeast-2.compute.amazonaws.com:8888";
+const URI = uri + "/api/delivery"
 
 export default () => {
-    const minWaitTime = 0.00;
-    const maxWaitTime = 1.00;
-
-    const uri = "http://localhost:8888";
-    const URI = uri + "/api/delivery"
-
-    const ORDER_ID = new Date().toISOString();
-
     // 신규주문
-    const req_addDelivery = makeDelivery(ORDER_ID, 'NEW');
+    const req_addDelivery = makeNewDelivery();
+    req_addDelivery['riderId'] = null;
+
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
     check(addDelivery, {
         'addDelivery is OK 200': () => {
             if (addDelivery.status !== 200) {
                 console.info('addDelivery result >>> ' + addDelivery.body);
+                fail();
             }
             return addDelivery.status === 200;
         }
     });
 
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1);
 
+    const SAVED_DELIVERY = JSON.parse(addDelivery.body);
+    const DELIVRY_ID = SAVED_DELIVERY.id;
 
     // 주문접수
-    const req_acceptDelivery = makeDelivery(ORDER_ID, 'ACCEPTED');
+    const req_acceptDelivery = makeDelivery(DELIVRY_ID, 'ACCEPTED');
+    req_acceptDelivery['riderId'] = null;
     req_acceptDelivery['orderTime'] = new Date().toISOString();
-    sleep(0.1)
+    sleep(0.01);
     req_acceptDelivery['pickupTime'] = new Date().toISOString();
 
     const acceptDelivery = http.put(URI + "/accept", JSON.stringify(req_acceptDelivery), params);
@@ -78,12 +76,11 @@ export default () => {
             return acceptDelivery.status === 200;
         }
     });
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1);
 
 
     // 라이더 배정
-    const req_setDeliveryRider = makeDelivery(ORDER_ID, 'ACCEPTED');
-    req_setDeliveryRider['riderId'] = null;
+    const req_setDeliveryRider = makeDelivery(DELIVRY_ID, 'ACCEPTED');
 
     const setDeliveryRider = http.put(URI + "/rider", JSON.stringify(req_setDeliveryRider), params);
     check(setDeliveryRider, {
@@ -94,11 +91,10 @@ export default () => {
             return setDeliveryRider.status === 200;
         }
     });
-
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1);
 
     // 픽업완료
-    const req_setPickedUp = makeDelivery(ORDER_ID, 'PICKED_UP');
+    const req_setPickedUp = makeDelivery(DELIVRY_ID, 'PICKED_UP');
     req_setPickedUp['deliveryStatus'] = 'PICKED_UP';
 
     const setPickedUp = http.put(URI + "/pickup", JSON.stringify(req_setPickedUp), params);
@@ -110,12 +106,11 @@ export default () => {
             return setPickedUp.status === 200;
         }
     });
-
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1);
 
 
     // 배달완료
-    const req_setComplete = makeDelivery(ORDER_ID, 'COMPLETE');
+    const req_setComplete = makeDelivery(DELIVRY_ID, 'COMPLETE');
 
     const setComplete = http.put(URI + "/complete", JSON.stringify(req_setComplete), params);
     check(setComplete, {
@@ -126,9 +121,25 @@ export default () => {
             return setComplete.status === 200;
         }
     });
-
-    sleep(generateRandomNumberBetween(minWaitTime, maxWaitTime));
+    sleep(1);
 };
+
+
+function makeNewDelivery(time) {
+    return {
+        'orderId': 'orderId-' + time,
+        'agencyId': 'agencyId-' + time,
+        'shopId': 'shopId-' + time,
+        'customerId': 'customerId-' + time,
+        'address': 'address-' + time,
+        'phoneNumber': 'phoneNumber-' + time,
+        'comment': 'comment-' + time,
+        'deliveryStatus': 'NEW',
+        'orderTime': new Date().toISOString(),
+        'pickupTime': new Date().toISOString(),
+        'finishTime': new Date().toISOString()
+    }
+}
 
 function makeDelivery(id, status) {
     return {

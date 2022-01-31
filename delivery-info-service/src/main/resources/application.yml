@@ -10,4 +10,4 @@ spring:
 
 hello:
   sha: aaaaaa
-  world: Hello World! from Delivery-Relay-Service ${hello.sha}.from Here
+  world: Hello World! from Delivery-Info-Service ${hello.sha}.from Here
