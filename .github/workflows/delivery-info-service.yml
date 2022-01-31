@@ -58,12 +58,16 @@ jobs:
             cd /home/ec2-user
             git clone https://github.com/f-lab-edu/in-bob-we-trust
             cd /home/ec2-user/in-bob-we-trust
-            git checkout ${{ github.sha }}
+            echo "killing process -----------------------------"
+            echo  ${{ github.head_ref }}
+            echo "killing process -----------------------------"
+            git checkout remotes/origin/${{ github.head_ref }}
             ./gradlew :delivery-info-service:build -x test -x integrationTest
             echo "killing process -----------------------------"
-            sudo kill -9 $(lsof -t -i:8888 -sTCP:LISTEN)
+            sudo lsof -t -i tcp:8888 | xargs kill
             cd /home/ec2-user/in-bob-we-trust
             java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
+              -Xms1024m -Xmx2048m \
               -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \
               -Dhello.sha="${{ github.sha }}" \
               -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \

@@ -3,11 +3,12 @@ package com.inbobwetrust.relay;
 import com.inbobwetrust.relay.domain.Delivery;
 import com.inbobwetrust.relay.domain.ReceiverType;
 import com.inbobwetrust.relay.domain.RelayRequest;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +23,7 @@ public class RelayController {
       @PathVariable String shopId, @RequestBody @Valid Delivery delivery) {
     return relayRepository
         .save(new RelayRequest(ReceiverType.SHOP, shopId, delivery))
-        .flatMap(relay -> Mono.just(relay.getDelivery()))
-        .log();
+        .flatMap(relay -> Mono.just(relay.getDelivery()));
   }
 
   @PostMapping("/agency/{agencyId}")
@@ -31,7 +31,6 @@ public class RelayController {
       @PathVariable String agencyId, @RequestBody @Valid Delivery delivery) {
     return relayRepository
         .save(new RelayRequest(ReceiverType.AGENCY, agencyId, delivery))
-        .flatMap(relay -> Mono.just(relay.getDelivery()))
-        .log();
+        .flatMap(relay -> Mono.just(relay.getDelivery()));
   }
 }

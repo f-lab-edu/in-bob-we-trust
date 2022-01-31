@@ -36,8 +36,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
         .onStatus(
             HttpStatus::is5xxServerError,
             serverResponse -> this.handleOn5xxStatus(delivery, serverResponse))
-        .bodyToMono(Delivery.class)
-        .log();
+        .bodyToMono(Delivery.class);
   }
 
   @Override
@@ -53,8 +52,7 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
         .onStatus(
             HttpStatus::is5xxServerError,
             serverResponse -> this.handleOn5xxStatus(delivery, serverResponse))
-        .bodyToMono(Delivery.class)
-        .log();
+        .bodyToMono(Delivery.class);
   }
 
   private Mono<? extends Throwable> handleOn5xxStatus(

@@ -1,14 +1,10 @@
 package com.inbobwetrust.service;
 
-import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
-import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.exception.DeliveryNotFoundException;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +12,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.RetryBackoffSpec;
+
+import java.util.Objects;
+
+import static com.inbobwetrust.domain.DeliveryStatus.ACCEPTED;
+import static com.inbobwetrust.domain.DeliveryStatus.PICKED_UP;
 
 @Service
 @Slf4j
@@ -26,12 +27,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
   @Override
   public Mono<Delivery> addDelivery(Delivery delivery) {
-    return deliveryRepository
-        .save(delivery)
-        .timeout(FIXED_DELAY)
-        .retryWhen(defaultRetryBackoffSpec())
-        .flatMap(deliveryPublisher::sendAddDeliveryEvent)
-        .log();
+    return deliveryRepository.save(delivery).flatMap(deliveryPublisher::sendAddDeliveryEvent);
   }
 
   @Override
@@ -144,7 +140,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         DeliveryStatus expectedBeforeStatus, Delivery before, Delivery after) {
       boolean statusSameAsExpected = before.getDeliveryStatus().equals(expectedBeforeStatus);
       boolean isNext = before.getDeliveryStatus().getNext().equals(after.getDeliveryStatus());
-      log.info("statusSameAsExpected {} && isNext {}", statusSameAsExpected, isNext);
       return statusSameAsExpected && isNext;
     }
 
