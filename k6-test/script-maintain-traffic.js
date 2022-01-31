@@ -10,32 +10,7 @@ import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 // }
 
 export function setup() {
-    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.info("------------------------------------------------------");
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info(new Date().toString());
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    console.info("------------------------------------------------------");
-    const req_addDelivery = makeNewDelivery();
-    req_addDelivery['riderId'] = null;
-    const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
-    if (addDelivery.status !== 200) {
-        throw new Error("somethigns wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    }
+
 }
 
 export let options = {

@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.woojoolion'
 sourceCompatibility = 11
-def jacocoMinimumCoverageRatio = 0.5
+def jacocoMinimumCoverageRatio = 0.99
 def jarFileName = 'delivery-info-service'
 
 bootJar {
