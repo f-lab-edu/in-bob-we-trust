@@ -9,18 +9,23 @@
 
 ### :bicyclist: 프로젝트 목표
 
-- [x] 단위테스트 instruction & branch 커버리지 100%(:link:[Reactor, Spring Webflux 에서 100 + 커버리지 유지하기]())
-- [x] 단위테스트 커버리지 체크 적용 및 유지 (:link:[Reactor, Spring Webflux 에서 100 + 커버리지 유지하기]())
-- [ ] 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트 (:link:[중계서버의 성능테스트, 분석, 그리고 개선과정]())
-- [ ] 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기 (= Microservices && interconnection)
-- [ ] 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요? (= Scaling && 테스트 시나리오)
-- [ ] 모든 기능이 탑재된 서비스를 개발하는 것이 아닌, 진화하는 서비스를 경험하기 (:link:[프로젝트 전체 회고]())
+- 단위테스트 커버리지 체크 적용 및 유지
+  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco) :point_right:[click to view](https://vince-kim.tistory.com/36)
+  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강):point_right:[click to view](https://vince-kim.tistory.com/37)
+- 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트
+  - :heavy_check_mark: 서버 성능테스트 이야기 1 [Overview] :point_right:[click to view](https://vince-kim.tistory.com/31)
+  - :heavy_check_mark: 서버 성능테스트 이야기 2 [첫 테스트] :point_right:[click to view](https://vince-kim.tistory.com/32)
+  - :heavy_check_mark: 서버 성능테스트 이야기 3 [성능개선 : JVM 메모리 영역 확장] :point_right:[click to view](https://vince-kim.tistory.com/33)
+  - :heavy_check_mark: 서버 성능테스트 이야기 4 [성능개선 적용기 : StackTrace 최소화] :point_right:[click to view](https://vince-kim.tistory.com/34)
+- 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기 (= Microservices && interconnection)
+- 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요? (= Scaling && 테스트 시나리오)
+- 모든 기능이 탑재된 서비스를 개발하는 것이 아닌, 진화하는 서비스를 경험하기
 
 <br>
 
 ### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
 
-- :link: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+- :point_right: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <p align="left">
   <div align="left"><img src="./.docs/serviceflow-snapshot3.png" width="100%"/></div>
@@ -48,5 +53,10 @@
 - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
 - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
 - [프로젝트 비용 최적화를 위한 Reactive + MongoDB Atlas Serverless 적용 및 예시 (in Spring Webflux)](https://vince-kim.tistory.com/30)
-
+- [서버 성능테스트 이야기 1 \[ Overview \]](https://vince-kim.tistory.com/31)
+- [서버 성능테스트 이야기 2 \[ 첫 테스트 \]](https://vince-kim.tistory.com/32)
+- [서버 성능테스트 이야기 3 \[ 성능개선 : JVM 메모리 영역 확장 \]](https://vince-kim.tistory.com/33)
+- [서버 성능테스트 이야기 4 \[ 성능개선 적용기 : StackTrace 최소화 \]](https://vince-kim.tistory.com/34)
+- [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
+- [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 <br>
