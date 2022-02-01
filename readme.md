@@ -10,13 +10,13 @@
 ### :bicyclist: 프로젝트 목표
 
 - 단위테스트 커버리지 체크 적용 및 유지
-  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco) :point_right:[click to view](https://vince-kim.tistory.com/36)
-  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강):point_right:[click to view](https://vince-kim.tistory.com/37)
+  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco\)(https://vince-kim.tistory.com/36)
+  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인\강(https://vince-kim.tistory.com/37)
 - 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트
-  - :heavy_check_mark: 서버 성능테스트 이야기 1 [Overview] :point_right:[click to view](https://vince-kim.tistory.com/31)
-  - :heavy_check_mark: 서버 성능테스트 이야기 2 [첫 테스트] :point_right:[click to view](https://vince-kim.tistory.com/32)
-  - :heavy_check_mark: 서버 성능테스트 이야기 3 [성능개선 : JVM 메모리 영역 확장] :point_right:[click to view](https://vince-kim.tistory.com/33)
-  - :heavy_check_mark: 서버 성능테스트 이야기 4 [성능개선 적용기 : StackTrace 최소화] :point_right:[click to view](https://vince-kim.tistory.com/34)
+  - :point_right: [서버 성능테스트 이야기 1 \[Overview\]](https://vince-kim.tistory.com/31)
+  - :point_right: [서버 성능테스트 이야기 2 \[첫 테스트\]](https://vince-kim.tistory.com/32)
+  - :point_right: [서버 성능테스트 이야기 3 \[성능개선 : JVM 메모리 영역 확장\]](https://vince-kim.tistory.com/33)
+  - :point_right: [서버 성능테스트 이야기 4 \[성능개선 적용기 : StackTrace 최소화\]](https://vince-kim.tistory.com/34)
 - 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기 (= Microservices && interconnection)
 - 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요? (= Scaling && 테스트 시나리오)
 - 모든 기능이 탑재된 서비스를 개발하는 것이 아닌, 진화하는 서비스를 경험하기
