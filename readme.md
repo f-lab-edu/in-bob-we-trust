@@ -6,12 +6,11 @@
 
 <br>
 
-### :bicyclist: 프로젝트 목표
-
+### :bicyclist: 무엇을 경험하려는 건가요?
 - 단위테스트 커버리지 체크 적용 및 유지
   - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
   - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
-- 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트
+- 대용량 트래픽과 대용량 데이터를 핸들링하는 경험
   - :point_right: [서버 성능테스트 이야기 1 \[Overview\]](https://vince-kim.tistory.com/31)
   - :point_right: [서버 성능테스트 이야기 2 \[첫 테스트\]](https://vince-kim.tistory.com/32)
   - :point_right: [서버 성능테스트 이야기 3 \[성능개선 : JVM 메모리 영역 확장\]](https://vince-kim.tistory.com/33)
@@ -22,9 +21,9 @@
 
 <br>
 
-### :bicyclist: 서비스플로우 snapshot (of 2022.01.19)
-
-- :point_right: [과거 Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+### :bicyclist: 서비스는 어떻게 구성되어있나요?
+- 서비스플로우 snapshot (of 2022.01.28)
+- :point_right: [과거 서비스-flow Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <p align="left">
   <div align="left"><img src="./.docs/serviceflow-snapshot3.png" width="100%"/></div>
