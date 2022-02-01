@@ -2,7 +2,6 @@
   <br>  
 </p>
 
-
 <p align="center"><b>"우리가 어떤 민족입니까"</b><br> <span>사장님-고객님-라이더님-배달대행사를 있는 배달의민족의 우아한 중계서비스입니다.</p>
 
 <br>
@@ -10,8 +9,8 @@
 ### :bicyclist: 프로젝트 목표
 
 - 단위테스트 커버리지 체크 적용 및 유지
-  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco\)(https://vince-kim.tistory.com/36)
-  - :heavy_check_mark: 테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인\강(https://vince-kim.tistory.com/37)
+  - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
+  - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 - 어플리케이션 레벨 테스트 작성 하기 ex. 성능테스트
   - :point_right: [서버 성능테스트 이야기 1 \[Overview\]](https://vince-kim.tistory.com/31)
   - :point_right: [서버 성능테스트 이야기 2 \[첫 테스트\]](https://vince-kim.tistory.com/32)
