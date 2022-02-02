@@ -12,11 +12,16 @@ public class RiderLocationController {
 
   @PutMapping
   public Mono<Boolean> updateLocationPost(@RequestBody RiderLocation location) {
-    return locationService.setIfPresent(location);
+    return locationService.tryPutOperation(location);
   }
 
   @PostMapping
   public Mono<Boolean> updateLocationPut(@RequestBody RiderLocation location) {
-    return locationService.setIfPresent(location);
+    return locationService.tryPutOperation(location);
+  }
+
+  @GetMapping
+  public Mono<RiderLocation> getLocation(@RequestParam(name = "deliveryId") String deliveryId){
+    return locationService.getLocation(deliveryId);
   }
 }

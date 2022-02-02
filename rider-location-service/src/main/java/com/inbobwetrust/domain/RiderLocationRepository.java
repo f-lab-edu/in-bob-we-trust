@@ -12,4 +12,6 @@ public interface RiderLocationRepository {
   Flux<RiderLocation> findAll();
 
   Flux<Boolean> deleteAll();
+
+  Mono<RiderLocation> getLocation(String deliveryId);
 }
