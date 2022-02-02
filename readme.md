@@ -21,7 +21,8 @@
 
 ### :bicyclist: 서비스는 어떻게 구성되어있나요?
 
-:point_right: [과거 서비스-flow Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+:
+point_right: [과거 서비스-flow Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 
 <br>
 
@@ -82,16 +83,28 @@
     - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 
 - 내 MongoDB는 효율적으로 설계되어있을까?
+
 - 내 서버의 스타트업 타입은 얼마나 빨라질 수 있을까?
-- 서버간 통신속도를 향상 시키는 방법은 무엇이 있을까요?
+
+- 서버간 통신속도를 향상 시키는 방법은 무엇이 있을까?
+
 - 위치정보서비스의 Redis 캐시는 얼마나 최적화 되어있을까?
-- 기존 성능테스트에서 개선할 점들을 찾아내서 어떤 부분이 느렸고 왜 느렸는지 분석해나가기
+
+- 배달완료된 주문은
+
+- 기존 성능테스트에서 개선할 점들을 찾아내서
+  - 어떤 부분이 느렸고 왜 느렸는지 분석해나가기
+  - HTTP Duration 분석 후 최적화
+ 
 - MongoDB Write I/O 최적화
-- HTTP Duration 분석 후 최적화
+
 - 서버 간 통신을 비동기로 변경해보겠습니다.
-- 현재는 Sync 로 구현
+  - 현재는 Sync 로 구현
+
 - 데이터베이스 MongoDB 부하방지
-- Scale Out vs Scale Up 는
-- SpringBoot의 기본 Netty Server 오버라이드해서 Inject하기
+
+- Scale Out vs Scale Up
+
+- SpringBoot의 내장 Netty Server는 어떻게 작성되어있지? 내가 직접 NIO 서버를 작성해서 주입하면 지금 성능을 향상 시킬 수 있을까?
 
 <br>
