@@ -11,10 +11,7 @@
   - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
   - :point_right: [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 - 대용량 트래픽 or 대용량 데이터를 핸들링하는 경험
-  - :point_right: [서버 성능테스트 이야기 1 \[Overview\]](https://vince-kim.tistory.com/31)
-  - :point_right: [서버 성능테스트 이야기 2 \[첫 테스트\]](https://vince-kim.tistory.com/32)
-  - :point_right: [서버 성능테스트 이야기 3 \[성능개선 : JVM 메모리 영역 확장\]](https://vince-kim.tistory.com/33)
-  - :point_right: [서버 성능테스트 이야기 4 \[성능개선 적용기 : StackTrace 최소화\]](https://vince-kim.tistory.com/34)
+
 - 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기
   - (= Microservices && interconnection)
 - 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?
@@ -45,19 +42,35 @@
 
 <br>
 
-### :blue_book: 프로젝트 기술 블로그 읽어보기
+### :blue_book: 프로젝트를 통해 해결한 궁금증과 문제들
 
+#### 프로젝트를 시작하시죠
 - [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
 - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
 - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
+
+#### REST 도큐먼트 툴 적용해볼까요?
 - [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25?category=973188)
+
+#### 프로젝트에 포매터를 적용할까요?
 - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
+
+#### 라이더 위치기능은 어떻게 구현할까요?
 - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
+
+#### MongoDB Atlas 인스턴스 비용 비효율적인것 아닌가요?
 - [프로젝트 비용 최적화를 위한 Reactive + MongoDB Atlas Serverless 적용 및 예시 (in Spring Webflux)](https://vince-kim.tistory.com/30)
-- [서버 성능테스트 이야기 1 \[ Overview \]](https://vince-kim.tistory.com/31)
-- [서버 성능테스트 이야기 2 \[ 첫 테스트 \]](https://vince-kim.tistory.com/32)
-- [서버 성능테스트 이야기 3 \[ 성능개선 : JVM 메모리 영역 확장 \]](https://vince-kim.tistory.com/33)
-- [서버 성능테스트 이야기 4 \[ 성능개선 적용기 : StackTrace 최소화 \]](https://vince-kim.tistory.com/34)
+
+#### 서버의 성능은 얼마나되나요?
+  - [서버 성능테스트 이야기 1 \[ Overview \]](https://vince-kim.tistory.com/31)
+  - [서버 성능테스트 이야기 2 \[ 첫 테스트 \]](https://vince-kim.tistory.com/32)
+  - [서버 성능테스트 이야기 3 \[ 성능개선 : JVM 메모리 영역 확장 \]](https://vince-kim.tistory.com/33)
+  - [서버 성능테스트 이야기 4 \[ 성능개선 적용기 : StackTrace 최소화 \]](https://vince-kim.tistory.com/34)
+   
+#### 테스트도 철저히 작성해보고 싶습니다.
 - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
 - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
+
+
+
 <br>
