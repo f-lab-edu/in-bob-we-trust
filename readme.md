@@ -11,22 +11,14 @@
 - 단위테스트 커버리지 체크 적용 및 유지하기
 - 대용량 트래픽 or 대용량 데이터를 핸들링하는 경험
 - 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기
-    - (= Microservices && interconnection)
 - 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?
-    - (= Scaling && 테스트 시나리오)
 - 모든 기능이 탑재된 서비스를 개발하는 것이 아닌, 진화하는 서비스를 경험하기
-    - (=마일스톤)
 
 <br>
 
 ### :bicyclist: 서비스는 어떻게 구성되어있나요?
-
-:
-point_right: [과거 서비스-flow Snapshot 보러가기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
-
-<br>
-
-아래는 현재 서비스플로우 snapshot입니다. (of 2022.01.28)
+- [과거 서비스-flow Snapshot 확인하기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
+- 아래는 현재 서비스플로우 snapshot 입니다. (of 2022.01.28)
 
 <p align="left">
   <div align="left"><img src="./.docs/serviceflow-snapshot3.png" width="100%"/></div>
@@ -90,21 +82,31 @@ point_right: [과거 서비스-flow Snapshot 보러가기](https://github.com/f-
 
 - 위치정보서비스의 Redis 캐시는 얼마나 최적화 되어있을까?
 
-- 배달완료된 주문은
+- 배달완료된 주문은 별도 분리가 필요합니다.
 
 - 기존 성능테스트에서 개선할 점들을 찾아내서
-  - 어떤 부분이 느렸고 왜 느렸는지 분석해나가기
-  - HTTP Duration 분석 후 최적화
- 
+    - 어떤 부분이 느렸고 왜 느렸는지 분석해나가기
+    - HTTP Duration 분석 후 최적화
+
 - MongoDB Write I/O 최적화
 
 - 서버 간 통신을 비동기로 변경해보겠습니다.
-  - 현재는 Sync 로 구현
+    - 현재는 Sync 로 구현
 
 - 데이터베이스 MongoDB 부하방지
 
 - Scale Out vs Scale Up
 
 - SpringBoot의 내장 Netty Server는 어떻게 작성되어있지? 내가 직접 NIO 서버를 작성해서 주입하면 지금 성능을 향상 시킬 수 있을까?
+
+- 분산환경에서 여러 서비스들과 통신하는 과정을 경험하기
+    - (= Microservices && interconnection)
+
+
+- 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?
+    - (= Scaling && 테스트 시나리오)
+
+- 트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?
+    - (= Scaling && 테스트 시나리오)
 
 <br>
