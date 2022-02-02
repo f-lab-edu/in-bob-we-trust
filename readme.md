@@ -49,13 +49,13 @@
 - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
 - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
 
-#### REST 도큐먼트 툴 적용해볼까요?
+#### REST 도큐먼트 툴 적용해볼까요:question:
 - [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25?category=973188)
 
-#### 프로젝트에 포매터를 적용할까요?
+#### 프로젝트에 포매팅 논쟁을 정리했습니다.:question:
 - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
 
-#### 라이더 위치기능은 어떻게 구현할까요?
+#### 라이더 위치기능은 어떻게 구현할까요:question:
 - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
 
 #### MongoDB Atlas 인스턴스 비용 비효율적인것 아닌가요?
@@ -71,6 +71,30 @@
 - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
 - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 
+#### 서버간 통신속도를 향상 시키는 방법은 무엇이 있을까요:question:
 
+#### 내 MongoDB는 효율적으로 설계되어있을까? 
+
+#### 데이터베이스 MongoDB 부하방지 
+
+#### 테스트 시나리오기반 실제 라이더 위치조회 캐시최적화 (Hit vs Miss) 
+
+#### 기존 성능테스트에서 개선할 점들을 찾아내서 어떤 부분이 느렸고 왜 느렸는지 분석해나가기 
+
+#### 평균 
+  - MongoDB Write I/O 최적화
+  - HTTP Duration 분석 후 최적화
+  
+#### 서버 간 통신을 비동기로 변경해보겠습니다.
+  - 현재는 Sync 로 구현
+   
+#### Scale Out vs Scale Up
+- 직접 체감해보기
+
+#### SpringBoot의 기본 Netty Server 오버라이드해서 Inject하기 
+
+#### 내가 사용하는 Redis 캐시는 최적화 되어있을까?
+
+#### 서버의 Start Up Time은 얼마나 빨라질 수 있을까?
 
 <br>
