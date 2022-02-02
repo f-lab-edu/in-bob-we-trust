@@ -54,7 +54,7 @@
 
     - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
 
-- ** 주혁님, 라이더 위치기능이 필요합니다.**
+- **라이더 위치기능이 필요합니다.**
 
     - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
 
