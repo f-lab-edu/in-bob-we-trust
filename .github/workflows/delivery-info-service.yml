@@ -34,45 +34,45 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew ${{ matrix.TEST_COMMAND }}
-
-  aws_deploy_server:
-    runs-on: ubuntu-latest
-    steps:
-      - name: AWS > Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-duration-seconds: 1200
-
-      - name: AWS > SSH > git checkout > run new
-        if: success()
-        uses: appleboy/ssh-action@master
-        with:
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          script: |
-            sudo rm -R /home/ec2-user/in-bob-we-trust
-            cd /home/ec2-user
-            git clone https://github.com/f-lab-edu/in-bob-we-trust
-            cd /home/ec2-user/in-bob-we-trust
-            echo "killing process -----------------------------"
-            echo  ${{ github.head_ref }}
-            echo "killing process -----------------------------"
-            git checkout remotes/origin/${{ github.head_ref }}
-            ./gradlew :delivery-info-service:build -x test -x integrationTest
-            echo "killing process -----------------------------"
-            sudo lsof -t -i tcp:8888 | xargs kill
-            cd /home/ec2-user/in-bob-we-trust
-            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
-              -Xms1024m -Xmx2048m \
-              -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \
-              -Dhello.sha="${{ github.sha }}" \
-              -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
-              -jar ./delivery-info-service/build/libs/delivery-info-service.jar \
-              --spring.profiles.active=production > /dev/null 2>&1 & disown 
+#
+#  aws_deploy_server:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: AWS > Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+#          role-duration-seconds: 1200
+#
+#      - name: AWS > SSH > git checkout > run new
+#        if: success()
+#        uses: appleboy/ssh-action@master
+#        with:
+#          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+#          host: ${{ secrets.AWS_EC2_HOST }}
+#          username: ${{ secrets.AWS_EC2_USER }}
+#          script: |
+#            sudo rm -R /home/ec2-user/in-bob-we-trust
+#            cd /home/ec2-user
+#            git clone https://github.com/f-lab-edu/in-bob-we-trust
+#            cd /home/ec2-user/in-bob-we-trust
+#            echo "killing process -----------------------------"
+#            echo  ${{ github.head_ref }}
+#            echo "killing process -----------------------------"
+#            git checkout remotes/origin/${{ github.head_ref }}
+#            ./gradlew :delivery-info-service:build -x test -x integrationTest
+#            echo "killing process -----------------------------"
+#            sudo lsof -t -i tcp:8888 | xargs kill
+#            cd /home/ec2-user/in-bob-we-trust
+#            java -Dspring.data.mongodb.uri="${{ secrets.MONGO_DB_CONN }}" \
+#              -Xms1024m -Xmx2048m \
+#              -DrestClient.proxy.baseUrl="${{ secrets.AWS_EC2_RELAY_SERVICE }}:8090" \
+#              -Dhello.sha="${{ github.sha }}" \
+#              -Dspring.zipkin.base-url="${{ secrets.AWS_ZIPKIN_URL }}" \
+#              -jar ./delivery-info-service/build/libs/delivery-info-service.jar \
+#              --spring.profiles.active=production > /dev/null 2>&1 & disown
 
   # The process is running in the background in the terminal, but the output from stdout (and stderr) is still being sent to the terminal.
   # To stop this, add > /dev/null 2>&1 before the & to redirect both the outputs to /dev/null
