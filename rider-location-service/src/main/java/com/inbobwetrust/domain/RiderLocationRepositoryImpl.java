@@ -28,4 +28,9 @@ public class RiderLocationRepositoryImpl implements RiderLocationRepository {
   public Flux<Boolean> deleteAll() {
     return locationOperations.keys("*").flatMap(locationOperations.opsForValue()::delete);
   }
+
+  @Override
+  public Mono<RiderLocation> getLocation(String deliveryId) {
+    return locationOperations.opsForValue().get(deliveryId);
+  }
 }

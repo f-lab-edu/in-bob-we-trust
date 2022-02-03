@@ -1,10 +1,5 @@
 package com.inbobwetrust.domain;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RiderLocationServiceTest {
@@ -47,13 +48,12 @@ class RiderLocationServiceTest {
     if (!canSetIfPresent) {
       when(deliveryRepository.isPickedUp(anyString())).thenReturn(Mono.just(isPickedUp));
     }
-
     if (isPickedUp && !canSetIfPresent) {
       when(locationRepository.setIfAbsent(any(RiderLocation.class)))
           .thenReturn(Mono.just(canSetIfAbsent));
     }
     // then
-    var resultStream = locationService.setIfPresent(riderLocation);
+    var resultStream = locationService.tryPutOperation(riderLocation);
 
     StepVerifier.create(resultStream).expectNextMatches(res -> res == finalResult).verifyComplete();
 
@@ -86,5 +86,16 @@ class RiderLocationServiceTest {
     StepVerifier.create(locationService.findAll())
         .expectNext(locations.get(0), locations.get(1))
         .verifyComplete();
+  }
+
+  @Test
+  void getLocationTest() {
+    // given
+    var location = new RiderLocation("rider-12222", "delivery-12222", 23.0f, Float.MIN_VALUE);
+    // when
+    when(locationRepository.getLocation(location.getDeliveryId())).thenReturn(Mono.just(location));
+    var stream = locationService.getLocation(location.getDeliveryId());
+    // then
+    StepVerifier.create(stream).expectNext(location).verifyComplete();
   }
 }

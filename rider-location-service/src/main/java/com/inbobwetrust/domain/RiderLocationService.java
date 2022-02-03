@@ -11,9 +11,10 @@ public class RiderLocationService {
   private final RiderLocationRepository repository;
   private final DeliveryRepository deliveryRepository;
 
-  public Mono<Boolean> setIfPresent(RiderLocation location) {
+  public Mono<Boolean> tryPutOperation(RiderLocation location) {
     return repository.setIfPresent(location).flatMap(isSaved -> orElseSetNew(isSaved, location));
   }
+
 
   private Mono<Boolean> orElseSetNew(Boolean isSaved, RiderLocation location) {
     return isSaved ? Mono.just(true) : doSetNew(location);
@@ -29,7 +30,12 @@ public class RiderLocationService {
     return isPickedUp ? repository.setIfAbsent(location) : Mono.just(false);
   }
 
+
   public Flux<RiderLocation> findAll() {
     return repository.findAll();
+  }
+
+  public Mono<RiderLocation> getLocation(String deliveryId) {
+    return repository.getLocation(deliveryId);
   }
 }
