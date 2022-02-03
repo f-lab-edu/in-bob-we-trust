@@ -1,16 +1,8 @@
 package com.inbobwetrust.domain;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,17 +17,27 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
 @Testcontainers
 public class RiderLocationWriteTest {
-
   @Autowired WebTestClient testClient;
 
   @SpyBean RiderLocationRepository locationRepository;
@@ -94,7 +96,7 @@ public class RiderLocationWriteTest {
         .expectBody(Boolean.class)
         .isEqualTo(false);
     // then
-    verify(locationService, times(1)).setIfPresent(any(RiderLocation.class));
+    verify(locationService, times(1)).tryPutOperation(any(RiderLocation.class));
     verify(locationRepository, times(1)).setIfPresent(riderLocation);
     verify(deliveryRepository, times(1)).isPickedUp(riderLocation.getDeliveryId());
   }
@@ -125,7 +127,7 @@ public class RiderLocationWriteTest {
     // then
     var cache = locationRepository.findAll().collectList().block();
     System.out.println(cache);
-    verify(locationService, times(1)).setIfPresent(any(RiderLocation.class));
+    verify(locationService, times(1)).tryPutOperation(any(RiderLocation.class));
     verify(locationRepository, times(1)).setIfPresent(riderLocation);
     verify(deliveryRepository, times(1)).isPickedUp(riderLocation.getDeliveryId());
   }
@@ -152,8 +154,36 @@ public class RiderLocationWriteTest {
 
     // then
     StepVerifier.create(locationRepository.findAll()).expectNext(riderLocation).verifyComplete();
-    verify(locationService, times(1)).setIfPresent(any(RiderLocation.class));
+    verify(locationService, times(1)).tryPutOperation(any(RiderLocation.class));
     verify(locationRepository, times(1)).setIfPresent(riderLocation);
     verify(deliveryRepository, times(0)).isPickedUp(any());
+  }
+
+  @Test
+  @DisplayName("라이더 위치 조회 테스트")
+  void getLocationTest() {
+    // given
+    var deliveryId = LocalDateTime.now().toString();
+    var riderLocation = new RiderLocation(deliveryId, deliveryId, 180.0f, 180f);
+    var saved = locationRepository.setIfAbsent(riderLocation).block();
+    assertEquals(true, saved);
+    var uri =
+        UriComponentsBuilder.fromUriString("/rider/location")
+            .queryParam("deliveryId", riderLocation.getDeliveryId())
+            .buildAndExpand()
+            .toUri();
+    // when
+    var getLocationResult =
+        testClient
+            .get()
+            .uri(uri)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(RiderLocation.class)
+            .returnResult()
+            .getResponseBody();
+    // then
+    Assertions.assertEquals(riderLocation, getLocationResult);
   }
 }
