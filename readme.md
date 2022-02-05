@@ -17,6 +17,7 @@
 <br>
 
 ### :bicyclist: 서비스는 어떻게 구성되어있나요?
+
 - [과거 서비스-flow Snapshot 확인하기](https://github.com/f-lab-edu/in-bob-we-trust/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%94%8C%EB%A1%9C%EC%9A%B0-snapshots)
 - 아래는 현재 서비스플로우 snapshot 입니다. (of 2022.01.28)
 
@@ -38,25 +39,25 @@
 
 <br>
 
-### :triangular_ruler: 프로젝트를 통해 해결한 궁금증과 문제들
+### :bicyclist: 프로젝트를 통해 해결한 궁금증과 문제들
 
 - **프로젝트를 시작하시죠.**
 
-    - [프로젝트 시작하기](https://vince-kim.tistory.com/23?category=973188)
-    - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22?category=973188)
-    - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24?category=973188)
+    - [프로젝트 시작하기](https://vince-kim.tistory.com/23)
+    - [프로젝트 주제선정하기](https://vince-kim.tistory.com/22)
+    - [배달 중계서비스를 설계하기](https://vince-kim.tistory.com/24)
 
 - **REST 도큐먼트 툴 적용해볼까요?**
 
-    - [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25?category=973188)
+    - [SwaggerUI 도큐먼트 툴 적용 + 단점 보완하기](https://vince-kim.tistory.com/25)
 
 - **프로젝트의 포매팅 논쟁을 정리했습니다.**
 
-    - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28?category=973188)
+    - [Github 프로젝트 & Intellij 전반에 걸쳐 Google Java Style Guide 를 강제하기](https://vince-kim.tistory.com/28)
 
 - **라이더 위치기능이 필요합니다.**
 
-    - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29?category=973188)
+    - [\[Reactive한 라이더위치 기능구현\] 요구사항 분석부터 기능구현까지](https://vince-kim.tistory.com/29)
 
 - **MongoDB Atlas 인스턴스 비용 지출은 비효율이다.**
 
@@ -100,8 +101,7 @@
 - **분산환경에서 여러 서비스들과 통신하는 과정을 경험하기**
     - (= Microservices && interconnection)
 
-
-- **트래픽 최저점시간 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?**
-    - (= Scaling && 테스트 시나리오)
+- **배달의민족 서비스는 최저점 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?**
+    - 배달의민족 서비스 트래픽 체험기 (= Scaling && 테스트 시나리오)
 
 <br>
