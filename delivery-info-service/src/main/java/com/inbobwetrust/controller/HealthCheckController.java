@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -20,5 +23,21 @@ public class HealthCheckController {
   @GetMapping
   Mono<String> helloWorld() {
     return Mono.just(helloWorld);
+  }
+
+  String IP_PREFIX = "IP is...";
+  String ipMessage = IP_PREFIX;
+
+  @GetMapping("/ip")
+  Mono<String> getIp() {
+    if (ipMessage.equals(IP_PREFIX)) {
+      try {
+        InetAddress ip = InetAddress.getLocalHost();
+        ipMessage += " From host: " + ip;
+      } catch (UnknownHostException e) {
+        e.printStackTrace();
+      }
+    }
+    return Mono.just(ipMessage);
   }
 }
