@@ -1,22 +1,10 @@
 import {sleep, check, fail} from 'k6';
 import http from 'k6/http';
-import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
-
-
-// export let options = {
-//     vus: 1,
-//     duration: '1s',
-//
-// }
-
-export function setup() {
-
-}
 
 export let options = {
     stages: [
-        {duration: '2m', target: 1100},
-        {duration: '10m', target: 1100},
+        {duration: '5m', target: 11000},
+        {duration: '15m', target: 11000},
     ],
     thresholds: {
         // http errors should be less than 1%
@@ -27,8 +15,6 @@ export let options = {
         checks: ['rate>=0.95']
     }
 };
-/*
-*/
 
 const params = {
     headers: {
@@ -41,7 +27,7 @@ const URI = uri + "/api/delivery"
 
 export default () => {
     // 신규주문
-    const req_addDelivery = makeNewDelivery();
+    const req_addDelivery = makeNewDelivery(Date.now().toString());
     req_addDelivery['riderId'] = null;
 
     const addDelivery = http.post(URI, JSON.stringify(req_addDelivery), params);
@@ -157,8 +143,3 @@ function makeDelivery(id, status) {
         'finishTime': new Date().toISOString()
     }
 }
-
-function generateRandomNumberBetween(min, max) {
-    return (Math.random() * (max - min) + min).toFixed(3);
-};
-
