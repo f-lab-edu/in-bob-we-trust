@@ -75,6 +75,9 @@
     - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 깨달은 것들 (테스트 철학, 전략, 노하우, Jacoco)](https://vince-kim.tistory.com/36)
     - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 
+- **Scale Out vs Scale Up**
+    - [서버를 10대로 스케일-아웃해서 60만 RPM 트래픽을 테스트하면 보이는 것들... (K6, AWS, EC2, 테스트, 성능테스트)](https://vince-kim.tistory.com/39)
+
 - **내 MongoDB는 효율적으로 설계되어있을까?**
 
 - **내 서버의 스타트업 타입은 얼마나 빨라질 수 있을까?**
@@ -94,7 +97,6 @@
 
 - **데이터베이스 MongoDB 부하방지**
 
-- **Scale Out vs Scale Up**
 
 - **SpringBoot의 내장 Netty Server는 어떻게 작성되어있지? 내가 직접 NIO 서버를 작성해서 주입하면 지금 성능을 향상 시킬 수 있을까?**
 
