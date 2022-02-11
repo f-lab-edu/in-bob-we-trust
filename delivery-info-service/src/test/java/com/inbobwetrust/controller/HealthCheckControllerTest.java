@@ -40,4 +40,27 @@ class HealthCheckControllerTest {
             });
     // then
   }
+
+  @Test
+  @DisplayName("Ping Hello World")
+  void helloWorld() {
+    // given
+    var uri = "";
+    // when
+    testClient
+      .get()
+      .uri(uri)
+      .exchange()
+      .expectStatus()
+      .isOk()
+      .expectBody(String.class)
+      .consumeWith(
+        response -> {
+          assertTrue(
+            Objects.requireNonNull(response.getResponseBody())
+              .toLowerCase()
+              .contains("hello world"));
+        });
+    // then
+  }
 }
