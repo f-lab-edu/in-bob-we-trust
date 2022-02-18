@@ -79,7 +79,7 @@
     - [대용량 트래픽은 어떻게 테스트해야할까? 60만 RPM 테스트하기 by 스케일아웃 (K6, AWS, EC2, 테스트, 성능테스트)](https://vince-kim.tistory.com/39)
 
 - **우아한 중계서비스에 웹소켓이 필요할까?**
-    - [웹소켓이 필요한 기능은 무엇이 있을까? 서비스의 신규 기능 도입을 위한 기술검토과정](https://vince-kim.tistory.com/)
+    - [웹소켓 WebSocket 에 대해서 알아보자 \(구현, 테스트, 예제, SpringBoot, WebSocket, WebFlux, etc...\)](https://vince-kim.tistory.com/40)
 
 - **내 MongoDB는 효율적으로 설계되어있을까?**
 - **내 서버의 스타트업 타입은 얼마나 빨라질 수 있을까?**
