@@ -76,34 +76,24 @@
     - [테스트를 작성하고, 커버리지를 95% 이상 유지하며 익힌 것들 (Reactor, Spring WebFlux, JUnit, 단위테스트, 통합테스트, 추천인강)](https://vince-kim.tistory.com/37)
 
 - **Scale Out vs Scale Up**
-    - [서버를 10대로 스케일-아웃해서 60만 RPM 트래픽을 테스트하면 보이는 것들... (K6, AWS, EC2, 테스트, 성능테스트)](https://vince-kim.tistory.com/39)
+    - [대용량 트래픽은 어떻게 테스트해야할까? 60만 RPM 테스트하기 by 스케일아웃 (K6, AWS, EC2, 테스트, 성능테스트)](https://vince-kim.tistory.com/39)
+
+- **우아한 중계서비스에 웹소켓이 필요할까?**
+    - [웹소켓이 필요한 기능은 무엇이 있을까? 서비스의 신규 기능 도입을 위한 기술검토과정](https://vince-kim.tistory.com/)
 
 - **내 MongoDB는 효율적으로 설계되어있을까?**
-
 - **내 서버의 스타트업 타입은 얼마나 빨라질 수 있을까?**
-
 - **서버간 통신속도를 향상 시키는 방법은 무엇이 있을까?**
-
 - **위치정보서비스의 Redis 캐시는 얼마나 최적화 되어있을까?**
-
 - **배달완료된 주문은 별도 분리가 필요합니다.**
-
 - **기존 성능테스트에서 개선할 점들을 찾아내서 어떤 부분이 느렸고 왜 느렸는지 분석해나가기**
-    - HTTP Duration 분석 후 최적화
+    - HTTP Duration, API Tracing w/ Zipkin, Pinpoint or AWS X-Ray.... dissect API requests etc...
     - MongoDB Write I/O 최적화
-
-- **서버 간 통신을 비동기로 변경하기.**
-    - 현재는 Sync 로 구현
-
+- **서버 간 통신을 비동기로 변경하기.** - 현재는 Sync 로 구현
 - **데이터베이스 MongoDB 부하방지**
-
-
 - **SpringBoot의 내장 Netty Server는 어떻게 작성되어있지? 내가 직접 NIO 서버를 작성해서 주입하면 지금 성능을 향상 시킬 수 있을까?**
-
 - **분산환경에서 여러 서비스들과 통신하는 과정을 경험하기**
-    - (= Microservices && interconnection)
-
 - **배달의민족 서비스는 최저점 대비 100배까지 증가하는 점심, 저녁 피크타임 트래픽 스파이크를 어떻게 해결할까요?**
-    - 배달의민족 서비스 트래픽 체험기 (= Scaling && 테스트 시나리오)
+    - analyze service traffic change/variance then..... scale? up? out? queue?
 
 <br>

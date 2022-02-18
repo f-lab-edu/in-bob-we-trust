@@ -1,0 +1,13 @@
+server:
+  port: 8888
+
+spring:
+  profiles:
+    active: production
+  mongodb:
+    embedded:
+      version: 3.5.5
+
+hello:
+  sha: aaaaaa
+  world: Hello World! from Delivery-Info-Service ${hello.sha}.from Here
