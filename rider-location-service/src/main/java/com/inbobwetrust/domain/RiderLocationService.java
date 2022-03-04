@@ -1,5 +1,7 @@
 package com.inbobwetrust.domain;
 
+import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.RiderLocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

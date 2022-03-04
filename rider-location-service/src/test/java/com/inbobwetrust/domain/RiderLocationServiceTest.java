@@ -1,5 +1,7 @@
 package com.inbobwetrust.domain;
 
+import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.RiderLocationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,9 +26,11 @@ class RiderLocationServiceTest {
 
   @InjectMocks RiderLocationService locationService;
 
-  @Mock RiderLocationRepository locationRepository;
+  @Mock
+  RiderLocationRepository locationRepository;
 
-  @Mock DeliveryRepository deliveryRepository;
+  @Mock
+  DeliveryRepository deliveryRepository;
 
   @ParameterizedTest
   @DisplayName("캐시에 저장하는 워크플로우")
