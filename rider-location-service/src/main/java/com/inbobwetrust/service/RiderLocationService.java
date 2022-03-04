@@ -1,5 +1,6 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.service;
 
+import com.inbobwetrust.domain.RiderLocation;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.repository.RiderLocationRepository;
 import lombok.RequiredArgsConstructor;
