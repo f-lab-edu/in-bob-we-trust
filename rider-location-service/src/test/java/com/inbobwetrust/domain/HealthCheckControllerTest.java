@@ -2,6 +2,7 @@ package com.inbobwetrust.domain;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.inbobwetrust.controller.HealthCheckController;
 import groovy.util.logging.Slf4j;
 import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;

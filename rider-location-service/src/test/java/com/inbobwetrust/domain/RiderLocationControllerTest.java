@@ -1,5 +1,7 @@
 package com.inbobwetrust.domain;
 
+import com.inbobwetrust.controller.RiderLocationController;
+import com.inbobwetrust.service.RiderLocationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -20,7 +22,8 @@ class RiderLocationControllerTest {
 
   @Autowired WebTestClient testClient;
 
-  @MockBean RiderLocationService riderLocationService;
+  @MockBean
+  RiderLocationService riderLocationService;
 
   String riderLocationMapping = "/rider/location";
 

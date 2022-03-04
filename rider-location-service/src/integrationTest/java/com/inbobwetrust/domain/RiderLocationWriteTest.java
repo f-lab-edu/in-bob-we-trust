@@ -2,6 +2,9 @@ package com.inbobwetrust.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.RiderLocationRepository;
+import com.inbobwetrust.service.RiderLocationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +43,14 @@ import static org.mockito.Mockito.verify;
 public class RiderLocationWriteTest {
   @Autowired WebTestClient testClient;
 
-  @SpyBean RiderLocationRepository locationRepository;
+  @SpyBean
+  RiderLocationRepository locationRepository;
 
-  @SpyBean RiderLocationService locationService;
+  @SpyBean
+  RiderLocationService locationService;
 
-  @SpyBean DeliveryRepository deliveryRepository;
+  @SpyBean
+  DeliveryRepository deliveryRepository;
 
   @Container static GenericContainer<?> redisContainer = startRedisContainer();
 

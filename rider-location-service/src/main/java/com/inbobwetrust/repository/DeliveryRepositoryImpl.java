@@ -1,4 +1,4 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.repository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,7 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.repository;
 
 import com.inbobwetrust.config.JacocoNotGenerated;
+import com.inbobwetrust.domain.RiderLocation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Repository;

@@ -1,5 +1,7 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.controller;
 
+import com.inbobwetrust.domain.RiderLocation;
+import com.inbobwetrust.service.RiderLocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
