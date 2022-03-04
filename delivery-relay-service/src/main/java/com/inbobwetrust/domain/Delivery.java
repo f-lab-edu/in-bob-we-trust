@@ -1,4 +1,4 @@
-package com.inbobwetrust.relay.domain;
+package com.inbobwetrust.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.inbobwetrust.relay.domain;
+package com.inbobwetrust.domain;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
