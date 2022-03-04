@@ -1,5 +1,8 @@
 package com.inbobwetrust.domain;
 
+import com.inbobwetrust.repository.DeliveryRepository;
+import com.inbobwetrust.repository.RiderLocationRepository;
+import com.inbobwetrust.service.RiderLocationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +25,14 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RiderLocationServiceTest {
 
-  @InjectMocks RiderLocationService locationService;
+  @InjectMocks
+  RiderLocationService locationService;
 
-  @Mock RiderLocationRepository locationRepository;
+  @Mock
+  RiderLocationRepository locationRepository;
 
-  @Mock DeliveryRepository deliveryRepository;
+  @Mock
+  DeliveryRepository deliveryRepository;
 
   @ParameterizedTest
   @DisplayName("캐시에 저장하는 워크플로우")

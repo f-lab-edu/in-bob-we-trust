@@ -1,5 +1,6 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.repository;
 
+import com.inbobwetrust.domain.RiderLocation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

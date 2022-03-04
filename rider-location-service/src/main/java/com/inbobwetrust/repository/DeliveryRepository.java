@@ -1,4 +1,4 @@
-package com.inbobwetrust.domain;
+package com.inbobwetrust.repository;
 
 import reactor.core.publisher.Mono;
 
