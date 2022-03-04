@@ -1,4 +1,4 @@
-package com.inbobwetrust.relay.domain;
+package com.inbobwetrust.domain;
 
 public enum DeliveryStatus {
   DECLINED("접수", "접수"),

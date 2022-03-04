@@ -1,13 +1,15 @@
-package com.inbobwetrust.relay;
+package com.inbobwetrust.controller;
 
-import com.inbobwetrust.relay.domain.Delivery;
-import com.inbobwetrust.relay.domain.ReceiverType;
-import com.inbobwetrust.relay.domain.RelayRequest;
-import javax.validation.Valid;
+import com.inbobwetrust.domain.Delivery;
+import com.inbobwetrust.domain.ReceiverType;
+import com.inbobwetrust.domain.RelayRequest;
+import com.inbobwetrust.repository.RelayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
