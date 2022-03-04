@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.repository.RiderLocationRepository;
+import com.inbobwetrust.service.RiderLocationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +46,8 @@ public class RiderLocationWriteTest {
   @SpyBean
   RiderLocationRepository locationRepository;
 
-  @SpyBean RiderLocationService locationService;
+  @SpyBean
+  RiderLocationService locationService;
 
   @SpyBean
   DeliveryRepository deliveryRepository;
