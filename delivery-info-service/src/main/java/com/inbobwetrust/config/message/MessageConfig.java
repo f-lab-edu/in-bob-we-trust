@@ -11,7 +11,7 @@ public class MessageConfig {
 
   @Bean
   public Jackson2JsonMessageConverter jsonMessageConverter() {
-    return new Jackson2JsonMessageConverter(new ObjectMapper().registerModule(new JavaTimeModule()));
+    return new Jackson2JsonMessageConverter(
+        new ObjectMapper().registerModule(new JavaTimeModule()));
   }
-
 }

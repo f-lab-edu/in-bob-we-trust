@@ -1,8 +1,13 @@
 package com.inbobwetrust.domain;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.service.RiderLocationService;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,23 +21,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class RiderLocationServiceTest {
 
-  @InjectMocks
-  RiderLocationService locationService;
+  @InjectMocks RiderLocationService locationService;
 
-  @Mock
-  RiderLocationRepository locationRepository;
+  @Mock RiderLocationRepository locationRepository;
 
-  @Mock
-  DeliveryRepository deliveryRepository;
+  @Mock DeliveryRepository deliveryRepository;
 
   @ParameterizedTest
   @DisplayName("캐시에 저장하는 워크플로우")

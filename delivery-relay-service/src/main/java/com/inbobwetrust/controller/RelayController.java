@@ -4,12 +4,11 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.ReceiverType;
 import com.inbobwetrust.domain.RelayRequest;
 import com.inbobwetrust.repository.RelayRepository;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
