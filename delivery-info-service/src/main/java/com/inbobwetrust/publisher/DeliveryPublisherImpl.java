@@ -29,47 +29,45 @@ public class DeliveryPublisherImpl implements DeliveryPublisher {
 
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
     return Mono.just(delivery)
-      .subscribeOn(Schedulers.boundedElastic())
-      .flatMap(this::publishAddDeliveryEvent);
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMap(this::publishAddDeliveryEvent);
   }
 
   @Override
   public Mono<Delivery> sendSetRiderEvent(Delivery delivery) {
     return Mono.just(delivery)
-      .subscribeOn(Schedulers.boundedElastic())
-      .flatMap(this::publishSetRiderEvent);
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMap(this::publishSetRiderEvent);
   }
-
 
   private Mono<Delivery> publishAddDeliveryEvent(Delivery delivery) {
     return Mono.fromCallable(
-      () -> {
-        this.amqpTemplate.convertAndSend(
-          "inbobwetrust-delivery-addDelivery", "new-items-spring-amqp", delivery);
-        return delivery;
-      });
+        () -> {
+          this.amqpTemplate.convertAndSend(
+              "inbobwetrust-delivery-addDelivery", "new-items-spring-amqp", delivery);
+          return delivery;
+        });
   }
 
   private Mono<Delivery> publishSetRiderEvent(Delivery delivery) {
     return Mono.fromCallable(
-      () -> {
-        this.amqpTemplate.convertAndSend(
-          "inbobwetrust-delivery-setRider", "new-items-spring-amqp", delivery);
-        return delivery;
-      });
+        () -> {
+          this.amqpTemplate.convertAndSend(
+              "inbobwetrust-delivery-setRider", "new-items-spring-amqp", delivery);
+          return delivery;
+        });
   }
 
-
   private Mono<? extends Throwable> handleOn5xxStatus(
-    Delivery delivery, ClientResponse serverResponse) {
+      Delivery delivery, ClientResponse serverResponse) {
     log.info("Status code 5XX is : {}", serverResponse.statusCode().value());
     log.info("Error Status 5XX for delivery : {}", delivery);
     return Mono.error(
-      new RelayServerException("Shop operation failed for delivery :     " + delivery));
+        new RelayServerException("Shop operation failed for delivery :     " + delivery));
   }
 
   private Mono<? extends Throwable> handleOn4xxStatus(
-    Delivery delivery, ClientResponse clientResponse) {
+      Delivery delivery, ClientResponse clientResponse) {
     log.info("Status code 4xx is : {}", clientResponse.statusCode().value());
     log.info("Error Status 4XX for delivery : {}", delivery);
     return Mono.error(new RelayClientException("Push Event failed for delivery :     " + delivery));
