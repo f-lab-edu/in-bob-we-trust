@@ -1,15 +1,16 @@
 server:
   port: 8090
 
+hello:
+  sha: aaaaaa
+  world: Hello World! from Delivery-Relay-Service ${hello.sha}.from Here
+
 spring:
   profiles:
     active: production
   mongodb:
     embedded:
       version: 3.5.5
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
 
 management:
   endpoints:
