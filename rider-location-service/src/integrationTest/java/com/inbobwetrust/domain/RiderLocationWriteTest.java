@@ -1,10 +1,19 @@
 package com.inbobwetrust.domain;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inbobwetrust.repository.DeliveryRepository;
 import com.inbobwetrust.repository.RiderLocationRepository;
 import com.inbobwetrust.service.RiderLocationService;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,16 +35,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @AutoConfigureWireMock(port = 0)
@@ -43,14 +42,11 @@ import static org.mockito.Mockito.verify;
 public class RiderLocationWriteTest {
   @Autowired WebTestClient testClient;
 
-  @SpyBean
-  RiderLocationRepository locationRepository;
+  @SpyBean RiderLocationRepository locationRepository;
 
-  @SpyBean
-  RiderLocationService locationService;
+  @SpyBean RiderLocationService locationService;
 
-  @SpyBean
-  DeliveryRepository deliveryRepository;
+  @SpyBean DeliveryRepository deliveryRepository;
 
   @Container static GenericContainer<?> redisContainer = startRedisContainer();
 
