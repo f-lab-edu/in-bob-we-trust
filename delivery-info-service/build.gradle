@@ -137,6 +137,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
     implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin"
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
         implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
     }
@@ -148,6 +149,7 @@ dependencies {
     testImplementation "org.testcontainers:testcontainers:1.16.2"
     testImplementation "org.testcontainers:junit-jupiter:1.16.2"
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    testImplementation "org.testcontainers:rabbitmq:1.16.3"
 }
 
 
