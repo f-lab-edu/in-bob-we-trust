@@ -1,15 +1,7 @@
 # Example workflow
 name: google-java-format
 
-on:
-  push:
-    branches-ignore:
-      - main
-
-  pull_request:
-    branches-ignore:
-      - main
-
+on: [ push ]
 
 jobs:
 

@@ -23,7 +23,7 @@ public class RiderLocationController {
   }
 
   @GetMapping
-  public Mono<RiderLocation> getLocation(@RequestParam(name = "deliveryId") String deliveryId){
+  public Mono<RiderLocation> getLocation(@RequestParam(name = "deliveryId") String deliveryId) {
     return locationService.getLocation(deliveryId);
   }
 }

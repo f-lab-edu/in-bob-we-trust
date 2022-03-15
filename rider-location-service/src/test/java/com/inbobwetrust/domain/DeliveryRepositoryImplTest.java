@@ -4,9 +4,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import java.util.stream.Stream;
-
 import com.inbobwetrust.repository.DeliveryRepositoryImpl;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,8 +25,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 class DeliveryRepositoryImplTest {
 
-  @InjectMocks
-  DeliveryRepositoryImpl deliveryRepository;
+  @InjectMocks DeliveryRepositoryImpl deliveryRepository;
 
   private WireMockServer wireMockServer;
 
