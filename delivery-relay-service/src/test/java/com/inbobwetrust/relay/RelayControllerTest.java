@@ -8,10 +8,9 @@ import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.domain.ReceiverType;
 import com.inbobwetrust.domain.RelayRequest;
+import com.inbobwetrust.repository.RelayRepository;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
-
-import com.inbobwetrust.repository.RelayRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,8 +32,7 @@ class RelayControllerTest {
 
   @Autowired WebTestClient testClient;
 
-  @MockBean
-  RelayRepository relayRepository;
+  @MockBean RelayRepository relayRepository;
 
   private final String BASE_URL = "/relay/v1";
 

@@ -1,5 +1,9 @@
 package com.inbobwetrust.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.inbobwetrust.controller.RiderLocationController;
 import com.inbobwetrust.service.RiderLocationService;
 import org.junit.jupiter.api.Test;
@@ -12,18 +16,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @WebFluxTest(RiderLocationController.class)
 @AutoConfigureWebTestClient
 class RiderLocationControllerTest {
 
   @Autowired WebTestClient testClient;
 
-  @MockBean
-  RiderLocationService riderLocationService;
+  @MockBean RiderLocationService riderLocationService;
 
   String riderLocationMapping = "/rider/location";
 
@@ -80,7 +79,8 @@ class RiderLocationControllerTest {
             .toUriString();
 
     // when
-    when(riderLocationService.getLocation(location.getDeliveryId())).thenReturn(Mono.just(location));
+    when(riderLocationService.getLocation(location.getDeliveryId()))
+        .thenReturn(Mono.just(location));
 
     var result =
         testClient

@@ -1,16 +1,15 @@
 package com.inbobwetrust.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import groovy.util.logging.Slf4j;
+import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @WebFluxTest(HealthCheckController.class)
 @AutoConfigureWebTestClient
