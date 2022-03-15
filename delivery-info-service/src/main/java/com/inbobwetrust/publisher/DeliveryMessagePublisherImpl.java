@@ -13,7 +13,8 @@ public class DeliveryMessagePublisherImpl implements DeliveryPublisher {
 
   private String agencyExchange;
 
-  public DeliveryMessagePublisherImpl(AmqpTemplate messageQueue, String shopExchange, String agencyExchange) {
+  public DeliveryMessagePublisherImpl(
+      AmqpTemplate messageQueue, String shopExchange, String agencyExchange) {
     this.messageQueue = messageQueue;
     this.shopExchange = shopExchange;
     this.agencyExchange = agencyExchange;
@@ -21,29 +22,31 @@ public class DeliveryMessagePublisherImpl implements DeliveryPublisher {
 
   @Override
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
-    return Mono.just(delivery).subscribeOn(Schedulers.boundedElastic())
-      .flatMap(this::publishAddDeliveryEvent);
+    return Mono.just(delivery)
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMap(this::publishAddDeliveryEvent);
   }
 
   private Mono<Delivery> publishAddDeliveryEvent(Delivery delivery) {
-    return Mono.fromCallable(() -> {
-      this.messageQueue.convertAndSend(shopExchange, delivery);
-      return delivery;
-    });
+    return Mono.fromCallable(
+        () -> {
+          this.messageQueue.convertAndSend(shopExchange, delivery);
+          return delivery;
+        });
   }
 
   @Override
   public Mono<Delivery> sendSetRiderEvent(Delivery delivery) {
     return Mono.just(delivery)
-      .subscribeOn(Schedulers.boundedElastic()).flatMap(
-        this::publishSetRiderEvent
-      );
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMap(this::publishSetRiderEvent);
   }
 
   private Mono<Delivery> publishSetRiderEvent(Delivery delivery) {
-    return Mono.fromCallable(() -> {
-      this.messageQueue.convertAndSend(agencyExchange, delivery);
-      return delivery;
-    });
+    return Mono.fromCallable(
+        () -> {
+          this.messageQueue.convertAndSend(agencyExchange, delivery);
+          return delivery;
+        });
   }
 }
