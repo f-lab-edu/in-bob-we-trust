@@ -7,6 +7,9 @@ spring:
   mongodb:
     embedded:
       version: 3.5.5
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
 
 hello:
   sha: aaaaaa
