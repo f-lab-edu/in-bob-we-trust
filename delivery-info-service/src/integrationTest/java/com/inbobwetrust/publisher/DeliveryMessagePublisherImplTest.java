@@ -12,11 +12,14 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -38,22 +41,16 @@ public class DeliveryMessagePublisherImplTest {
   @Autowired
   DeliveryRepository deliveryRepository;
 
-//  @Container
-//  static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
+  @Container
+  static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
   @SpyBean
   AmqpTemplate amqpTemplate;
-//
-//  @DynamicPropertySource
-//  static void configure(DynamicPropertyRegistry registry) {
-//    registry.add("spring.rabbitmq.host", container::getContainerIpAddress);
-//    registry.add("spring.rabbitmq.port", container::getAmqpPort);
-//  }
 
   @DynamicPropertySource
   static void configure(DynamicPropertyRegistry registry) {
-    registry.add("spring.rabbitmq.host", () -> "127.0.0.1");
-    registry.add("spring.rabbitmq.port", () -> "5672");
+    registry.add("spring.rabbitmq.host", container::getContainerIpAddress);
+    registry.add("spring.rabbitmq.port", container::getAmqpPort);
   }
 
   @Test
