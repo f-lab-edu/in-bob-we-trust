@@ -14,8 +14,4 @@ spring:
 hello:
   sha: aaaaaa
   world: Hello World! from Delivery-Info-Service ${hello.sha}.from Here
-
-messageQueue:
-  exchange:
-    shop: rabbit-exchange-shop
-    agency: rabbit-exchange-agency
+  
