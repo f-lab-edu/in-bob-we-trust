@@ -61,15 +61,15 @@ public class DeliveryMessagePublisherImplTest {
     var delivery = makeValidDelivery();
     // when
     var resBody = this.webTestClient
-      .post()
-      .uri("/api/delivery")
-      .bodyValue(delivery)
-      .exchange()
-      .expectStatus()
-      .isOk()
-      .expectBody(Delivery.class)
-      .returnResult()
-      .getResponseBody();
+        .post()
+        .uri("/api/delivery")
+        .bodyValue(delivery)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Delivery.class)
+        .returnResult()
+        .getResponseBody();
 
     Thread.sleep(1000L);
     // then
@@ -82,12 +82,12 @@ public class DeliveryMessagePublisherImplTest {
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
-      .shopId("shop1234")
-      .orderId("order-1234")
-      .customerId("customer-1234")
-      .address("서울시 강남구 삼성동 봉은사로 12-41")
-      .phoneNumber("01031583212")
-      .orderTime(LocalDateTime.now())
-      .build();
+        .shopId("shop1234")
+        .orderId("order-1234")
+        .customerId("customer-1234")
+        .address("서울시 강남구 삼성동 봉은사로 12-41")
+        .phoneNumber("01031583212")
+        .orderTime(LocalDateTime.now())
+        .build();
   }
 }
