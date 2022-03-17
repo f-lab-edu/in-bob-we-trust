@@ -29,17 +29,14 @@ public class DeliveryMessagePublisherImplTest {
   @Value("messageQueue.exchange.agency")
   private String agencyExchange;
 
-  @Autowired
-  WebTestClient webTestClient;
+  @Autowired WebTestClient webTestClient;
 
-  @Autowired
-  DeliveryRepository deliveryRepository;
+  @Autowired DeliveryRepository deliveryRepository;
 
   @Container
   static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
-  @SpyBean
-  AmqpTemplate amqpTemplate;
+  @SpyBean AmqpTemplate amqpTemplate;
 
   @DynamicPropertySource
   static void configure(DynamicPropertyRegistry registry) {
@@ -52,16 +49,17 @@ public class DeliveryMessagePublisherImplTest {
     // given
     var delivery = makeValidDelivery();
     // when
-    var resBody = this.webTestClient
-        .post()
-        .uri("/api/delivery")
-        .bodyValue(delivery)
-        .exchange()
-        .expectStatus()
-        .isOk()
-        .expectBody(Delivery.class)
-        .returnResult()
-        .getResponseBody();
+    var resBody =
+        this.webTestClient
+            .post()
+            .uri("/api/delivery")
+            .bodyValue(delivery)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
 
     Thread.sleep(1000L);
     // then
