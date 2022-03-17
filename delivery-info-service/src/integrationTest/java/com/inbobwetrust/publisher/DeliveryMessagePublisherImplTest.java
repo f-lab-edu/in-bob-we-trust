@@ -2,6 +2,8 @@ package com.inbobwetrust.publisher;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -21,14 +23,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 // @Testcontainers
@@ -41,17 +35,14 @@ public class DeliveryMessagePublisherImplTest {
   @Value("messageQueue.exchange.agency")
   private String agencyExchange;
 
-  @Autowired
-  WebTestClient webTestClient;
+  @Autowired WebTestClient webTestClient;
 
-  @Autowired
-  DeliveryRepository deliveryRepository;
+  @Autowired DeliveryRepository deliveryRepository;
 
   @Container
   static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
-  @SpyBean
-  AmqpTemplate amqpTemplate;
+  @SpyBean AmqpTemplate amqpTemplate;
 
   @DynamicPropertySource
   static void configure(DynamicPropertyRegistry registry) {
@@ -64,16 +55,17 @@ public class DeliveryMessagePublisherImplTest {
     // given
     var delivery = makeValidDelivery();
     // when
-    var resBody = this.webTestClient
-        .post()
-        .uri("/api/delivery")
-        .bodyValue(delivery)
-        .exchange()
-        .expectStatus()
-        .isOk()
-        .expectBody(Delivery.class)
-        .returnResult()
-        .getResponseBody();
+    var resBody =
+        this.webTestClient
+            .post()
+            .uri("/api/delivery")
+            .bodyValue(delivery)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(Delivery.class)
+            .returnResult()
+            .getResponseBody();
 
     Thread.sleep(1000L);
     // then
