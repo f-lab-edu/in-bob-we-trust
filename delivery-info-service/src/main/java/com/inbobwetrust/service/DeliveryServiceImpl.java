@@ -10,15 +10,13 @@ import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.RetryBackoffSpec;
 
-@Service
-@Slf4j
+@Component
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
   private final DeliveryRepository deliveryRepository;
