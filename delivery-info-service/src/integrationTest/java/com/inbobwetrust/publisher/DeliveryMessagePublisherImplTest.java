@@ -1,13 +1,7 @@
 package com.inbobwetrust.publisher;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 
@@ -31,8 +27,8 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-// @Testcontainers
-// @ContextConfiguration
+@Testcontainers
+@ContextConfiguration
 public class DeliveryMessagePublisherImplTest {
 
   @Value("messageQueue.exchange.shop")
@@ -65,15 +61,15 @@ public class DeliveryMessagePublisherImplTest {
     var delivery = makeValidDelivery();
     // when
     var resBody = this.webTestClient
-        .post()
-        .uri("/api/delivery")
-        .bodyValue(delivery)
-        .exchange()
-        .expectStatus()
-        .isOk()
-        .expectBody(Delivery.class)
-        .returnResult()
-        .getResponseBody();
+      .post()
+      .uri("/api/delivery")
+      .bodyValue(delivery)
+      .exchange()
+      .expectStatus()
+      .isOk()
+      .expectBody(Delivery.class)
+      .returnResult()
+      .getResponseBody();
 
     Thread.sleep(1000L);
     // then
@@ -86,12 +82,12 @@ public class DeliveryMessagePublisherImplTest {
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
-        .shopId("shop1234")
-        .orderId("order-1234")
-        .customerId("customer-1234")
-        .address("서울시 강남구 삼성동 봉은사로 12-41")
-        .phoneNumber("01031583212")
-        .orderTime(LocalDateTime.now())
-        .build();
+      .shopId("shop1234")
+      .orderId("order-1234")
+      .customerId("customer-1234")
+      .address("서울시 강남구 삼성동 봉은사로 12-41")
+      .phoneNumber("01031583212")
+      .orderTime(LocalDateTime.now())
+      .build();
   }
 }
