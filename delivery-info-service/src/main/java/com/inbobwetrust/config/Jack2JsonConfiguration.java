@@ -13,6 +13,6 @@ public class Jack2JsonConfiguration {
   @Bean
   public MessageConverter jsonMessageConverter() {
     return new Jackson2JsonMessageConverter(
-      new ObjectMapper().registerModule(new JavaTimeModule()));
+        new ObjectMapper().registerModule(new JavaTimeModule()));
   }
 }
