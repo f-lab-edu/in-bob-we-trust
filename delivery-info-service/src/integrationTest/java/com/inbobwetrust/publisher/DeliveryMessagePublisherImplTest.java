@@ -1,7 +1,13 @@
 package com.inbobwetrust.publisher;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.DeliveryRepository;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -17,13 +23,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -76,7 +75,8 @@ public class DeliveryMessagePublisherImplTest {
     assertTrue(delivery.getShopId().equals(savedDelivery.getShopId()));
     assertTrue(delivery.getCustomerId().equals(savedDelivery.getCustomerId()));
     verify(amqpTemplate, times(1))
-        .convertAndSend(ArgumentMatchers.eq(DeliveryMessagePublisherImpl.shopExchange), any(Delivery.class));
+        .convertAndSend(
+            ArgumentMatchers.eq(DeliveryMessagePublisherImpl.shopExchange), any(Delivery.class));
   }
 
   private Delivery makeValidDelivery() {
