@@ -1,6 +1,7 @@
 package com.inbobwetrust.publisher;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 import com.inbobwetrust.domain.Delivery;
@@ -8,8 +9,6 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -18,9 +17,9 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 class DeliveryMessagePublisherImplTest {
 
-  @InjectMocks DeliveryMessagePublisherImpl deliveryPublisher;
+  DeliveryMessagePublisherImpl deliveryPublisher;
 
-  @Mock AmqpTemplate amqpTemplate;
+  AmqpTemplate amqpTemplate;
 
   private final String SHOP_EXCHANGE = "shop-exchange";
 
@@ -28,8 +27,8 @@ class DeliveryMessagePublisherImplTest {
 
   @BeforeEach
   void setUp() {
-    deliveryPublisher.setShopExchange("shop-exchange");
-    deliveryPublisher.setAgencyExchange("agency-exchange");
+    amqpTemplate = Mockito.mock(AmqpTemplate.class);
+    deliveryPublisher = new DeliveryMessagePublisherImpl(amqpTemplate);
   }
 
   @Test

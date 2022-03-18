@@ -1,32 +1,23 @@
 package com.inbobwetrust.publisher;
 
 import com.inbobwetrust.domain.Delivery;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+@Component
+@RequiredArgsConstructor
+@Slf4j
 public class DeliveryMessagePublisherImpl implements DeliveryPublisher {
 
   private final AmqpTemplate messageQueue;
 
-  private String shopExchange;
+  private final String shopExchange = "messageQueue.exchange.shop";
 
-  private String agencyExchange;
-
-  public DeliveryMessagePublisherImpl(
-      AmqpTemplate messageQueue, String shopExchange, String agencyExchange) {
-    this.messageQueue = messageQueue;
-    this.shopExchange = shopExchange;
-    this.agencyExchange = agencyExchange;
-  }
-
-  public void setShopExchange(String shopExchange) {
-    this.shopExchange = shopExchange;
-  }
-
-  public void setAgencyExchange(String agencyExchange) {
-    this.agencyExchange = agencyExchange;
-  }
+  private final String agencyExchange = "messageQueue.exchange.agency";
 
   @Override
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {
