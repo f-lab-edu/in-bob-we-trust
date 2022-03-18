@@ -38,6 +38,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
@@ -68,8 +69,9 @@ public class DeliveryControllerIntgrationTest {
     return Stream.of(Arguments.arguments(possibleDeliveries));
   }
 
-  public static RabbitMQContainer container =
-      new RabbitMQContainer("rabbitmq:3.7.25-management-alpine").withReuse(true);
+  @Container
+  private static RabbitMQContainer container =
+      new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
   @BeforeAll
   static void beforeAll() {
