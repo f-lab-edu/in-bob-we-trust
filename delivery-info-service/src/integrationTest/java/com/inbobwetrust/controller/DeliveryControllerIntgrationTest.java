@@ -8,6 +8,7 @@ import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +28,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
@@ -58,6 +58,9 @@ public class DeliveryControllerIntgrationTest {
   @SpyBean
   DeliveryPublisher deliveryPublisher;
 
+  @SpyBean
+  AmqpTemplate amqpTemplate;
+
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
@@ -70,11 +73,12 @@ public class DeliveryControllerIntgrationTest {
     return Stream.of(Arguments.arguments(possibleDeliveries));
   }
 
-  @Container
-  static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
+  public static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine").withReuse(true);
 
-  @SpyBean
-  AmqpTemplate amqpTemplate;
+  @BeforeAll
+  static void beforeAll(){
+    container.start();
+  }
 
   @DynamicPropertySource
   static void configure(DynamicPropertyRegistry registry) {
