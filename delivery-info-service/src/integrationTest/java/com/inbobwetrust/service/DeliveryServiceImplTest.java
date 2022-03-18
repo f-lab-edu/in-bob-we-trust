@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
 import com.inbobwetrust.repository.DeliveryRepository;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,8 +18,6 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
-
-import java.time.LocalDateTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
@@ -32,23 +31,21 @@ public class DeliveryServiceImplTest {
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-  @Autowired
-  private DeliveryService deliveryService;
+  @Autowired private DeliveryService deliveryService;
 
-  @Autowired
-  private DeliveryRepository deliveryRepository;
+  @Autowired private DeliveryRepository deliveryRepository;
 
   static Delivery makeDeliveryIsPickedUp(DeliveryStatus status) {
     return Delivery.builder()
-      .orderId(LocalDateTime.now().toString())
-      .customerId("customer-1234")
-      .shopId("shop-1234")
-      .address("서울시 강남구 삼성동 봉은사로 12-41")
-      .deliveryStatus(status)
-      .phoneNumber("01031583212")
-      .orderTime(LocalDateTime.now())
-      .pickupTime(LocalDateTime.now().plusMinutes(1))
-      .build();
+        .orderId(LocalDateTime.now().toString())
+        .customerId("customer-1234")
+        .shopId("shop-1234")
+        .address("서울시 강남구 삼성동 봉은사로 12-41")
+        .deliveryStatus(status)
+        .phoneNumber("01031583212")
+        .orderTime(LocalDateTime.now())
+        .pickupTime(LocalDateTime.now().plusMinutes(1))
+        .build();
   }
 
   @Test
@@ -64,7 +61,7 @@ public class DeliveryServiceImplTest {
     deliveryService.acceptDelivery(acceptDelivery).block();
     // then
     StepVerifier.create(deliveryRepository.findById(delivery.getId()))
-      .expectNextMatches(del -> del.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED))
-      .verifyComplete();
+        .expectNextMatches(del -> del.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED))
+        .verifyComplete();
   }
 }
