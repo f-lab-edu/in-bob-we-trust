@@ -138,7 +138,7 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
     implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin"
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그
+    if (System.getProperty("os.arch").equals("aarch64")) { // 맥 M1 DNS리졸버 버그해결
         implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
     }
     compileOnly 'org.projectlombok:lombok'
