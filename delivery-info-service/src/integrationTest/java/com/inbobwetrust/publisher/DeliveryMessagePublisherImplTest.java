@@ -15,6 +15,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
@@ -34,8 +35,9 @@ public class DeliveryMessagePublisherImplTest {
 
   @Autowired DeliveryRepository deliveryRepository;
 
+  @Container
   public static RabbitMQContainer container =
-      new RabbitMQContainer("rabbitmq:3.7.25-management-alpine").withReuse(true);
+      new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
   @BeforeAll
   static void beforeAll() {

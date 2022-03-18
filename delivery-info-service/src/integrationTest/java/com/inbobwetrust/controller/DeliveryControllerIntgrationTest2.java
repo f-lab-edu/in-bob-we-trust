@@ -10,6 +10,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,15 +33,15 @@ public class DeliveryControllerIntgrationTest2 {
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
+
   @Container
-  static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
+  private static RabbitMQContainer container =
+    new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
-  @DynamicPropertySource
-  static void configure(DynamicPropertyRegistry registry) {
-    registry.add("spring.rabbitmq.host", container::getContainerIpAddress);
-    registry.add("spring.rabbitmq.port", container::getAmqpPort);
+  @BeforeAll
+  static void beforeAll() {
+    container.start();
   }
-
   static Delivery makeDeliveryIsPickedUp(DeliveryStatus status) {
     return Delivery.builder()
         .orderId(LocalDateTime.now().toString())
