@@ -1,19 +1,12 @@
 package com.inbobwetrust.publisher;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.DeliveryRepository;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -24,17 +17,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @Testcontainers
 @ContextConfiguration
 public class DeliveryMessagePublisherImplTest {
-
-  @Value("messageQueue.exchange.shop")
-  private String shopExchange;
-
-  @Value("messageQueue.exchange.agency")
-  private String agencyExchange;
 
   @Autowired WebTestClient webTestClient;
 
@@ -79,8 +73,8 @@ public class DeliveryMessagePublisherImplTest {
     delivery.setId(savedDelivery.getId());
     assertTrue(delivery.getShopId().equals(savedDelivery.getShopId()));
     assertTrue(delivery.getCustomerId().equals(savedDelivery.getCustomerId()));
-    Mockito.verify(amqpTemplate, times(1))
-        .convertAndSend(ArgumentMatchers.eq(shopExchange), any(Delivery.class));
+    verify(amqpTemplate, times(1))
+        .convertAndSend(ArgumentMatchers.eq(DeliveryMessagePublisherImpl.shopExchange), any(Delivery.class));
   }
 
   private Delivery makeValidDelivery() {
