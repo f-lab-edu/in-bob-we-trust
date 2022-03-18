@@ -15,9 +15,9 @@ public class DeliveryMessagePublisherImpl implements DeliveryPublisher {
 
   private final AmqpTemplate messageQueue;
 
-  private final String shopExchange = "messageQueue.exchange.shop";
+  public static final String shopExchange = "messageQueue.exchange.shop";
 
-  private final String agencyExchange = "messageQueue.exchange.agency";
+  public static final String agencyExchange = "messageQueue.exchange.agency";
 
   @Override
   public Mono<Delivery> sendAddDeliveryEvent(Delivery delivery) {

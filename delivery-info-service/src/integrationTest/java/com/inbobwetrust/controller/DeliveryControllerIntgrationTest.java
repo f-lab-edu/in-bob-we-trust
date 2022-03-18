@@ -1,59 +1,67 @@
 package com.inbobwetrust.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.inbobwetrust.controller.TestParameterGenerator.generate;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.domain.DeliveryStatus;
-import com.inbobwetrust.exception.RelayClientException;
+import com.inbobwetrust.publisher.DeliveryPublisher;
 import com.inbobwetrust.repository.DeliveryRepository;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.test.StepVerifier;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.util.UriComponentsBuilder;
-import org.testcontainers.containers.GenericContainer;
-import reactor.test.StepVerifier;
+
+import static com.inbobwetrust.controller.TestParameterGenerator.generate;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("integration")
 @AutoConfigureWebTestClient
-@AutoConfigureWireMock(port = 0)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
+@ContextConfiguration
 public class DeliveryControllerIntgrationTest {
   private static final String DEFAULT_MONGO_DATABASE = "inbob";
-  @Autowired WebTestClient testClient;
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  WebTestClient testClient;
+
+  @Autowired
+  DeliveryRepository deliveryRepository;
+
+  @SpyBean
+  DeliveryPublisher deliveryPublisher;
+
+  @SpyBean
+  AmqpTemplate amqpTemplate;
 
   ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-  private String proxyShopUrl = "/relay/v1/shop";
-
-  private String proxyAgencyUrl = "/relay/v1/agency";
 
   static List<Delivery> possibleDeliveries = Collections.unmodifiableList(generate());
 
@@ -65,6 +73,19 @@ public class DeliveryControllerIntgrationTest {
     return Stream.of(Arguments.arguments(possibleDeliveries));
   }
 
+  public static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine").withReuse(true);
+
+  @BeforeAll
+  static void beforeAll(){
+    container.start();
+  }
+
+  @DynamicPropertySource
+  static void configure(DynamicPropertyRegistry registry) {
+    registry.add("spring.rabbitmq.host", container::getContainerIpAddress);
+    registry.add("spring.rabbitmq.port", container::getAmqpPort);
+  }
+
   @BeforeEach
   void setUp() {
     var setUpDatabase = deliveryRepository.deleteAll();
@@ -73,10 +94,10 @@ public class DeliveryControllerIntgrationTest {
 
   static String extractSimpleMongoUri(GenericContainer<?> container) {
     return String.format(
-        "mongodb://%s:%d/%s",
-        container.getHost(),
-        container.getMappedPort(MongoProperties.DEFAULT_PORT),
-        DEFAULT_MONGO_DATABASE);
+      "mongodb://%s:%d/%s",
+      container.getHost(),
+      container.getMappedPort(MongoProperties.DEFAULT_PORT),
+      DEFAULT_MONGO_DATABASE);
   }
 
   @DisplayName("[서버-신규주문수신]")
@@ -84,98 +105,23 @@ public class DeliveryControllerIntgrationTest {
   @MethodSource("possibleDeliveryStream")
   void sendAddDeliveryEvent_success(Delivery delivery) throws JsonProcessingException {
     // Arrange
-    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
-    // Stub
-    stubFor(
-        post(urlPathEqualTo(testUrl))
-            .willReturn(
-                aResponse()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mapper.writeValueAsString(delivery))));
     // Act
     var actual =
-        testClient
-            .post()
-            .uri("/api/delivery")
-            .bodyValue(delivery)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(Delivery.class)
-            .returnResult()
-            .getResponseBody();
+      testClient
+        .post()
+        .uri("/api/delivery")
+        .bodyValue(delivery)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Delivery.class)
+        .returnResult()
+        .getResponseBody();
     delivery.setId(Objects.requireNonNull(actual).getId());
     var savedCnt = deliveryRepository.findAll();
     // Assert
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
+    verify(deliveryPublisher, times(1)).sendAddDeliveryEvent(actual);
     StepVerifier.create(savedCnt).expectNextCount(1).verifyComplete();
-  }
-
-  @DisplayName("[서버-신규주문수신]")
-  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
-  @MethodSource("possibleDeliveryStream")
-  void sendAddDeliveryEvent_connection_refused(Delivery expected) {
-    // Arrange
-    final String testUrl = proxyShopUrl + "/" + expected.getShopId();
-    // Stub
-    stubFor(
-        post(urlPathEqualTo(testUrl))
-            .willReturn(
-                aResponse()
-                    .withStatus(HttpStatus.NOT_FOUND.value())
-                    .withBody(
-                        new RelayClientException("Push Event failed for delivery :     " + expected)
-                            .getMessage())));
-    // Act
-    var actual =
-        testClient
-            .post()
-            .uri("/api/delivery")
-            .bodyValue(expected)
-            .exchange()
-            .expectStatus()
-            .is4xxClientError()
-            .expectBody(String.class)
-            .returnResult()
-            .getResponseBody();
-    var saved = deliveryRepository.findAll();
-    // Assert
-    assertTrue(Objects.requireNonNull(actual).contains("Push Event failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
-    StepVerifier.create(saved).expectNextCount(1).verifyComplete();
-  }
-
-  @DisplayName("[서버-신규주문수신 : 서버에러]")
-  @ParameterizedTest(name = "#{index} - {displayName} = Test with Argument={0}")
-  @MethodSource("possibleDeliveryStream")
-  void sendAddDeliveryEvent_server_error(Delivery delivery) {
-    // Arrange
-    final String testUrl = proxyShopUrl + "/" + delivery.getShopId();
-    // Stub
-    stubFor(
-        post(urlPathEqualTo(testUrl))
-            .willReturn(
-                aResponse()
-                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .withBody(
-                        new RelayClientException(
-                                "Shop operation failed for delivery :     " + delivery)
-                            .getMessage())));
-    // Act
-    var errorMsg =
-        testClient
-            .post()
-            .uri("/api/delivery")
-            .bodyValue(delivery)
-            .exchange()
-            .expectStatus()
-            .is4xxClientError()
-            .expectBody(String.class)
-            .returnResult()
-            .getResponseBody();
-    // Assert
-    assertTrue(errorMsg.contains("Shop operation failed for delivery :     "));
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
   }
 
   @DisplayName("[사장님-주문접수 : 성공]")
@@ -189,42 +135,35 @@ public class DeliveryControllerIntgrationTest {
     expected.setPickupTime(expected.getPickupTime().plusMinutes(1));
     expected.setFinishTime(expected.getOrderTime().plusMinutes(2));
 
-    final String testUrl = proxyAgencyUrl + "/" + expected.getAgencyId();
-    stubFor(
-        post(urlPathMatching(proxyAgencyUrl + "/.*"))
-            .willReturn(
-                aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mapper.writeValueAsString(expected))));
     // Act
     if (!expected.getOrderTime().isBefore(expected.getPickupTime())) {
       var responseBody =
-          testClient
-              .put()
-              .uri("/api/delivery/accept")
-              .bodyValue(expected)
-              .exchange()
-              .expectStatus()
-              .isEqualTo(HttpStatus.BAD_REQUEST)
-              .expectBody(String.class)
-              .returnResult();
+        testClient
+          .put()
+          .uri("/api/delivery/accept")
+          .bodyValue(expected)
+          .exchange()
+          .expectStatus()
+          .isEqualTo(HttpStatus.BAD_REQUEST)
+          .expectBody(String.class)
+          .returnResult();
       return;
     }
     var responseBody =
-        testClient
-            .put()
-            .uri("/api/delivery/accept")
-            .bodyValue(expected)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(Delivery.class)
-            .returnResult()
-            .getResponseBody();
+      testClient
+        .put()
+        .uri("/api/delivery/accept")
+        .bodyValue(expected)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Delivery.class)
+        .returnResult()
+        .getResponseBody();
     // Assert
     Assertions.assertEquals(expected, responseBody);
-    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
+//    WireMock.verify(1, postRequestedFor(urlPathEqualTo(testUrl)));
+    verify(deliveryPublisher, times(1)).sendSetRiderEvent(any(Delivery.class));
   }
 
   @DisplayName("[배달대행사-라이더배정: 성공]")
@@ -236,31 +175,31 @@ public class DeliveryControllerIntgrationTest {
     // Act
     if (expected.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
       var actual =
-          testClient
-              .put()
-              .uri("/api/delivery/rider")
-              .bodyValue(expected)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
+        testClient
+          .put()
+          .uri("/api/delivery/rider")
+          .bodyValue(expected)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectBody(Delivery.class)
+          .returnResult()
+          .getResponseBody();
       // Assert
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
       // Act & Assert
       testClient
-          .put()
-          .uri("/api/delivery/rider")
-          .bodyValue(expected)
-          .exchange()
-          .expectStatus()
-          .isBadRequest()
-          .expectBody(String.class)
-          .returnResult()
-          .getResponseBody();
+        .put()
+        .uri("/api/delivery/rider")
+        .bodyValue(expected)
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody(String.class)
+        .returnResult()
+        .getResponseBody();
     }
   }
 
@@ -276,29 +215,29 @@ public class DeliveryControllerIntgrationTest {
     if (before.getDeliveryStatus().equals(DeliveryStatus.ACCEPTED)) {
       // Act
       var actual =
-          testClient
-              .put()
-              .uri("/api/delivery/pickup")
-              .bodyValue(expected)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
+        testClient
+          .put()
+          .uri("/api/delivery/pickup")
+          .bodyValue(expected)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectBody(Delivery.class)
+          .returnResult()
+          .getResponseBody();
       // Assert
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
       // Act
       testClient
-          .put()
-          .uri("/api/delivery/pickup")
-          .bodyValue(expected)
-          .exchange()
-          .expectStatus()
-          .isBadRequest()
-          .expectBody(String.class);
+        .put()
+        .uri("/api/delivery/pickup")
+        .bodyValue(expected)
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody(String.class);
     }
   }
 
@@ -313,29 +252,29 @@ public class DeliveryControllerIntgrationTest {
       expected.setDeliveryStatus(DeliveryStatus.COMPLETE);
       // Act
       var actual =
-          testClient
-              .put()
-              .uri("/api/delivery/complete")
-              .bodyValue(expected)
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
+        testClient
+          .put()
+          .uri("/api/delivery/complete")
+          .bodyValue(expected)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectBody(Delivery.class)
+          .returnResult()
+          .getResponseBody();
       // Assert
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);
     } else {
       // Act
       testClient
-          .put()
-          .uri("/api/delivery/complete")
-          .bodyValue(expected)
-          .exchange()
-          .expectStatus()
-          .isBadRequest()
-          .expectBody(String.class);
+        .put()
+        .uri("/api/delivery/complete")
+        .bodyValue(expected)
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody(String.class);
     }
   }
 
@@ -349,22 +288,22 @@ public class DeliveryControllerIntgrationTest {
     int expectedSize = 10;
     int page = 3;
     var uri =
-        UriComponentsBuilder.fromUriString("/api/delivery")
-            .queryParam("page", page)
-            .queryParam("size", expectedSize)
-            .buildAndExpand()
-            .toUri();
+      UriComponentsBuilder.fromUriString("/api/delivery")
+        .queryParam("page", page)
+        .queryParam("size", expectedSize)
+        .buildAndExpand()
+        .toUri();
     // Act
     var actual =
-        testClient
-            .get()
-            .uri(uri)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBodyList(Delivery.class)
-            .returnResult()
-            .getResponseBody();
+      testClient
+        .get()
+        .uri(uri)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBodyList(Delivery.class)
+        .returnResult()
+        .getResponseBody();
     // Assert
     Assertions.assertEquals(expectedSize, actual.size());
   }
@@ -382,22 +321,22 @@ public class DeliveryControllerIntgrationTest {
     // Act
     if (isIdWrong) {
       testClient
+        .get()
+        .uri("/api/delivery/{id}", delivery.getId())
+        .exchange()
+        .expectStatus()
+        .isEqualTo(HttpStatus.BAD_REQUEST);
+    } else {
+      var actual =
+        testClient
           .get()
           .uri("/api/delivery/{id}", delivery.getId())
           .exchange()
           .expectStatus()
-          .isEqualTo(HttpStatus.BAD_REQUEST);
-    } else {
-      var actual =
-          testClient
-              .get()
-              .uri("/api/delivery/{id}", delivery.getId())
-              .exchange()
-              .expectStatus()
-              .isOk()
-              .expectBody(Delivery.class)
-              .returnResult()
-              .getResponseBody();
+          .isOk()
+          .expectBody(Delivery.class)
+          .returnResult()
+          .getResponseBody();
       // Assert
       expected.copyTimeFields(actual);
       Assertions.assertEquals(expected, actual);

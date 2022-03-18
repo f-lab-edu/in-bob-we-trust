@@ -6,7 +6,10 @@ import static org.mockito.Mockito.times;
 
 import com.inbobwetrust.domain.Delivery;
 import com.inbobwetrust.repository.DeliveryRepository;
+
 import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -36,14 +39,21 @@ public class DeliveryMessagePublisherImplTest {
   @Value("messageQueue.exchange.agency")
   private String agencyExchange;
 
-  @Autowired WebTestClient webTestClient;
+  @Autowired
+  WebTestClient webTestClient;
 
-  @Autowired DeliveryRepository deliveryRepository;
+  @Autowired
+  DeliveryRepository deliveryRepository;
 
-  @Container
-  static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
+  public static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine").withReuse(true);
 
-  @SpyBean AmqpTemplate amqpTemplate;
+  @BeforeAll
+  static void beforeAll() {
+    container.start();
+  }
+
+  @SpyBean
+  AmqpTemplate amqpTemplate;
 
   @DynamicPropertySource
   static void configure(DynamicPropertyRegistry registry) {
@@ -57,16 +67,16 @@ public class DeliveryMessagePublisherImplTest {
     var delivery = makeValidDelivery();
     // when
     var resBody =
-        this.webTestClient
-            .post()
-            .uri("/api/delivery")
-            .bodyValue(delivery)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(Delivery.class)
-            .returnResult()
-            .getResponseBody();
+      this.webTestClient
+        .post()
+        .uri("/api/delivery")
+        .bodyValue(delivery)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Delivery.class)
+        .returnResult()
+        .getResponseBody();
 
     Thread.sleep(1000L);
     // then
@@ -75,17 +85,17 @@ public class DeliveryMessagePublisherImplTest {
     assertTrue(delivery.getShopId().equals(savedDelivery.getShopId()));
     assertTrue(delivery.getCustomerId().equals(savedDelivery.getCustomerId()));
     Mockito.verify(amqpTemplate, times(1))
-        .convertAndSend(ArgumentMatchers.eq(shopExchange), any(Delivery.class));
+      .convertAndSend(ArgumentMatchers.eq(shopExchange), any(Delivery.class));
   }
 
   private Delivery makeValidDelivery() {
     return Delivery.builder()
-        .shopId("shop1234")
-        .orderId("order-1234")
-        .customerId("customer-1234")
-        .address("서울시 강남구 삼성동 봉은사로 12-41")
-        .phoneNumber("01031583212")
-        .orderTime(LocalDateTime.now())
-        .build();
+      .shopId("shop1234")
+      .orderId("order-1234")
+      .customerId("customer-1234")
+      .address("서울시 강남구 삼성동 봉은사로 12-41")
+      .phoneNumber("01031583212")
+      .orderTime(LocalDateTime.now())
+      .build();
   }
 }
