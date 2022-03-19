@@ -27,8 +27,7 @@ public class DeliveryMessageSubscriber {
     id = "addDeliveryMessageListener",
     bindings = @QueueBinding(
       value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.shop"),
-      key = "shop"
+      exchange = @Exchange("messageQueue.exchange.shop")
     ))
   public Mono<Void> processAddDeliveryMessage(Delivery delivery) {
     log.info("Consuming addDelivery     ===>      " + delivery);
@@ -40,8 +39,7 @@ public class DeliveryMessageSubscriber {
     id = "setRiderMessageListener",
     bindings = @QueueBinding(
       value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.agency"),
-      key = "agency"
+      exchange = @Exchange("messageQueue.exchange.agency")
     ))
   public Mono<Void> processSetRiderMessage(Delivery delivery) {
     log.info("Consuming setRider      ===>      " + delivery);
