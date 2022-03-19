@@ -31,7 +31,9 @@ public class DeliveryMessageSubscriber {
     ))
   public Mono<Void> processAddDeliveryMessage(Delivery delivery) {
     log.info("Consuming addDelivery     ===>      " + delivery);
-    return relayRepository.save(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery)).then();
+    return relayRepository
+        .save(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery))
+        .then();
   }
 
   @RabbitListener(
@@ -43,6 +45,8 @@ public class DeliveryMessageSubscriber {
     ))
   public Mono<Void> processSetRiderMessage(Delivery delivery) {
     log.info("Consuming setRider      ===>      " + delivery);
-    return relayRepository.save(new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery)).then();
+    return relayRepository
+        .save(new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery))
+        .then();
   }
 }
