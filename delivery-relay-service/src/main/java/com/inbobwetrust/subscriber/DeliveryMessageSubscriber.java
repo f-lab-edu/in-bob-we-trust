@@ -23,28 +23,32 @@ public class DeliveryMessageSubscriber {
   private final RelayRepository relayRepository;
 
   @RabbitListener(
-    ackMode = "MANUAL",
-    id = "addDeliveryMessageListener",
-    bindings = @QueueBinding(
-      value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.shop"),
-      key = "shop"
-    ))
+      ackMode = "MANUAL",
+      id = "addDeliveryMessageListener",
+      bindings =
+          @QueueBinding(
+              value = @Queue,
+              exchange = @Exchange("messageQueue.exchange.shop"),
+              key = "shop"))
   public Mono<Void> processAddDeliveryMessage(Delivery delivery) {
     log.info("Consuming addDelivery     ===>      " + delivery);
-    return relayRepository.save(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery)).then();
+    return relayRepository
+        .save(new RelayRequest(ReceiverType.SHOP, delivery.getShopId(), delivery))
+        .then();
   }
 
   @RabbitListener(
-    ackMode = "MANUAL",
-    id = "setRiderMessageListener",
-    bindings = @QueueBinding(
-      value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.agency"),
-      key = "agency"
-    ))
+      ackMode = "MANUAL",
+      id = "setRiderMessageListener",
+      bindings =
+          @QueueBinding(
+              value = @Queue,
+              exchange = @Exchange("messageQueue.exchange.agency"),
+              key = "agency"))
   public Mono<Void> processSetRiderMessage(Delivery delivery) {
     log.info("Consuming setRider      ===>      " + delivery);
-    return relayRepository.save(new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery)).then();
+    return relayRepository
+        .save(new RelayRequest(ReceiverType.AGENCY, delivery.getAgencyId(), delivery))
+        .then();
   }
 }

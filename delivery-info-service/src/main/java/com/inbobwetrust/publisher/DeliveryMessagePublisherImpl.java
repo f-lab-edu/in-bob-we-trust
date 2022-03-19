@@ -29,7 +29,7 @@ public class DeliveryMessagePublisherImpl implements DeliveryPublisher {
   private Mono<Delivery> publishAddDeliveryEvent(Delivery delivery) {
     return Mono.fromCallable(
         () -> {
-          this.messageQueue.convertAndSend(shopExchange,"shop", delivery);
+          this.messageQueue.convertAndSend(shopExchange, "shop", delivery);
           return delivery;
         });
   }
