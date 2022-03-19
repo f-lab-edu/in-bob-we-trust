@@ -23,12 +23,9 @@ public class DeliveryMessageSubscriber {
   private final RelayRepository relayRepository;
 
   @RabbitListener(
-    ackMode = "MANUAL",
-    id = "addDeliveryMessageListener",
-    bindings = @QueueBinding(
-      value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.shop")
-    ))
+      ackMode = "MANUAL",
+      id = "addDeliveryMessageListener",
+      bindings = @QueueBinding(value = @Queue, exchange = @Exchange("messageQueue.exchange.shop")))
   public Mono<Void> processAddDeliveryMessage(Delivery delivery) {
     log.info("Consuming addDelivery     ===>      " + delivery);
     return relayRepository
@@ -37,12 +34,10 @@ public class DeliveryMessageSubscriber {
   }
 
   @RabbitListener(
-    ackMode = "MANUAL",
-    id = "setRiderMessageListener",
-    bindings = @QueueBinding(
-      value = @Queue,
-      exchange = @Exchange("messageQueue.exchange.agency")
-    ))
+      ackMode = "MANUAL",
+      id = "setRiderMessageListener",
+      bindings =
+          @QueueBinding(value = @Queue, exchange = @Exchange("messageQueue.exchange.agency")))
   public Mono<Void> processSetRiderMessage(Delivery delivery) {
     log.info("Consuming setRider      ===>      " + delivery);
     return relayRepository
